@@ -9,12 +9,12 @@
 
 |                     |                   |
 |---------------------|-------------------|
-|Project Title:       | xxxxxx            |
-|Student 1 Name:      | xxxxxx            |
-|Student 1 ID:        | xxxxxx            |
-|Student 2 Name:      | xxxxxx            |
+|Project Title:       | Infer-Read Language Learning Tool |
+|Student 1 Name:      | Ryan McQuillan |
+|Student 1 ID:        | 19452414 |
+|Student 2 Name:      | Ethan Hall |
 |Student 2 ID:        | xxxxxx            |
-|Project Supervisor:  | xxxxxx            |
+|Project Supervisor:  | Jennifer Foster |
 
 > Ensure that the Supervisor formally agrees to supervise your project; this is only recognised once the
 > Supervisor assigns herself/himself via the project Dashboard.
