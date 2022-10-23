@@ -17,14 +17,15 @@ document = sys.argv[1]
 
 # PDF Logic
 def PDFFlow(document):
-    pdfTarget = "fileTarget"
+    pdfTarget = document
     pdfFileObj = open(pdfTarget, 'rb')
     pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
     currPage = 0
     num_pages = pdfReader.numPages
     text = ""
 
-    while currPage < num_pages:
+    # Currently gets the first 10 pages, an arbitrary limit for now
+    while currPage < 10:
         pageObj = pdfReader.getPage(currPage)
         currPage += 1
         text += pageObj.extractText()
@@ -37,6 +38,7 @@ def PDFFlow(document):
         ocr_result = pytesseract.image_to_string(text)
         text = ocr_result
     
+    text = text.replace("\n\n", " ").replace("\n", " ")
     return text
 
 # Plaintext Logic
@@ -55,7 +57,9 @@ if (os.path.splitext(document)[1] == ".txt"):
 
 
 # simple spacy tokenisation flow for French
-nlp = spacy.load("fr_dep_news_trf")
+print("Starting spacy operations")
+nlp = spacy.load("fr_core_news_sm")
 doc = nlp(text)
-print(doc)
+sentences = list(doc.sents) 
+print(sentences)
 
