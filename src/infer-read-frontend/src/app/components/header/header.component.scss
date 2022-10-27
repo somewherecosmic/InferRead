@@ -1,0 +1,28 @@
+.body {
+    height: 8vh;
+    width: 100vw;
+    display: flex;
+    justify-content: space-around;
+    background-color: white;
+    border-bottom: solid black .5vh;
+
+    .logo-brand {
+        width: 20vw;
+        background-color: red;
+    }
+
+    .chosen-lang {
+        width: 5vw;
+        background-color: green;
+    }
+
+    .user {
+        width: 20vw;
+        background-color: black;
+    }
+}
+
+p {
+    margin: 0;
+    padding: 0;
+}
