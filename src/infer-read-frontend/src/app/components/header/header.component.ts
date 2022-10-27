@@ -12,4 +12,7 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  onClick(): void {
+    alert("This will route to the homepage at some point");
+  }
 }
