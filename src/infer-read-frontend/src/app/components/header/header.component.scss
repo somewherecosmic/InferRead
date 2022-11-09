@@ -10,19 +10,23 @@
         display: flex;
         width: 20vw;
         img {
-            height: 9vh;
-            width: 9vw;
+            height: 6vh;
+            width: 5vw;
         }
     }
 
     .chosen-lang {
         width: 5vw;
-        background-color: green;
+
     }
 
     .user {
+        display: flex;
         width: 20vw;
-        background-color: black;
+        img {
+            height: 9vh;
+            width: 9vw;
+        }
     }
 }
 
@@ -30,4 +34,7 @@ p {
     margin: 0;
     padding: 0;
     font-size: 2.5rem;
+    line-height: 8vh;
+    text-align: center
 }
+
