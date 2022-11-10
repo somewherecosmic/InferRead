@@ -2,16 +2,20 @@
     height: 8vh;
     width: 100vw;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     background-color: white;
-    border-bottom: solid black .5vh;
+    border-bottom: solid black .25vh;
 
     .logo-brand {
         display: flex;
-        width: 20vw;
+        width: 15vw;
+        text-align: center;
+        margin-left: 5vw;
         img {
             height: 6vh;
             width: 5vw;
+            display: block;
+            border-radius: 20px;
         }
     }
 
@@ -23,9 +27,10 @@
     .user {
         display: flex;
         width: 20vw;
+
         img {
-            height: 9vh;
-            width: 9vw;
+            height: 8vh;
+            width: 8vw;
         }
     }
 }
@@ -33,8 +38,7 @@
 p {
     margin: 0;
     padding: 0;
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     line-height: 8vh;
     text-align: center
 }
-

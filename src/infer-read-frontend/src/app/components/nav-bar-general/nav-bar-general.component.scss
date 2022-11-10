@@ -1,0 +1,20 @@
+.body {
+    height: 91.75vh;
+    width: 20vw;
+    border-right: .10vw solid black;
+    .list-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1vh;
+        height: 91.75vh;
+        justify-content: space-around;
+        .button {
+            display: flex;
+            flex-direction: row;
+            margin-left: 5vh;
+            p {
+                font-size: 1.5rem;
+            }
+        }
+    }
+}
