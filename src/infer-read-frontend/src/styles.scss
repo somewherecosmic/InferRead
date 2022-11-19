@@ -1,0 +1,15 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  p {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+  font-size: calc(8px + (12 - 8) * ((100vw - 1280px)/(2500 - 1280)));
+}
