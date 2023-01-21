@@ -1,48 +1,26 @@
 .body {
+  height: 8vh;
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  background-color: white;
+  border-bottom: solid black 0.25vh;
+
+  .logo-brand {
     height: 8vh;
-    width: 100vw;
+    width: 20vw;
     display: flex;
-    justify-content: space-between;
-    background-color: white;
-    border-bottom: solid black .25vh;
-
-    .logo-brand {
-        display: flex;
-        width: 35vw;
-        text-align: center;
-        margin-left: 5vw;
-        img {
-            height: 8vh;
-            width: 5vw;
-            margin-left: 10vw;
-            margin-right: 2vw;
-            display: block;
-            //border-radius: 20px;
-            line-height:6vh;
-            //vertical-align:middle;
-        }
+    justify-content: center;
+    align-items: center;
+    img {
+      height: 6vh;
+      width: 5vw;
+      display: block;
+      line-height: 6vh;
+    margin-left: 2vw;
     }
+  }
 
-    .chosen-lang {
-        width: 5vw;
-
-    }
-
-    .user {
-        display: flex;
-        width: 20vw;
-
-        img {
-            height: 8vh;
-            width: 8vw;
-        }
-    }
-}
-
-p {
-    margin: 0;
-    padding: 0;
-    font-size: 1.5rem;
-    line-height: 8vh;
-    text-align: center
+  .user {
+  }
 }
