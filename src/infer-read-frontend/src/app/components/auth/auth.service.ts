@@ -20,5 +20,17 @@ export class AuthService {
   });
   }
 
+  login(email: string, password: string) {
+    return this.http.post('http://localhost:3000/auth/login', {
+      email: email,
+      password: password
+    },
+    {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  }
+
   constructor(private http: HttpClient) { }
 }

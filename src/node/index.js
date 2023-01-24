@@ -9,8 +9,6 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-app.listen(3000);
-
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE');
@@ -21,7 +19,13 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 
 
-mongoose.connect('mongodb+srv://Ethan:2mQWDO8L7jTetddl@cluster0.kbsgj.mongodb.net/test?retryWrites=true&w=majority');
+mongoose
+    .connect('mongodb+srv://Ethan:2mQWDO8L7jTetddl@cluster0.kbsgj.mongodb.net/test?retryWrites=true&w=majority').then(result => {
+        app.listen(3000)
+    })
+    .catch(err => {
+        console.log(err);
+    })
 
 // Easy to call in a document create endpoint in API
 

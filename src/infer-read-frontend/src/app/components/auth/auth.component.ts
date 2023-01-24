@@ -17,7 +17,12 @@ export class AuthComponent implements OnInit {
   }
 
   onLogIn(authForm: NgForm) {
-    console.log(authForm);
+    this.authService.login(authForm.value.email, authForm.value.password).subscribe(res => {
+      console.log(res);
+    },
+    err => {
+      console.log(err);
+    })
     authForm.reset();
   }
 

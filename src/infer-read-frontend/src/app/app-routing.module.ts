@@ -15,7 +15,7 @@ import { AuthComponent } from './components/auth/auth.component';
       { path: 'read', component: ReadingViewComponent },
       { path: 'upload', component: UploadPageComponent },
       { path: 'review', component: ReviewPageComponent },
-      {path: 'auth', component: AuthComponent }
+      {path: 'auth', component: AuthComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
     ],
     { initialNavigation: 'enabledBlocking'}
