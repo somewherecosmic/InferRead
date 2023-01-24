@@ -4,6 +4,9 @@ import { OverviewComponent } from './components/overview/overview.component';
 import { ReadingViewComponent } from './components/reading-view/reading-view.component';
 import { UploadPageComponent } from './components/upload-page/upload-page.component';
 import { ReviewPageComponent } from './components/review-page/review-page.component';
+import { AuthComponent } from './components/auth/auth.component';
+
+
 
 @NgModule({
   imports: [RouterModule.forRoot(
@@ -12,6 +15,7 @@ import { ReviewPageComponent } from './components/review-page/review-page.compon
       { path: 'read', component: ReadingViewComponent },
       { path: 'upload', component: UploadPageComponent },
       { path: 'review', component: ReviewPageComponent },
+      {path: 'auth', component: AuthComponent }
       { path: '', redirectTo: 'overview', pathMatch: 'full' },
     ],
     { initialNavigation: 'enabledBlocking'}

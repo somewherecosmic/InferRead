@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from "@angular/router"
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,6 +12,7 @@ import { OverviewComponent } from './components/overview/overview.component';
 import { ReadingViewComponent } from './components/reading-view/reading-view.component';
 import { UploadPageComponent } from './components/upload-page/upload-page.component';
 import { ReviewPageComponent } from './components/review-page/review-page.component';
+import { AuthComponent } from './components/auth/auth.component';
 
 @NgModule({
   declarations: [
@@ -19,11 +22,14 @@ import { ReviewPageComponent } from './components/review-page/review-page.compon
     OverviewComponent,
     ReadingViewComponent,
     UploadPageComponent,
-    ReviewPageComponent
+    ReviewPageComponent,
+    AuthComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
