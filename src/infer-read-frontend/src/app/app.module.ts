@@ -13,6 +13,8 @@ import { ReadingViewComponent } from './components/reading-view/reading-view.com
 import { UploadPageComponent } from './components/upload-page/upload-page.component';
 import { ReviewPageComponent } from './components/review-page/review-page.component';
 import { AuthComponent } from './components/auth/auth.component';
+import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +25,9 @@ import { AuthComponent } from './components/auth/auth.component';
     ReadingViewComponent,
     UploadPageComponent,
     ReviewPageComponent,
-    AuthComponent
+    AuthComponent,
+    LoadingSpinnerComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

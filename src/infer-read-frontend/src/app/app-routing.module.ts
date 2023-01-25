@@ -5,6 +5,7 @@ import { ReadingViewComponent } from './components/reading-view/reading-view.com
 import { UploadPageComponent } from './components/upload-page/upload-page.component';
 import { ReviewPageComponent } from './components/review-page/review-page.component';
 import { AuthComponent } from './components/auth/auth.component';
+import { HomeComponent } from './components/home/home.component';
 
 
 
@@ -16,7 +17,7 @@ import { AuthComponent } from './components/auth/auth.component';
       { path: 'upload', component: UploadPageComponent },
       { path: 'review', component: ReviewPageComponent },
       {path: 'auth', component: AuthComponent },
-      { path: '', redirectTo: 'overview', pathMatch: 'full' },
+      { path: '', component: HomeComponent, pathMatch: 'full' },
     ],
     { initialNavigation: 'enabledBlocking'}
   )],

@@ -52,9 +52,11 @@ const logIn = (req, res, next) => {
             {email : loadedUser.email},
             'inferread',
             {expiresIn: '24h'});
-        res.status(200).send( { token: token, id: loadedUser._id })
+            // Date object + 24 hours
+        res.status(200).send( {email: loadedUser.email, token: token, id: loadedUser._id, expiresIn: new Date( new Date().getTime() + 24 * 60 * 60 * 1000)}) 
     })
     .catch(err => {
+        console.log("User does not exist");
         next(err);
     })
 }
