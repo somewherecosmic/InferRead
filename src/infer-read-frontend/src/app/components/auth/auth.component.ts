@@ -27,7 +27,7 @@ export class AuthComponent implements OnInit {
     this.authService.login(authForm.value.email, authForm.value.password).subscribe(res => {
       console.log(res);
       this.isLoading = false;
-      this.router.navigate(['']);
+      this.router.navigate(['/overview']);
     },
     err => {
       console.log(err);
@@ -42,7 +42,7 @@ export class AuthComponent implements OnInit {
     this.authService.signup(authForm.value.email, authForm.value.password).subscribe((res) => {
       console.log(res);
       this.isLoading = false;
-      this.router.navigate(['']);
+      this.router.navigate(['/overview']);
     }, 
     err => {
       console.log(err);
