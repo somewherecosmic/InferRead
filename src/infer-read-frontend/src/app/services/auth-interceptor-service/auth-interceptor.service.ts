@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpParams } from '@angular/common/http';
-import { AuthService } from './auth.service';
+import { AuthorizationService } from '../authorization-service/authorization.service';
 import { switchMap, take, exhaustMap } from 'rxjs/operators';
-import { User } from './user.model';
+import { User } from '../../models/user.model';
 
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor {
 
-  constructor(private authService: AuthService ) { }
+  constructor(private authService: AuthorizationService ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler ) {
     return this.authService.user.pipe(

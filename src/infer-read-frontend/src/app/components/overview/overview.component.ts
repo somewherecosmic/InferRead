@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
+import { AuthorizationService } from '../../services/authorization-service/authorization.service';
 import { Subscription } from 'rxjs';
-import { User } from '../auth/user.model';
+import { User } from '../../models/user.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 })
 export class OverviewComponent implements OnInit {
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthorizationService, private router: Router) { }
 
   private userSubscription!: Subscription;
   user!: User;

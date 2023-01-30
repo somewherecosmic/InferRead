@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './components/auth/auth.service';
+import { AuthorizationService } from './services/authorization-service/authorization.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +11,7 @@ export class AppComponent implements OnInit {
 
   basilArr: String[] = ["baz", "mac", "q"];
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthorizationService) {}
   
   ngOnInit() {
     this.authService.autoLog();

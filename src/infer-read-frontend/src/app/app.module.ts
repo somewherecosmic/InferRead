@@ -6,17 +6,17 @@ import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './components/header/header.component';
-import { NavBarGeneralComponent } from './components/nav-bar-general/nav-bar-general.component';
+import { HeaderComponent } from './components/page-skeleton/header/header.component';
+import { NavBarGeneralComponent } from './components/page-skeleton/nav-bar-general/nav-bar-general.component';
 import { OverviewComponent } from './components/overview/overview.component';
 import { ReadingViewComponent } from './components/reading-view/reading-view.component';
 import { UploadPageComponent } from './components/upload-page/upload-page.component';
 import { ReviewPageComponent } from './components/review-page/review-page.component';
-import { AuthComponent } from './components/auth/auth.component';
-import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner.component';
+import { LoginAuthorizationComponent } from './components/login-auth/login-auth.component';
+import { LoadingSpinnerComponent } from './components/page-skeleton/loading-spinner/loading-spinner.component';
 import { HomeComponent } from './components/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AuthInterceptorService } from './components/auth/auth-interceptor.service';
+import { AuthInterceptorService } from './services/auth-interceptor-service/auth-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -27,7 +27,7 @@ import { AuthInterceptorService } from './components/auth/auth-interceptor.servi
     ReadingViewComponent,
     UploadPageComponent,
     ReviewPageComponent,
-    AuthComponent,
+    LoginAuthorizationComponent,
     LoadingSpinnerComponent,
     HomeComponent
   ],

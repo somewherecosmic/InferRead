@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
-import { User } from '../auth/user.model'; 
+import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { User } from '../../models/user.model'; 
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
   userSubscription: Subscription;
 
 
-  constructor(private authService: AuthService) {
+  constructor(private authService: AuthorizationService) {
     this.userSubscription = this.authService.user.subscribe(user => {
       if (user) {
         this.user = user;
