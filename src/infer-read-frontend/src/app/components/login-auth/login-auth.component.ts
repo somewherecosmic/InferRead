@@ -2,19 +2,19 @@ import { formatCurrency } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from './auth.service';
+import { AuthorizationService } from '../../services/authorization-service/authorization.service';
 
 @Component({
   selector: 'app-auth',
-  templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.scss']
+  templateUrl: './login-auth.component.html',
+  styleUrls: ['./login-auth.component.scss']
 })
-export class AuthComponent implements OnInit {
+export class LoginAuthorizationComponent implements OnInit {
 
   isLoading: Boolean = false;
   error: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthorizationService, private router: Router) { }
 
   ngOnInit(): void {
   }

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http'
 import { BehaviorSubject, tap, TimeoutConfig } from 'rxjs';
-import { User } from './user.model';
+import { User } from '../../models/user.model';
 
-interface AuthResponse {
+interface AuthorizationResponse {
   email: string,
   token: string,
   id: string
@@ -13,13 +13,13 @@ interface AuthResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthorizationService {
   // empty string fields treated as falsey, workaround for strict typechecking 
   user = new BehaviorSubject<User | null>(null);
   tokenExpirationTimer: NodeJS.Timeout | null = null;
 
 
-  authHandler(response: AuthResponse) {
+  authHandler(response: AuthorizationResponse) {
     const user = new User(response.email, response.id, response.token, response.expiresIn);
     this.user.next(user);
     // Have to cast to new Date() again due to problem with res deserialisation in getTime() method
@@ -30,7 +30,7 @@ export class AuthService {
 
   signup(email: string, password: string) {
     console.log(email, password);
-    return this.http.post<AuthResponse>('http://localhost:3000/auth/signup', {
+    return this.http.post<AuthorizationResponse>('http://localhost:3000/auth/signup', {
       email: email,
       password: password
     },
@@ -44,7 +44,7 @@ export class AuthService {
   }
 
   login(email: string, password: string) {
-    return this.http.post<AuthResponse>('http://localhost:3000/auth/login', {
+    return this.http.post<AuthorizationResponse>('http://localhost:3000/auth/login', {
       email: email,
       password: password
     },
