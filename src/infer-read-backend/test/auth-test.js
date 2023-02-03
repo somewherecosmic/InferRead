@@ -8,6 +8,8 @@ import { expect, should } from 'chai';
 // Have signup validation handle the creation itself through req, then deleteMany at end
 
 describe('Auth Controller Validation - Login', () => {
+
+    // Need to export this logic to a helper for the sake of DRY
     before((done) => {
         mongoose.set('strictQuery', false);
         mongoose.connect(
