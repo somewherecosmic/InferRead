@@ -38,7 +38,6 @@ const logIn = (req, res, next) => {
 
     User.findOne({email: email})
     .then(user => {
-        console.log(user);
         loadedUser = user;
         return bcrypt.compare(password, user.password);
     })
@@ -56,7 +55,6 @@ const logIn = (req, res, next) => {
         res.status(200).send( {email: loadedUser.email, token: token, id: loadedUser._id, expiresIn: new Date( new Date().getTime() + 24 * 60 * 60 * 1000)}) 
     })
     .catch(err => {
-        console.log("User does not exist");
         next(err);
     })
 }

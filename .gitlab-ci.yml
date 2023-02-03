@@ -1,0 +1,11 @@
+stages:
+    - backend-test
+
+
+backend-test:
+    stage: backend-test
+    image: node:16-alpine
+    script:
+        - cd src/infer-read-backend/
+        - npm install
+        - npm test
