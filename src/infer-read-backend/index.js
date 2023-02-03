@@ -18,14 +18,15 @@ app.use((req, res, next) => {
 
 app.use('/auth', authRoutes);
 
-
+mongoose.set('strictQuery', false);
 mongoose
     .connect('mongodb+srv://Ethan:2mQWDO8L7jTetddl@cluster0.kbsgj.mongodb.net/test?retryWrites=true&w=majority').then(result => {
         app.listen(3000)
+        console.log("Connected to MongoDB Atlas Cluster");
     })
     .catch(err => {
         console.log(err);
-    })
+    });
 
 // Easy to call in a document create endpoint in API
 
