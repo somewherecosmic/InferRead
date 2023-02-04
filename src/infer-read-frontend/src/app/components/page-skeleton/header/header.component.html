@@ -14,7 +14,7 @@
       icon="../../../assets/logo.png"
       [items]="userDropdownOptions"
       displayExpr="name"
-      (onItemClick)="onLogout()"
+      (onItemClick)="dropdownItemSelected($event.itemData.name)"
     ></dx-drop-down-button>
   </div>
 </div>

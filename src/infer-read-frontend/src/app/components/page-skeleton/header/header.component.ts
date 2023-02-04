@@ -5,28 +5,37 @@ import { AuthorizationService } from 'src/app/services/authorization-service/aut
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-  
   userDropdownOptions: any[] = [
     { name: 'Profile', icon: 'alignleft' },
     { name: 'Options', icon: 'alignright' },
     { name: 'Logout', icon: 'aligncenter' },
   ];
 
-  constructor(private authService: AuthorizationService, private router: Router) { }
+  constructor(
+    private authService: AuthorizationService,
+    private router: Router
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
-  onLogout() {
-    this.authService.logout();
-    this.router.navigate([''])
+  dropdownItemSelected(optionSelected: string) {
+    switch (optionSelected) {
+      case 'Logout': {
+        this.authService.logout();
+        this.router.navigate(['']);
+        break;
+      }
+      default: {
+        console.log('Other');
+        break;
+      }
+    }
   }
 
   onClick(): void {
-    alert("This will route to the homepage at some point");
+    alert('This will route to the homepage at some point');
   }
-  
 }
