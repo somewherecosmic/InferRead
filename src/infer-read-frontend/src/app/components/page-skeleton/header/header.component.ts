@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { AuthorizationService } from 'src/app/services/authorization-service/authorization.service';
 
 @Component({
@@ -17,7 +17,13 @@ export class HeaderComponent implements OnInit {
   constructor(
     private authService: AuthorizationService,
     private router: Router
-  ) {}
+  ) {
+    router.events.subscribe((val) => {
+      this.currentPage = this.router.url;
+    });
+  }
+
+  currentPage = this.router.url;
 
   ngOnInit(): void {}
 

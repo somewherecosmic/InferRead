@@ -6,7 +6,7 @@
     <img src="../../../assets/irish-flag.jpg" alt="Irish Flag" />
   </div>
 
-  <div class="RHS-dropdown">
+  <div *ngIf="currentPage != '/'" class="RHS-dropdown">
     <dx-drop-down-button
       [splitButton]="false"
       [useSelectMode]="false"
