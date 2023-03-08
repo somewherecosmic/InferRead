@@ -9,6 +9,12 @@ interface fileResponse {
   text: string
 }
 
+
+
+interface fileResponse {
+  text: string
+}
+
 @Component({
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
