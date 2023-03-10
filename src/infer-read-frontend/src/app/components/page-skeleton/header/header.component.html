@@ -1,15 +1,20 @@
 <div class="body">
+  <div class="logo-brand">
     <a (click)="onClick()">
-        <div class="logo-brand">
-            <h1> Infer-Read</h1>
-            <img src="../../../assets/irish-flag.jpg" alt="Irish Flag">
-        </div>
+      <h1>Infer-Read</h1>
     </a>
+    <img src="../../../assets/irish-flag.jpg" alt="Irish Flag" />
+  </div>
 
-    <div class="user">
-        <a routerLink="/auth">
-        <p>Auth</p>
-        </a>
-        <img src="../../../assets/logo.png" alt="Infer-Read Logo">
-    </div>
+  <div *ngIf="currentPage != '/'" class="RHS-dropdown">
+    <dx-drop-down-button
+      [splitButton]="false"
+      [useSelectMode]="false"
+      text="Name McGee"
+      icon="../../../assets/logo.png"
+      [items]="userDropdownOptions"
+      displayExpr="name"
+      (onItemClick)="dropdownItemSelected($event.itemData.name)"
+    ></dx-drop-down-button>
+  </div>
 </div>

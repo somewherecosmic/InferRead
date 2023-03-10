@@ -9,8 +9,6 @@ import { AuthorizationService } from './services/authorization-service/authoriza
 export class AppComponent implements OnInit {
   title = 'infer-read-frontend';
 
-  basilArr: String[] = ["baz", "mac", "q"];
-
   constructor(private authService: AuthorizationService) {}
   
   ngOnInit() {
