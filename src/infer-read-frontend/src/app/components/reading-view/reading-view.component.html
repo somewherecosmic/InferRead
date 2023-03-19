@@ -1,7 +1,12 @@
 <div class="body">
     <app-nav-bar-general></app-nav-bar-general>
     <div class="RHS">
-      <p>reading view works!</p>
+      <div class="reading-body">
+        <p [textContent]="text" (dblclick)="highlight($event)"></p>
+      </div>
+      <div class="side-help-info">
+        <h1> {{selectedWord}}</h1>
+      </div>
     </div>
   </div>
   

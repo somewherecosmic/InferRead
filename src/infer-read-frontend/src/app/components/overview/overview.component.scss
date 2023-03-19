@@ -1,4 +1,36 @@
-.body{
+.body {
+  display: flex;
+  background-color: #f3f2ef;
+  .RHS {
+    height: 90vh;
+    width: 90vw;
     display: flex;
-    .RHS{}
+    margin-left: 1vw;
+    margin-top: 0.5vh;
+
+    .items-available {
+      background-color: #ffffff;
+      max-height: 90vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      width: 75vw;
+      margin-right: 1.5vw;
+      border-radius: 0.75vw;
+      padding-left: 2vw;
+      padding-right: 2vw;
+      .item {
+        margin-top: 1vh;
+        border-radius: 0.75vw;
+        background-color: #f3f2ef;
+        padding-left: 1vw;
+        padding-right: 1vw;
+      }
+    }
+    .filtering-body {
+      background-color: #ffffff;
+      height: 90vh;
+      width: 10vw;
+      border-radius: 0.75vw;
+    }
+  }
 }
