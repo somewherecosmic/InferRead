@@ -1,9 +1,18 @@
 <div class="body">
   <app-nav-bar-general></app-nav-bar-general>
   <div class="RHS">
-    <div>
-    <h1></h1>
+    <div class="items-available">
+      <div *ngFor="let item of items" class="item">
+        <h1 class="item-title">{{dummyitem.title}}</h1>
+        <h2 class="item-desc">{{dummyitem.size}} ● {{dummyitem.uploaddate}}</h2>
+      </div>
     </div>
-   
+    <div class="filtering-body">
+      <ul>
+        <li>Uploaded By Me</li>
+        <li>System</li>
+        <li>Other</li>
+      </ul>
+    </div>
   </div>
 </div>

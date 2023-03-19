@@ -15,6 +15,8 @@ export class OverviewComponent implements OnInit {
   private userSubscription!: Subscription;
   user!: User;
 
+  dummyitem = {title:"Irish Book PDF", size:"22MB", uploaddate:"Today", }
+  items = [0, 0, 0]
   
 
   ngOnInit(): void {

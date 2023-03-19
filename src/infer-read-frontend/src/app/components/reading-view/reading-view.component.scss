@@ -1,4 +1,32 @@
-.body{
+.body {
+  display: flex;
+  background-color: #f3f2ef;
+  .RHS {
+    height: 90vh;
+    width: 90vw;
     display: flex;
-    .RHS{}
+    margin-left: 1vw;
+    margin-top: 0.5vh;
+
+    .reading-body {
+      background-color: #ffffff;
+      max-height: 90vh;
+      overflow-x: hidden;
+      overflow-y: auto;
+      width: 75vw;
+      margin-right: 1.5vw;
+      border-radius: 0.75vw;
+      padding-left: 2vw;
+      padding-right: 2vw;
+      p {
+        font-size: 3rem;
+      }
+    }
+    .side-help-info {
+      background-color: #ffffff;
+      height: 90vh;
+      width: 10vw;
+      border-radius: 0.75vw;
+    }
+  }
 }
