@@ -36,10 +36,7 @@ import { FileUploadComponent } from './components/file-upload/file-upload.compon
     LoginAuthorizationComponent,
     LoadingSpinnerComponent,
     HomeComponent,
-<<<<<<< HEAD
-=======
     FileUploadComponent
->>>>>>> f654e91 (File upload finally working between frontend and new FastAPI backend for the Python tasks)
   ],
   imports: [
     BrowserModule,

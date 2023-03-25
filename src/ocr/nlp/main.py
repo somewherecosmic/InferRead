@@ -29,7 +29,7 @@ app.add_middleware(
 )
 
 # Model needs to be JSON encoded before being sent to Atlas
-class Document(BaseModel, title, pages, language):
+class Document(BaseModel):
     title: str = Field(...)
     pages: List[str]
     language: str
