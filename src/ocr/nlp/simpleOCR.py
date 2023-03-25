@@ -18,8 +18,10 @@ document = sys.argv[1]
 # PDF Logic
 def PDFFlow(document):
     pdfTarget = document
+    # Need to comment either of these lines out depending on if dealing with bytes or not
     pdfFileObj = open(pdfTarget, 'rb')
-    pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+    #pdfFileObj = pdfTarget.read()
+    pdfReader = PyPDF2.PdfReader(pdfFileObj)
     currPage = 0
     num_pages = pdfReader.numPages
     text = ""
@@ -64,20 +66,22 @@ class Page:
 
 
 # simple spacy tokenisation flow for French
-print("Starting spacy operations")
-nlp = spacy.load("fr_core_news_sm")
-nlp.add_pipe('sentencizer')
-pages = []
-with nlp.select_pipes(disable=["tok2vec", "parser", "ner"]):
-    doc = nlp(text)
-    sentences = list(doc.sents)
-
-def toPages(sentences):
+def spacy_tokenise(text):
+    print("Starting spacy operations")
+    nlp = spacy.load("fr_core_news_sm")
+    nlp.add_pipe('sentencizer')
     pages = []
-    pagecount = 1
-    i = 0
-    while i < len(sentences):
+    with nlp.select_pipes(disable=["tok2vec", "parser", "ner"]):
+        doc = nlp(text)
+        sentences = list(doc.sents)
+    
+    return sentences
+
+# def toPages(sentences):
+#     pages = []
+#     pagecount = 1
+#     i = 0
+#     while i < len(sentences):
 
     
-    return pages
-
+#     return pages

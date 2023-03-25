@@ -2,12 +2,20 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon'
 
+
+
+interface fileResponse {
+  text: string
+}
+
 @Component({
   selector: 'app-file-upload',
   templateUrl: './file-upload.component.html',
   styleUrls: ['./file-upload.component.scss']
 })
 export class FileUploadComponent {
+
+  text = "";
 
   constructor(private http: HttpClient) {}
 
@@ -55,9 +63,14 @@ export class FileUploadComponent {
 
           formData.append("document", file);
 
-          const upload$ = this.http.post("http://127.0.0.1:8000/preprocess", formData);
+          const upload$ = this.http.post<fileResponse>("http://127.0.0.1:8000/preprocess", formData);
 
-          upload$.subscribe();
+          upload$.subscribe(response => {
+            console.log(response);
+            this.text = response.text
+          });
+
+        
       }
 }
 }
