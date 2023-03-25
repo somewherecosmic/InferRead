@@ -9,6 +9,12 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    documents: {
+        type: [{title: String, content: String}]
+    },
+    words: {
+        type: [{word: String, POS: String}]
     }
 });
 

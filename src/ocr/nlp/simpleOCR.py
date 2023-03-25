@@ -55,11 +55,29 @@ if (os.path.splitext(document)[1] == ".pdf"):
 if (os.path.splitext(document)[1] == ".txt"):
     text = PlaintextFlow(document)
 
+class Page:
+    def __init__(self, number, sentences):
+        self.number = number
+        self.sentences = sentences
+
+        
+
 
 # simple spacy tokenisation flow for French
 print("Starting spacy operations")
 nlp = spacy.load("fr_core_news_sm")
-doc = nlp(text)
-sentences = list(doc.sents) 
-print(sentences)
+nlp.add_pipe('sentencizer')
+pages = []
+with nlp.select_pipes(disable=["tok2vec", "parser", "ner"]):
+    doc = nlp(text)
+    sentences = list(doc.sents)
+
+def toPages(sentences):
+    pages = []
+    pagecount = 1
+    i = 0
+    while i < len(sentences):
+
+    
+    return pages
 

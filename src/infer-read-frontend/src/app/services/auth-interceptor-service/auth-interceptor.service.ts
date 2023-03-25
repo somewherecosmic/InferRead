@@ -10,6 +10,10 @@ export class AuthInterceptorService implements HttpInterceptor {
   constructor(private authService: AuthorizationService ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler ) {
+    if (req.url.match("http://127.0.0.1:8000/.+")) {
+      return next.handle(req);
+    }
+    else {
     return this.authService.user.pipe(
       take(1),
       exhaustMap(user => {
@@ -20,4 +24,5 @@ export class AuthInterceptorService implements HttpInterceptor {
       })
     );
   }
+}
 }

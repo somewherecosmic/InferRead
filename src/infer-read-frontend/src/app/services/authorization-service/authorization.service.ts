@@ -6,8 +6,9 @@ import { User } from '../../models/user.model';
 interface AuthorizationResponse {
   email: string,
   token: string,
-  id: string
-  expiresIn: Date
+  id: string,
+  expiresIn: Date,
+  documents: Document[]
 }
 
 @Injectable({
