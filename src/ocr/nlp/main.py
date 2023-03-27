@@ -1,7 +1,8 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+# from pydantic import BaseModel, Field, json
+from dataclasses import dataclass, asdict
 from typing import Union, List
 import simpleOCR
 import PyPDF2
@@ -9,6 +10,10 @@ from io import BytesIO
 import os
 import motor.motor_asyncio
 import certifi
+import pydantic
+from bson import ObjectId
+
+pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
 app = FastAPI()
 ca = certifi.where()
@@ -29,10 +34,16 @@ app.add_middleware(
 )
 
 # Model needs to be JSON encoded before being sent to Atlas
-class Document(BaseModel):
-    title: str = Field(...)
+@dataclass
+class Document:
+    title: str
     pages: List[str]
     language: str
+
+    # def __init__(self, title, pages, language):
+    #     self.title = title
+    #     self.pages = pages
+    #     self.language = language 
 
 
 @app.get("/")
@@ -65,21 +76,20 @@ async def preprocess(document: UploadFile):
     # Now, need to send to backend, as well as find some way to
     # iterate through / turn pages on the user end
     #preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
-    preprocessed_document = Document(document.filename, pages, "French");
-    print(preprocessed_document)
-    #preprocessed_document = await addDocumentData(preprocessed_document)
-    return {"document": preprocessed_document}
+    preprocessed_document = Document(title=document.filename, pages=pages, language="French");
+    newDocId = await addDocumentData(preprocessed_document)
+    return {"document": newDocId}
 
 # This endpoint preprocesses the text into raw plaintext, need to sentencize?
 
 async def addDocument(document_data):
-    document = await document_collection.insert_one(document_data)
-    print(document_data)
+    document = await document_collection.insert_one(asdict(document_data))
+    print(document.inserted_id)
     #doc_added = await document_collection.find_one({"title": document_data.title})
     #return doc_added
-    return document
+    return document.inserted_id
 
 async def addDocumentData(document: Document):
-    document = jsonable_encoder(document)
-    new_document = await addDocument(document)
-    return new_document
+    # document = jsonable_encoder(dict(document)
+    docId = await addDocument(document)
+    return docId
