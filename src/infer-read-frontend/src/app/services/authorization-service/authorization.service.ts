@@ -90,5 +90,9 @@ export class AuthorizationService {
     console.log(expirationDuration);
   }
 
+  getUserId() {
+    return JSON.parse(localStorage.getItem("userObject")).id;
+  }
+
   constructor(private http: HttpClient) { }
 }

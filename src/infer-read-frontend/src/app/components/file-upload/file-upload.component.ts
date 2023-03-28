@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon'
+import { AuthorizationService } from 'src/app/services/authorization-service/authorization.service';
 
 
 
@@ -17,7 +18,7 @@ export class FileUploadComponent {
 
   text = "";
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private authService : AuthorizationService) {}
 
   // file: File;
 
@@ -60,10 +61,20 @@ export class FileUploadComponent {
           this.fileName = file.name;
 
           const formData = new FormData();
+          const userId: string = this.authService.getUserId();
 
-          formData.append("document", file);
-
-          const upload$ = this.http.post<fileResponse>("http://127.0.0.1:8000/preprocess", formData);
+          formData.append("user", JSON.parse(localStorage.getItem("userObject")).id);
+          formData.append("document", file, this.fileName);
+          // if (userId) {
+          // formData.append("userId", userId.toString());
+          // console.log("user id appended") 
+          // console.log(userId);
+          // }
+          formData.forEach((data) => {
+            console.log(data);
+          })
+          
+          const upload$ = this.http.post<fileResponse>("http://127.0.0.1:8000/preprocess", formData );
 
           upload$.subscribe(response => {
             console.log(response);

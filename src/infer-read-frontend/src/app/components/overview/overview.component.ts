@@ -3,6 +3,8 @@ import { AuthorizationService } from '../../services/authorization-service/autho
 import { Subscription } from 'rxjs';
 import { User } from '../../models/user.model';
 
+// TODO fetch user's books and display them here
+// Need to add user ID or username to the book so we know who it belongs to
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
