@@ -2,9 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
 import { Subscription } from 'rxjs';
 import { User } from '../../models/user.model';
+import { HttpClient } from '@angular/common/http';
 
 // TODO fetch user's books and display them here
 // Need to add user ID or username to the book so we know who it belongs to
+
+interface OverviewResponse {
+  id: string,
+  documents: Document[]
+}
+
+interface Document {
+  title: string,
+  pages: [string],
+  language: string
+}
+
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
@@ -12,18 +25,30 @@ import { User } from '../../models/user.model';
 })
 export class OverviewComponent implements OnInit {
 
-  constructor(private authService: AuthorizationService) { }
+  constructor(private authService: AuthorizationService, private httpClient : HttpClient) { }
 
   private userSubscription!: Subscription;
   user!: User;
+  private documentsSubscription!: Subscription;
+  documents: Document[];
 
-  dummyitem = {title:"Irish Book PDF", size:"22MB", uploaddate:"Today", }
-  items = [0, 0, 0]
+  // Fetch the user docs array and display them on the template
+
   
-
   ngOnInit(): void {
     this.userSubscription = this.authService.user.subscribe(user => {
-      console.log(user);
+      this.user = user;
+    }, err => {
+      console.log(err);
+    });
+
+    this.getDocuments();
+  }
+
+  getDocuments() {
+    // id as a request parameter
+    this.documentsSubscription = this.httpClient.get<OverviewResponse>("http://localhost:3000/documents/getDocuments/" + this.user.id).subscribe(res => {
+      this.documents = res.documents;
     }, err => {
       console.log(err);
     });
@@ -32,5 +57,6 @@ export class OverviewComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
+    this.documentsSubscription.unsubscribe();
   }
 }

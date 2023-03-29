@@ -2,9 +2,9 @@
   <app-nav-bar-general></app-nav-bar-general>
   <div class="RHS">
     <div class="items-available">
-      <div *ngFor="let item of items" class="item">
-        <h1 class="item-title">{{dummyitem.title}}</h1>
-        <h2 class="item-desc">{{dummyitem.size}} ● {{dummyitem.uploaddate}}</h2>
+      <div *ngFor="let item of documents" class="item">
+        <h1 class="item-title">{{item.title}}</h1>
+        <h2 class="item-desc">{{item.pages.length}} pages ● {{item.language}}</h2>
       </div>
     </div>
     <div class="filtering-body">
