@@ -6,6 +6,26 @@
         <h1 class="item-title">{{item.title}}</h1>
         <h2 class="item-desc">{{item.pages.length}} pages ● {{item.language}}</h2>
       </div>
+      <dx-speed-dial-action
+        icon="add"
+        label="Add document"
+        [index]="1"
+        (onClick)="onRowTest()"
+      >
+      </dx-speed-dial-action>
+      <dx-speed-dial-action
+        icon="trash"
+        label="Delete document"
+        [index]="2"
+        (onClick)="onRowTest()"
+      >
+      </dx-speed-dial-action>
+      <dx-speed-dial-action
+        icon="edit"
+        label="Edit document"
+        [index]="3"
+        (onClick)="onRowTest()"
+      ></dx-speed-dial-action>
     </div>
     <div class="filtering-body">
       <ul>

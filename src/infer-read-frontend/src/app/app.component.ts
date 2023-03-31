@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthorizationService } from './services/authorization-service/authorization.service';
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

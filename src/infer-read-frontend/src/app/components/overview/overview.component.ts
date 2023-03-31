@@ -17,6 +17,18 @@ interface Document {
   pages: [string],
   language: string
 }
+import config from 'devextreme/core/config';
+config({
+  //BMcQ Comment: Configuration of floating action button
+  floatingActionButtonConfig: {
+      position: {
+          my: 'right bottom',
+          at: 'right bottom',
+          of: '#documents-display-without-filter-options',
+          offset: '-16 -16'
+      }
+  }
+});
 
 @Component({
   selector: 'app-overview',
@@ -65,5 +77,9 @@ export class OverviewComponent implements OnInit {
   ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
     this.documentsSubscription.unsubscribe();
+  }
+
+  onRowTest(): void {
+    alert("boing");
   }
 }

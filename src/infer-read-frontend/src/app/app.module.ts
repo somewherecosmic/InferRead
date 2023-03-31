@@ -7,8 +7,10 @@ import {
   HTTP_INTERCEPTORS,
 } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { DxDropDownButtonModule } from 'devextreme-angular';
-
+import {
+  DxDropDownButtonModule,
+  DxSpeedDialActionModule,
+} from 'devextreme-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/page-skeleton/header/header.component';
@@ -45,6 +47,7 @@ import { FileUploadComponent } from './components/file-upload/file-upload.compon
     HttpClientModule,
     BrowserAnimationsModule,
     DxDropDownButtonModule,
+    DxSpeedDialActionModule,
   ],
   providers: [
     {
