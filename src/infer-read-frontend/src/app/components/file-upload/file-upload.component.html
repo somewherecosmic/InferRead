@@ -1,0 +1,22 @@
+
+<!-- <form #fileForm="ngForm" (ngSubmit)="uploadFile()">
+<label for="document-upload">Please upload a document:</label>
+<br>
+<input type="file" enctype="multipart/form-data" id="document" name="document" (change)=setFile($event)>
+<button type="submit" [disabled]="fileForm.invalid">Upload</button>
+</form> -->
+
+<input type="file" class="file-input" (change)="onFileSelected($event)" #fileUpload>
+
+<div class="file-upload">
+
+    {{fileName || "Please upload a document"}}
+
+    <button mat-mini-fab color="primary"
+    class="upload-btn"
+    (click)="fileUpload.click()">
+    attach_file
+    </button>
+
+    {{text}}
+</div>

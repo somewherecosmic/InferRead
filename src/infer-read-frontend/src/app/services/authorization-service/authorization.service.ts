@@ -6,8 +6,9 @@ import { User } from '../../models/user.model';
 interface AuthorizationResponse {
   email: string,
   token: string,
-  id: string
-  expiresIn: Date
+  id: string,
+  expiresIn: Date,
+  documents: Document[]
 }
 
 @Injectable({
@@ -87,6 +88,10 @@ export class AuthorizationService {
       this.logout();
     }, expirationDuration);
     console.log(expirationDuration);
+  }
+
+  getUserId() {
+    return JSON.parse(localStorage.getItem("userObject")).id;
   }
 
   constructor(private http: HttpClient) { }

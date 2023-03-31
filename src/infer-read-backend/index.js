@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 
 import authRoutes from './routes/auth.js';
+import documentRoutes from './routes/documents.js'
 
 const app = express();
 
@@ -17,6 +18,8 @@ app.use((req, res, next) => {
 });
 
 app.use('/auth', authRoutes);
+
+app.use('/documents', documentRoutes);
 
 mongoose.set('strictQuery', false);
 mongoose
