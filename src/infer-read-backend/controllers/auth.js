@@ -8,6 +8,7 @@ import User from '../models/User.js';
 const signup = (req, res, next) => {
     console.log(req.body);
     const email = req.body.email;
+    const username = req.body.username;
     const password = req.body.password;
     console.log(email, password);
 
@@ -15,6 +16,7 @@ const signup = (req, res, next) => {
     .then(hash => {
         const user = new User({
             email: email,
+            username: username,
             password: hash
         })
         return user;
