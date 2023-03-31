@@ -25,6 +25,9 @@ interface Document {
 })
 export class OverviewComponent implements OnInit {
 
+  // TODO implement the rest of the CRUD operations - Update and Delete, on the overview page
+  // remove UPLOAD tab and have the user upload directly on the overview page?
+
   constructor(private authService: AuthorizationService, private httpClient : HttpClient) { }
 
   private userSubscription!: Subscription;
@@ -53,6 +56,10 @@ export class OverviewComponent implements OnInit {
       console.log(err);
     });
   }
+
+  // deleteDocument(id: string) {
+  //  this.httpClient.delete()
+  // }
 
 
   ngOnDestroy(): void {

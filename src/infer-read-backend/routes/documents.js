@@ -8,4 +8,6 @@ const router = express.Router();
 
 router.get("/getDocuments/:id", getDocuments);
 
+// router.delete("/deleteDocument/:id", deleteDocument);
+
 export default router;
