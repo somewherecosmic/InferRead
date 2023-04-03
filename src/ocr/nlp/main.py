@@ -75,7 +75,7 @@ async def test():
 async def preprocess(user: str = Form(...), document: UploadFile = File(...)): # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
     print(document)
     stream = BytesIO(document.file.read())
-    pdf = PyPDF2.PdfFileReader(stream)
+    pdf = PyPDF2.PdfReader(stream)
     currentPage = 0
     text = ""
     pages = []

@@ -3,10 +3,34 @@
   <div class="RHS">
     <div class="items-available">
       <div *ngFor="let item of documents" class="item">
-        <h1 class="item-title">{{item.title}}</h1>
-        <h2 class="item-desc">{{item.pages.length}} pages ● {{item.language}}</h2>
-        <button type="button" id="delete" (click)="deleteDocument(item._id)">Delete</button>
+        <h1 class="item-title">{{ item.title }}</h1>
+        <h2 class="item-desc">
+          {{ item.pages.length }} pages ● {{ item.language }}
+        </h2>
+        <button type="button" id="delete" (click)="deleteDocument(item._id)">
+          Delete
+        </button>
       </div>
+      <dx-speed-dial-action
+        icon="add"
+        label="Add document"
+        [index]="1"
+        (onClick)="onAddDocument()"
+      >
+      </dx-speed-dial-action>
+      <dx-speed-dial-action
+        icon="trash"
+        label="Delete document"
+        [index]="2"
+        (onClick)="onRowTest()"
+      >
+      </dx-speed-dial-action>
+      <dx-speed-dial-action
+        icon="edit"
+        label="Edit document"
+        [index]="3"
+        (onClick)="onRowTest()"
+      ></dx-speed-dial-action>
     </div>
     <div class="filtering-body">
       <ul>
@@ -15,5 +39,38 @@
         <li>Other</li>
       </ul>
     </div>
+    <dx-popup
+      [width]="300"
+      [height]="280"
+      [showTitle]="true"
+      title="Add Document"
+      [dragEnabled]="true"
+      [hideOnOutsideClick]="true"
+      [showCloseButton]="true"
+      [(visible)]="addDocumentVisible"
+    >
+      <!-- <dxo-position at="bottom" my="center" [of]="positionOf" collision="fit">
+    </dxo-position> -->
+      <input
+        type="file"
+        class="file-input"
+        (change)="onFileSelected($event)"
+        #fileUpload
+      />
+      <div *dxTemplate="let data of 'content'">
+        {{ fileName || "Please upload a document" }}
+
+        <button
+          mat-mini-fab
+          color="primary"
+          class="upload-btn"
+          (click)="fileUpload.click()"
+        >
+          attach_file
+        </button>
+
+        {{ text }}
+      </div>
+    </dx-popup>
   </div>
 </div>
