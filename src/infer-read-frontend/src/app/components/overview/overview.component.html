@@ -5,6 +5,7 @@
       <div *ngFor="let item of documents" class="item">
         <h1 class="item-title">{{item.title}}</h1>
         <h2 class="item-desc">{{item.pages.length}} pages ● {{item.language}}</h2>
+        <button type="button" id="delete" (click)="deleteDocument(item._id)">Delete</button>
       </div>
     </div>
     <div class="filtering-body">
