@@ -2,12 +2,12 @@
 // Typical CRUD operations for documents
 
 import express from 'express';
-import { getDocuments } from '../controllers/documents.js';
+import { getDocuments, deleteDocument } from '../controllers/documents.js';
 
 const router = express.Router();
 
 router.get("/getDocuments/:id", getDocuments);
 
-// router.delete("/deleteDocument/:id", deleteDocument);
+router.delete("/deleteDocument/:id/:docId", deleteDocument);
 
 export default router;

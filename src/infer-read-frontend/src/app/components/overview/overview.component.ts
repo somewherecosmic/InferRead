@@ -12,7 +12,12 @@ interface OverviewResponse {
   documents: Document[]
 }
 
+interface deletionResponse {
+  acknowledged: boolean
+}
+
 interface Document {
+  _id: string,
   title: string,
   pages: [string],
   language: string
@@ -44,7 +49,6 @@ export class OverviewComponent implements OnInit {
     }, err => {
       console.log(err);
     });
-
     this.getDocuments();
   }
 
@@ -52,14 +56,22 @@ export class OverviewComponent implements OnInit {
     // id as a request parameter
     this.documentsSubscription = this.httpClient.get<OverviewResponse>("http://localhost:3000/documents/getDocuments/" + this.user.id).subscribe(res => {
       this.documents = res.documents;
+      console.log(this.documents);
     }, err => {
       console.log(err);
     });
   }
 
-  // deleteDocument(id: string) {
-  //  this.httpClient.delete()
-  // }
+  // get ID of document, send to url for deletion
+  deleteDocument(docId: string) {
+   this.httpClient.delete<deletionResponse>("http://localhost:3000/documents/deleteDocument/" + this.user.id + "/" + docId).subscribe(res => {
+      console.log(res);
+      this.getDocuments();
+      console.log(this.documents);
+   }, err => {
+    console.log(err);
+   });
+  }
 
 
   ngOnDestroy(): void {
