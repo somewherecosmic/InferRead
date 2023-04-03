@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import {
   DxDropDownButtonModule,
   DxSpeedDialActionModule,
+  DxPopupModule,
 } from 'devextreme-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -48,6 +49,7 @@ import { FileUploadComponent } from './components/file-upload/file-upload.compon
     BrowserAnimationsModule,
     DxDropDownButtonModule,
     DxSpeedDialActionModule,
+    DxPopupModule,
   ],
   providers: [
     {

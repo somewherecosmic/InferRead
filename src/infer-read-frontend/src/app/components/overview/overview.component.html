@@ -3,14 +3,16 @@
   <div class="RHS">
     <div class="items-available">
       <div *ngFor="let item of documents" class="item">
-        <h1 class="item-title">{{item.title}}</h1>
-        <h2 class="item-desc">{{item.pages.length}} pages ● {{item.language}}</h2>
+        <h1 class="item-title">{{ item.title }}</h1>
+        <h2 class="item-desc">
+          {{ item.pages.length }} pages ● {{ item.language }}
+        </h2>
       </div>
       <dx-speed-dial-action
         icon="add"
         label="Add document"
         [index]="1"
-        (onClick)="onRowTest()"
+        (onClick)="onAddDocument()"
       >
       </dx-speed-dial-action>
       <dx-speed-dial-action
@@ -34,5 +36,38 @@
         <li>Other</li>
       </ul>
     </div>
+    <dx-popup
+      [width]="300"
+      [height]="280"
+      [showTitle]="true"
+      title="Information"
+      [dragEnabled]="true"
+      [hideOnOutsideClick]="true"
+      [showCloseButton]="true"
+      [(visible)]="popupVisible"
+    >
+      <!-- <dxo-position at="bottom" my="center" [of]="positionOf" collision="fit">
+    </dxo-position> -->
+      <input
+        type="file"
+        class="file-input"
+        (change)="onFileSelected($event)"
+        #fileUpload
+      />
+      <div *dxTemplate="let data of 'content'">
+        {{ fileName || "Please upload a document" }}
+
+        <button
+          mat-mini-fab
+          color="primary"
+          class="upload-btn"
+          (click)="fileUpload.click()"
+        >
+          attach_file
+        </button>
+
+        {{ text }}
+      </div>
+    </dx-popup>
   </div>
 </div>
