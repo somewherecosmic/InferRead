@@ -61,8 +61,20 @@ const logIn = (req, res, next) => {
     })
 }
 
+const verifyToken = token => {
+    const decoded = jwt.verify(token, 'inferread');
+        if (typeof decoded != "undefined") {
+            return true;
+        }
+        if (err) {
+            console.log(err);
+        }
+        return false;
+    }
+
 
 export {
     signup,
-    logIn
+    logIn,
+    verifyToken
 }
