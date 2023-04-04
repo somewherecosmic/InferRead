@@ -89,7 +89,7 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
     # Now, need to send to backend, as well as find some way to
     # iterate through / turn pages on the user end
     #preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
-    preprocessed_document = Document(_id=ObjectId(), title=document.filename, pages=pages, language=language)
+    preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(".")[0], pages=pages, language=language)
 
     WriteStatus = await addDocumentData(preprocessed_document, user)
     return {"successfulUpload": WriteStatus} #newDocId
