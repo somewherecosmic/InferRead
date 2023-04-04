@@ -3,6 +3,7 @@ import { AuthorizationService } from '../../services/authorization-service/autho
 import { Subscription } from 'rxjs';
 import { User } from '../../models/user.model';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import config from 'devextreme/core/config';
 import { log } from 'console';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -18,9 +19,6 @@ config({
     },
   },
 });
-
-// TODO fetch user's books and display them here
-// Need to add user ID or username to the book so we know who it belongs to
 
 interface OverviewResponse {
   id: string;
@@ -41,6 +39,10 @@ interface Document {
   language: string;
 }
 
+// TODO: Add onClick() to document title
+// clicking title calls a function which fetches the first page of the book
+// or the page the user was previously on (cache this or store in user or read object?)
+
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
@@ -55,7 +57,8 @@ export class OverviewComponent implements OnInit {
 
   constructor(
     private authService: AuthorizationService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private router: Router,
   ) {}
 
   private userSubscription!: Subscription;
@@ -180,5 +183,9 @@ export class OverviewComponent implements OnInit {
 
   onCancelDeleteDocNav(): void {
     this.isDeleteDocument = false;
+  }
+
+  readDocument(docId: string) {
+    // pass ID to READ tab via query params and route.navigate()
   }
 }
