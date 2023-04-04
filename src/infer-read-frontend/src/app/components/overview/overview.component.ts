@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 import { User } from '../../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import config from 'devextreme/core/config';
+import { log } from 'console';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 config({
   //BMcQ Comment: Configuration of floating action button
@@ -26,17 +28,17 @@ interface OverviewResponse {
 }
 
 interface fileResponse {
-  text: string
+  text: string;
 }
 interface deletionResponse {
-  acknowledged: boolean
+  acknowledged: boolean;
 }
 
 interface Document {
-  _id: string,
-  title: string,
-  pages: [string],
-  language: string
+  _id: string;
+  title: string;
+  pages: [string];
+  language: string;
 }
 
 @Component({
@@ -47,6 +49,9 @@ interface Document {
 export class OverviewComponent implements OnInit {
   // TODO implement the rest of the CRUD operations - Update and Delete, on the overview page
   // remove UPLOAD tab and have the user upload directly on the overview page?
+  // BMcQ Comment: FontAwesome variables for icons.
+  faTrash = faTrash;
+  
 
   constructor(
     private authService: AuthorizationService,
@@ -58,6 +63,10 @@ export class OverviewComponent implements OnInit {
   private documentsSubscription!: Subscription;
   documents: Document[];
   addDocumentVisible = false;
+  isDeleteDocument = false;
+  uploadDocData = new FormData();
+  isSubmitAvailable = false;
+  selectedLang = 'French';
 
   //BMcQ Comment: copying code from file-upload which will be moved here
   text = '';
@@ -66,33 +75,53 @@ export class OverviewComponent implements OnInit {
   // Fetch the user docs array and display them on the template
 
   ngOnInit(): void {
-    this.userSubscription = this.authService.user.subscribe(user => {
-      this.user = user;
-    }, err => {
-      console.log(err);
-    });
+    this.userSubscription = this.authService.user.subscribe(
+      (user) => {
+        this.user = user;
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
     this.getDocuments();
   }
 
   getDocuments() {
     // id as a request parameter
-    this.documentsSubscription = this.httpClient.get<OverviewResponse>("http://localhost:3000/documents/getDocuments/" + this.user.id).subscribe(res => {
-      this.documents = res.documents;
-      console.log(this.documents);
-    }, err => {
-      console.log(err);
-    });
+    this.documentsSubscription = this.httpClient
+      .get<OverviewResponse>(
+        'http://localhost:3000/documents/getDocuments/' + this.user.id
+      )
+      .subscribe(
+        (res) => {
+          this.documents = res.documents;
+          console.log(this.documents);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
   }
 
   // get ID of document, send to url for deletion
   deleteDocument(docId: string) {
-   this.httpClient.delete<deletionResponse>("http://localhost:3000/documents/deleteDocument/" + this.user.id + "/" + docId).subscribe(res => {
-      console.log(res);
-      this.getDocuments();
-      console.log(this.documents);
-   }, err => {
-    console.log(err);
-   });
+    this.httpClient
+      .delete<deletionResponse>(
+        'http://localhost:3000/documents/deleteDocument/' +
+          this.user.id +
+          '/' +
+          docId
+      )
+      .subscribe(
+        (res) => {
+          console.log(res);
+          this.getDocuments();
+          console.log(this.documents);
+        },
+        (err) => {
+          console.log(err);
+        }
+      );
   }
 
   ngOnDestroy(): void {
@@ -101,7 +130,7 @@ export class OverviewComponent implements OnInit {
   }
 
   onAddDocument(): void {
-    this.addDocumentVisible = !this.addDocumentVisible;
+    this.addDocumentVisible = true;
   }
 
   onFileSelected(event) {
@@ -110,36 +139,46 @@ export class OverviewComponent implements OnInit {
     if (file) {
       this.fileName = file.name;
 
-      const formData = new FormData();
+      this.uploadDocData = new FormData();
       const userId: string = this.authService.getUserId();
 
-      formData.append(
+      this.uploadDocData.append(
         'user',
         JSON.parse(localStorage.getItem('userObject')).id
       );
-      formData.append('document', file, this.fileName);
+      this.uploadDocData.append('document', file, this.fileName);
+      this.uploadDocData.append('language', this.selectedLang);
       // if (userId) {
       // formData.append("userId", userId.toString());
       // console.log("user id appended")
       // console.log(userId);
       // }
-      formData.forEach((data) => {
+      this.uploadDocData.forEach((data) => {
         console.log(data);
       });
-
-      const upload$ = this.httpClient.post<fileResponse>(
-        'http://127.0.0.1:8000/preprocess',
-        formData
-      );
-
-      upload$.subscribe((response) => {
-        console.log(response);
-        this.text = response.text;
-      });
+      this.isSubmitAvailable = true;
+      console.log(this.uploadDocData);
     }
   }
 
-  onRowTest(): void {
-    alert('boing');
+  onFileSubmit() {
+    const upload$ = this.httpClient.post<fileResponse>(
+      'http://127.0.0.1:8000/preprocess',
+      this.uploadDocData
+    );
+    this.addDocumentVisible = false;
+
+    upload$.subscribe((response) => {
+      console.log(response);
+      this.text = response.text;
+    });
+  }
+
+  onDeleteDocNav(): void {
+    this.isDeleteDocument = true;
+  }
+
+  onCancelDeleteDocNav(): void {
+    this.isDeleteDocument = false;
   }
 }

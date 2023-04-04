@@ -24,6 +24,13 @@
         background-color: #f3f2ef;
         padding-left: 1vw;
         padding-right: 1vw;
+        display: flex;
+        justify-content: space-between;
+        .delete-doc-btn {
+          color: #000000;
+          font-size: 4rem;
+          border: 0;
+        }
       }
     }
     .filtering-body {
@@ -33,4 +40,14 @@
       border-radius: 0.75vw;
     }
   }
+}
+
+.select-doc-btn {
+  // background-color: red;
+}
+.submit-doc-btn {
+  background: #45b11e;
+	color: white;
+	border-style: outset;
+	text-shadow: none;
 }

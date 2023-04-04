@@ -3,12 +3,20 @@
   <div class="RHS">
     <div class="items-available">
       <div *ngFor="let item of documents" class="item">
-        <h1 class="item-title">{{ item.title }}</h1>
-        <h2 class="item-desc">
-          {{ item.pages.length }} pages ● {{ item.language }}
-        </h2>
-        <button type="button" id="delete" (click)="deleteDocument(item._id)">
-          Delete
+        <div class="doc-info">
+          <h1 class="item-title">{{ item.title }}</h1>
+          <h2 class="item-desc">
+            {{ item.pages.length }} pages ● {{ item.language }}
+          </h2>
+        </div>
+        <button
+          *ngIf="isDeleteDocument"
+          class="delete-doc-btn"
+          type="button"
+          id="delete"
+          (click)="deleteDocument(item._id)"
+        >
+          <fa-icon [icon]="faTrash"></fa-icon>
         </button>
       </div>
       <dx-speed-dial-action
@@ -19,18 +27,21 @@
       >
       </dx-speed-dial-action>
       <dx-speed-dial-action
+        *ngIf="!isDeleteDocument"
         icon="trash"
-        label="Delete document"
+        label="Delete mode"
         [index]="2"
-        (onClick)="onRowTest()"
+        (onClick)="onDeleteDocNav()"
       >
       </dx-speed-dial-action>
       <dx-speed-dial-action
-        icon="edit"
-        label="Edit document"
-        [index]="3"
-        (onClick)="onRowTest()"
-      ></dx-speed-dial-action>
+        *ngIf="isDeleteDocument"
+        icon="trash"
+        label="Exit delete mode"
+        [index]="2"
+        (onClick)="onCancelDeleteDocNav()"
+      >
+      </dx-speed-dial-action>
     </div>
     <div class="filtering-body">
       <ul>
@@ -58,18 +69,20 @@
         #fileUpload
       />
       <div *dxTemplate="let data of 'content'">
-        {{ fileName || "Please upload a document" }}
-
-        <button
-          mat-mini-fab
-          color="primary"
-          class="upload-btn"
-          (click)="fileUpload.click()"
-        >
-          attach_file
-        </button>
-
+        <div class="upload-selecton">
+          <p>Click button to select document</p>
+          <button class="select-doc-btn" (click)="fileUpload.click()">
+            <p>{{ fileName || "Please upload a document" }}</p>
+          </button>
+        </div>
         {{ text }}
+        <button
+          [disabled]="!isSubmitAvailable"
+          class="submit-doc-btn"
+          (click)="onFileSubmit()"
+        >
+          <p>Submit</p>
+        </button>
       </div>
     </dx-popup>
   </div>
