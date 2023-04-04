@@ -72,7 +72,7 @@ async def test():
 # Pass file to python script
 # Run script, return result of script
 @app.post("/preprocess")
-async def preprocess(user: str = Form(...), document: UploadFile = File(...)): # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
+async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)): # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
     print(document)
     stream = BytesIO(document.file.read())
     pdf = PyPDF2.PdfReader(stream)
@@ -89,7 +89,7 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...)): #
     # Now, need to send to backend, as well as find some way to
     # iterate through / turn pages on the user end
     #preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
-    preprocessed_document = Document(_id=ObjectId(), title=document.filename, pages=pages, language="French");
+    preprocessed_document = Document(_id=ObjectId(), title=document.filename, pages=pages, language=language)
 
     WriteStatus = await addDocumentData(preprocessed_document, user)
     return {"successfulUpload": WriteStatus} #newDocId

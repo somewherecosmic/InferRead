@@ -7,6 +7,7 @@ import {
   HTTP_INTERCEPTORS,
 } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import {
   DxDropDownButtonModule,
   DxSpeedDialActionModule,
@@ -43,6 +44,7 @@ import { AuthInterceptorService } from './services/auth-interceptor-service/auth
     FormsModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    FontAwesomeModule,
     DxDropDownButtonModule,
     DxSpeedDialActionModule,
     DxPopupModule,
