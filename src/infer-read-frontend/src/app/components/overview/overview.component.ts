@@ -61,7 +61,8 @@ export class OverviewComponent implements OnInit {
   private userSubscription!: Subscription;
   user!: User;
   private documentsSubscription!: Subscription;
-  documents: Document[];
+  documentsFromDB: Document[];
+  filteredDocuments: Document[];
   addDocumentVisible = false;
   isDeleteDocument = false;
   uploadDocData = new FormData();
@@ -94,13 +95,18 @@ export class OverviewComponent implements OnInit {
       )
       .subscribe(
         (res) => {
-          this.documents = res.documents;
-          console.log(this.documents);
+          this.documentsFromDB = res.documents;
+          this.filterDocuments(this.documentsFromDB, this.selectedLang);
+          console.log(this.documentsFromDB);
         },
         (err) => {
           console.log(err);
         }
       );
+  }
+
+  filterDocuments(documents: any, language: string) {
+    this.filteredDocuments = documents.filter((doc) => doc.language === language);
   }
 
   // get ID of document, send to url for deletion
@@ -116,7 +122,7 @@ export class OverviewComponent implements OnInit {
         (res) => {
           console.log(res);
           this.getDocuments();
-          console.log(this.documents);
+          console.log(this.documentsFromDB);
         },
         (err) => {
           console.log(err);

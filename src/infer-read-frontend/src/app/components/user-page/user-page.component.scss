@@ -1,0 +1,22 @@
+.body {
+  display: flex;
+  background-color: #f3f2ef;
+  .RHS {
+    height: 90vh;
+    width: 90vw;
+    display: flex;
+    flex-direction: column;
+    margin-left: 1vw;
+    margin-top: 0.5vh;
+    margin-right: 1vw;
+    border-radius: 0.75vw;
+    background-color: #ffffff;
+    .user-page-header {
+      height: 30vh;
+      border-bottom: 1px solid #000000;
+    }
+    .user-page-expanded {
+      height: 60vh;
+    }
+  }
+}

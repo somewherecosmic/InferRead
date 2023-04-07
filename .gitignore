@@ -5,3 +5,5 @@ src/ocr/nlp/bin
 src/ocr/nlp/include
 src/ocr/nlp/__pycache__
 src/ocr/nlp/pyvenv.cfg
+src/bert-base-irish-cased-v1/
+src/.idea/
