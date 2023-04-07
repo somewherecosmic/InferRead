@@ -2,7 +2,7 @@
   <app-nav-bar-general></app-nav-bar-general>
   <div class="RHS">
     <div class="items-available">
-      <div *ngFor="let item of documents" class="item">
+      <div *ngFor="let item of filteredDocuments" class="item">
         <div class="doc-info">
           <h1 class="item-title">{{ item.title }}</h1>
           <h2 class="item-desc">
@@ -70,6 +70,7 @@
       />
       <div *dxTemplate="let data of 'content'">
         <div class="upload-selecton">
+          <p>Document being uploaded as {{this.selectedLang}}</p>
           <p>Click button to select document</p>
           <button class="select-doc-btn" (click)="fileUpload.click()">
             <p>{{ fileName || "Please upload a document" }}</p>

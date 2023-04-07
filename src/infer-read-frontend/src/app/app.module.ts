@@ -25,6 +25,7 @@ import { LoadingSpinnerComponent } from './components/page-skeleton/loading-spin
 import { HomeComponent } from './components/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthInterceptorService } from './services/auth-interceptor-service/auth-interceptor.service';
+import { UserPageComponent } from './components/user-page/user-page.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { AuthInterceptorService } from './services/auth-interceptor-service/auth
     LoginAuthorizationComponent,
     LoadingSpinnerComponent,
     HomeComponent,
+    UserPageComponent,
   ],
   imports: [
     BrowserModule,

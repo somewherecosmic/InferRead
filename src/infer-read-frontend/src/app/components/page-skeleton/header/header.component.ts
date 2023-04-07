@@ -29,11 +29,16 @@ export class HeaderComponent implements OnInit {
 
   dropdownItemSelected(optionSelected: string) {
     switch (optionSelected) {
+      case 'Profile': {
+        this.router.navigate(['user']);
+        break;
+      }
       case 'Logout': {
         this.authService.logout();
         this.router.navigate(['']);
         break;
       }
+      
       default: {
         console.log('Other');
         break;
