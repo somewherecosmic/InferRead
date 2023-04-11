@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { AuthorizationService } from 'src/app/services/authorization-service/authorization.service';
+import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
 
 @Component({
   selector: 'app-header',
@@ -16,7 +17,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private authService: AuthorizationService,
-    private router: Router
+    private router: Router,
+    private userConfigService: UserConfigService,
   ) {
     router.events.subscribe((val) => {
       this.currentPage = this.router.url;
@@ -24,8 +26,17 @@ export class HeaderComponent implements OnInit {
   }
 
   currentPage = this.router.url;
+  selectedLanguage: string = "English";
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.userConfigService.userChosenLang.subscribe((language) => {
+      this.selectedLanguage = language;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.userConfigService.userChosenLang.unsubscribe();
+  }
 
   dropdownItemSelected(optionSelected: string) {
     switch (optionSelected) {
@@ -48,5 +59,9 @@ export class HeaderComponent implements OnInit {
 
   onClick(): void {
     alert('This will route to the homepage at some point');
+  }
+
+  changeUserChosenLanguage(newLang: string) {
+    this.userConfigService.changeUserChosenLanguage(newLang);
   }
 }

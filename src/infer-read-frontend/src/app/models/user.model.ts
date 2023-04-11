@@ -2,6 +2,7 @@ export class User {
     constructor(
         public email: string, 
         public id: string, 
+        public userConfig: UserConfig,
         private _token: string, 
         private _tokenExpires: Date,
         ) {}
@@ -11,3 +12,8 @@ export class User {
             return this._token;
         }
 }
+
+export interface UserConfig {
+    selectedLanguage: string;
+    // otherConfig: string;
+  }

@@ -3,7 +3,9 @@
     <a (click)="onClick()">
       <h1>Infer-Read</h1>
     </a>
-    <img src="../../../assets/irish-flag.jpg" alt="Irish Flag" />
+    
+    <img *ngIf="this.selectedLanguage == 'Irish'" (click)="changeUserChosenLanguage('French')" src="../../../assets/irish-flag.jpg" alt="Irish Flag" />
+    <img *ngIf="this.selectedLanguage == 'French'" (click)="changeUserChosenLanguage('Irish')" src="../../../assets/french-flag.jpg" alt="French Flag" />
   </div>
 
   <div *ngIf="currentPage != '/'" class="RHS-dropdown">
