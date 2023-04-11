@@ -4,9 +4,13 @@
     <div class="user-page-header">
       <p>Email: {{ user.email}}</p>
       <p>Username: {{ user.id}}</p>
+      <p> {{userSettings | json}}</p>
     </div>
     <div class="user-page-expanded">
       <p> To be Developed<br>Statistics and review summary</p>
+      <button (click)="updateUserConfig('Irish')"> <p> Set config to Irish</p></button>
+      <button (click)="updateUserConfig('French')"> <p> Set config to French</p></button>
+
     </div>
   </div>
 </div>

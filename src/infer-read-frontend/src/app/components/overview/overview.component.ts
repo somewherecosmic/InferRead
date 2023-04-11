@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
 import { Subscription } from 'rxjs';
 import { User } from '../../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import config from 'devextreme/core/config';
-import { log } from 'console';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { EMPTY, catchError, tap, finalize } from 'rxjs';
 
 config({
   //BMcQ Comment: Configuration of floating action button
@@ -22,15 +23,15 @@ config({
 // TODO fetch user's books and display them here
 // Need to add user ID or username to the book so we know who it belongs to
 
-interface OverviewResponse {
+interface DocumentGetResponse {
   id: string;
   documents: Document[];
 }
 
-interface fileResponse {
+interface DocumentPostResponse {
   text: string;
 }
-interface deletionResponse {
+interface DocumentDeletionResponse {
   acknowledged: boolean;
 }
 
@@ -51,10 +52,10 @@ export class OverviewComponent implements OnInit {
   // remove UPLOAD tab and have the user upload directly on the overview page?
   // BMcQ Comment: FontAwesome variables for icons.
   faTrash = faTrash;
-  
 
   constructor(
     private authService: AuthorizationService,
+    private userConfigService: UserConfigService,
     private httpClient: HttpClient
   ) {}
 
@@ -62,12 +63,12 @@ export class OverviewComponent implements OnInit {
   user!: User;
   private documentsSubscription!: Subscription;
   documentsFromDB: Document[];
-  filteredDocuments: Document[];
+  filteredDocuments: Document[] = [];
   addDocumentVisible = false;
   isDeleteDocument = false;
   uploadDocData = new FormData();
   isSubmitAvailable = false;
-  selectedLang = 'French';
+  selectedLang!: string;
 
   //BMcQ Comment: copying code from file-upload which will be moved here
   text = '';
@@ -76,21 +77,29 @@ export class OverviewComponent implements OnInit {
   // Fetch the user docs array and display them on the template
 
   ngOnInit(): void {
-    this.userSubscription = this.authService.user.subscribe(
-      (user) => {
-        this.user = user;
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+    this.userSubscription = this.authService.user
+      .pipe(
+        tap((user) => {
+          this.user = user;
+        }),
+        catchError((err) => {
+          console.log(err);
+          return EMPTY;
+        }),
+        finalize(() => {})
+      )
+      .subscribe();
     this.getDocuments();
+    this.userConfigService.userChosenLang.subscribe((language) => {
+      this.selectedLang = language;
+      this.filterDocuments(this.documentsFromDB, this.selectedLang);
+    });
   }
 
   getDocuments() {
     // id as a request parameter
     this.documentsSubscription = this.httpClient
-      .get<OverviewResponse>(
+      .get<DocumentGetResponse>(
         'http://localhost:3000/documents/getDocuments/' + this.user.id
       )
       .subscribe(
@@ -106,13 +115,17 @@ export class OverviewComponent implements OnInit {
   }
 
   filterDocuments(documents: any, language: string) {
-    this.filteredDocuments = documents.filter((doc) => doc.language === language);
+    if (documents && documents.length) {
+      this.filteredDocuments = documents.filter(
+        (doc) => doc.language === language
+      );
+    }
   }
 
   // get ID of document, send to url for deletion
   deleteDocument(docId: string) {
     this.httpClient
-      .delete<deletionResponse>(
+      .delete<DocumentDeletionResponse>(
         'http://localhost:3000/documents/deleteDocument/' +
           this.user.id +
           '/' +
@@ -168,7 +181,7 @@ export class OverviewComponent implements OnInit {
   }
 
   onFileSubmit() {
-    const upload$ = this.httpClient.post<fileResponse>(
+    const upload$ = this.httpClient.post<DocumentPostResponse>(
       'http://127.0.0.1:8000/preprocess',
       this.uploadDocData
     );

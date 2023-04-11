@@ -1,7 +1,7 @@
 // Authentication model logic handling
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 
 
@@ -15,9 +15,11 @@ const signup = (req, res, next) => {
     bcrypt.hash(password, 12)
     .then(hash => {
         const user = new User({
+            _id : new mongoose.Types.ObjectId(),
             email: email,
             username: username,
-            password: hash
+            password: hash,
+            userConfig: {languageSelected: "Irish"},
         })
         return user;
     })
@@ -54,7 +56,7 @@ const logIn = (req, res, next) => {
             'inferread',
             {expiresIn: '24h'});
             // Date object + 24 hours
-        res.status(200).send( {email: loadedUser.email, token: token, id: loadedUser._id, expiresIn: new Date( new Date().getTime() + 24 * 60 * 60 * 1000)}) 
+        res.status(200).send( {email: loadedUser.email, token: token, id: loadedUser._id, userConfig: loadedUser.userConfig, expiresIn: new Date( new Date().getTime() + 24 * 60 * 60 * 1000)}) 
     })
     .catch(err => {
         next(err);

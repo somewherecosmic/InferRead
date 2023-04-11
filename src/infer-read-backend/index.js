@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 
 import authRoutes from './routes/auth.js';
 import documentRoutes from './routes/documents.js'
+import userSettingsRoutes from './routes/user.js'
 
 const app = express();
 
@@ -23,6 +24,8 @@ app.use((req, res, next) => {
 app.use('/auth', authRoutes);
 
 app.use('/documents', documentRoutes);
+
+app.use('/user', userSettingsRoutes);
 
 mongoose.set('strictQuery', false);
 mongoose
