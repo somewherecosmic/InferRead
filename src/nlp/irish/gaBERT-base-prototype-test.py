@@ -1,8 +1,8 @@
 from transformers import AutoModelWithLMHead, AutoTokenizer
 import torch
 
-tokenizer = AutoTokenizer.from_pretrained('bert-base-irish-cased-v1', local_files_only=True)
-model = AutoModelWithLMHead.from_pretrained('bert-base-irish-cased-v1', local_files_only=True)
+tokenizer = AutoTokenizer.from_pretrained('../../bert-base-irish-cased-v1', local_files_only=True)
+model = AutoModelWithLMHead.from_pretrained('../../bert-base-irish-cased-v1', local_files_only=True)
 
 sequence = f"Gaillimheach a {tokenizer.mask_token} an saol feicthe aige."
 
