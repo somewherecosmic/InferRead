@@ -11,7 +11,7 @@ import {
   throwError,
 } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router , ActivatedRoute } from '@angular/router';
 import config from 'devextreme/core/config';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
@@ -75,6 +75,7 @@ export class OverviewComponent implements OnInit {
     private userConfigService: UserConfigService,
     private httpClient: HttpClient,
     private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   user$: Observable<User>;
@@ -211,5 +212,6 @@ export class OverviewComponent implements OnInit {
 
   readDocument(docId: string) {
     // pass ID to READ tab via query params and route.navigate()
+    this.router.navigate(["./read"], {queryParams: {docId: docId}})
   }
 }

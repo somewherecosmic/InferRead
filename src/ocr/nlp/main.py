@@ -1,10 +1,8 @@
 from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field, json
-from dataclasses import dataclass, asdict
-from typing import Union, List, Annotated
-import simpleOCR
+from pydantic import BaseModel
+from dataclasses import dataclass
+from typing import List
 import PyPDF2
 from io import BytesIO
 import os
@@ -12,6 +10,7 @@ import motor.motor_asyncio
 import certifi
 import pydantic
 from bson import ObjectId
+import spacy
 
 # TODO Need to store user's books in the OVERVIEW tab
 # TODO Add user ID to the book for fetching - any book with their ID will appear in their OVERVIEW tab
@@ -21,6 +20,7 @@ from bson import ObjectId
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
 app = FastAPI()
+nlp = spacy.load("fr_core_news_md")
 ca = certifi.where()
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"], tlsCAFile=ca)
 database = client.test
@@ -29,7 +29,8 @@ user_collection = database.get_collection("users")
 
 origins = [
     "http://localhost:4200",
-    "http://localhost:4200/upload"
+    "http://localhost:4200/upload",
+    "http://localhost:4200/read"
 ]
 
 app.add_middleware(
@@ -50,6 +51,7 @@ class Document:
     title: str
     pages: List[str]
     language: str
+    pageIndex: int
 
 
     # def __init__(self, title, pages, language):
@@ -89,7 +91,7 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
     # Now, need to send to backend, as well as find some way to
     # iterate through / turn pages on the user end
     #preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
-    preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(".")[0], pages=pages, language=language)
+    preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(".")[0], pages=pages, language=language, pageIndex=0)
 
     WriteStatus = await addDocumentData(preprocessed_document, user)
     return {"successfulUpload": WriteStatus} #newDocId
@@ -107,3 +109,4 @@ async def addDocumentData(document: Document, user: str):
     # document = jsonable_encoder(dict(document)
     writeStatus = await addDocument(document, user)
     return writeStatus
+
