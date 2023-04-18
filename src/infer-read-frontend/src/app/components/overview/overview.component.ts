@@ -3,7 +3,7 @@ import { AuthorizationService } from '../../services/authorization-service/autho
 import { Subscription } from 'rxjs';
 import { User } from '../../models/user.model';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router , ActivatedRoute } from '@angular/router';
 import config from 'devextreme/core/config';
 import { log } from 'console';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -59,6 +59,7 @@ export class OverviewComponent implements OnInit {
     private authService: AuthorizationService,
     private httpClient: HttpClient,
     private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   private userSubscription!: Subscription;
@@ -187,5 +188,6 @@ export class OverviewComponent implements OnInit {
 
   readDocument(docId: string) {
     // pass ID to READ tab via query params and route.navigate()
+    this.router.navigate(["./read"], {queryParams: {docId: docId}})
   }
 }

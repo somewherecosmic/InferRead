@@ -3,7 +3,7 @@
   <div class="RHS">
     <div class="items-available">
       <div *ngFor="let item of documents" class="item">
-        <div class="doc-info">
+        <div class="doc-info" (click)="readDocument(item._id)">
           <h1 class="item-title">{{ item.title }}</h1>
           <h2 class="item-desc">
             {{ item.pages.length }} pages ● {{ item.language }}
