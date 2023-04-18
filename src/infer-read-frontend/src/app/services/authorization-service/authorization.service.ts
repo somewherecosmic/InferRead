@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap, TimeoutConfig } from 'rxjs';
 import { User, UserConfig } from '../../models/user.model';
+import { Router } from '@angular/router';
 
 interface AuthorizationResponse {
   email: string;
@@ -24,7 +25,7 @@ export class AuthorizationService {
     const user = new User(
       response.email,
       response.id,
-      { selectedLanguage: 'French' },
+      response.userConfig,
       response.token,
       response.expiresIn
     );
@@ -80,6 +81,7 @@ export class AuthorizationService {
   logout() {
     this.user.next(null);
     localStorage.removeItem('userObject');
+    this.router.navigate(['']);
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
       this.tokenExpirationTimer = null;
@@ -110,15 +112,16 @@ export class AuthorizationService {
 
   // Want to check for time left on json web token every time a new subject event is emitted
   tokenExpirationHandler(expirationDuration: number) {
-    this.tokenExpirationTimer = setTimeout(() => {
-      this.logout();
-    }, expirationDuration);
-    console.log(expirationDuration);
+    // BMcQ Comment: Bug?, expirationDuration is always 0
+    // this.tokenExpirationTimer = setTimeout(() => {
+    //   this.logout();
+    // }, expirationDuration);
+    // console.log(expirationDuration);
   }
 
   getUserId() {
     return JSON.parse(localStorage.getItem('userObject')).id;
   }
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 }

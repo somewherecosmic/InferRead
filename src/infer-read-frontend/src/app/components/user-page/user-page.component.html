@@ -1,11 +1,16 @@
 <div class="body">
   <app-nav-bar-general></app-nav-bar-general>
   <div class="RHS">
-    <div class="user-page-header">
+    <div *ngIf="user; else userDataError" class="user-page-header">
       <p>Email: {{ user.email}}</p>
       <p>Username: {{ user.id}}</p>
-      <p> {{userSettings | json}}</p>
+      <p> {{user.userConfig | json}}</p>
     </div>
+    <ng-template #userDataError>
+      <div>
+        <p>User Data Error</p>
+      </div>
+    </ng-template>
     <div class="user-page-expanded">
       <p> To be Developed<br>Statistics and review summary</p>
       <button (click)="updateUserConfig('Irish')"> <p> Set config to Irish</p></button>

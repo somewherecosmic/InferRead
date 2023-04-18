@@ -1,12 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthorizationService } from '../../services/authorization-service/authorization.service';
-import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
-import { Subscription } from 'rxjs';
-import { User } from '../../models/user.model';
+import {
+  Observable,
+  Subscription,
+  catchError,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+  throwError,
+} from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import config from 'devextreme/core/config';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { EMPTY, catchError, tap, finalize } from 'rxjs';
+import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
+import { User, UserConfig } from '../../models/user.model';
+import {
+  DocumentGetResponse,
+  DocumentDeletionResponse,
+  DocumentPostResponse,
+  UploadedDocument,
+} from 'src/app/models/documents.model';
 
 config({
   //BMcQ Comment: Configuration of floating action button
@@ -22,25 +37,6 @@ config({
 
 // TODO fetch user's books and display them here
 // Need to add user ID or username to the book so we know who it belongs to
-
-interface DocumentGetResponse {
-  id: string;
-  documents: Document[];
-}
-
-interface DocumentPostResponse {
-  text: string;
-}
-interface DocumentDeletionResponse {
-  acknowledged: boolean;
-}
-
-interface Document {
-  _id: string;
-  title: string;
-  pages: [string];
-  language: string;
-}
 
 @Component({
   selector: 'app-overview',
@@ -59,16 +55,16 @@ export class OverviewComponent implements OnInit {
     private httpClient: HttpClient
   ) {}
 
-  private userSubscription!: Subscription;
-  user!: User;
+  user$: Observable<User>;
+  userConfig$: Observable<UserConfig>;
+  selectedLanguage: string;
   private documentsSubscription!: Subscription;
-  documentsFromDB: Document[];
-  filteredDocuments: Document[] = [];
+  documentsFromDB: UploadedDocument[];
+  filteredDocuments: UploadedDocument[] = [];
   addDocumentVisible = false;
   isDeleteDocument = false;
   uploadDocData = new FormData();
   isSubmitAvailable = false;
-  selectedLang!: string;
 
   //BMcQ Comment: copying code from file-upload which will be moved here
   text = '';
@@ -77,75 +73,75 @@ export class OverviewComponent implements OnInit {
   // Fetch the user docs array and display them on the template
 
   ngOnInit(): void {
-    this.userSubscription = this.authService.user
-      .pipe(
-        tap((user) => {
-          this.user = user;
-        }),
-        catchError((err) => {
-          console.log(err);
-          return EMPTY;
-        }),
-        finalize(() => {})
-      )
-      .subscribe();
+    this.user$ = this.authService.user;
+    this.userConfig$ = this.user$.pipe(
+      switchMap((user: any) => this.userConfigService.getUserConfig(user))
+    );
+    this.userConfig$
+      .pipe(map((userConfig: UserConfig) => userConfig))
+      .subscribe((userConfigSuperObject: any) => {
+        this.selectedLanguage =
+          userConfigSuperObject.userConfig.selectedLanguage;
+      });
     this.getDocuments();
-    this.userConfigService.userChosenLang.subscribe((language) => {
-      this.selectedLang = language;
-      this.filterDocuments(this.documentsFromDB, this.selectedLang);
-    });
   }
 
   getDocuments() {
-    // id as a request parameter
-    this.documentsSubscription = this.httpClient
-      .get<DocumentGetResponse>(
-        'http://localhost:3000/documents/getDocuments/' + this.user.id
-      )
-      .subscribe(
-        (res) => {
-          this.documentsFromDB = res.documents;
-          this.filterDocuments(this.documentsFromDB, this.selectedLang);
-          console.log(this.documentsFromDB);
-        },
-        (err) => {
+    this.documentsSubscription = this.user$
+      .pipe(
+        switchMap((user) =>
+          this.httpClient.get<DocumentGetResponse>(
+            `http://localhost:3000/documents/getDocuments/${user.id}`
+          )
+        ),
+        map((response) => response.documents),
+        tap((documentsFromDB) => {
+          this.documentsFromDB = documentsFromDB;
+          this.filteredDocuments = this.filterDocuments(
+            documentsFromDB,
+            this.selectedLanguage
+          );
+        }),
+        catchError((err) => {
           console.log(err);
-        }
-      );
+          return throwError(() => new Error(err));
+        })
+      )
+      .subscribe();
   }
 
   filterDocuments(documents: any, language: string) {
     if (documents && documents.length) {
-      this.filteredDocuments = documents.filter(
-        (doc) => doc.language === language
+      return documents.filter(
+        (doc: UploadedDocument) => doc.language === language
       );
     }
   }
 
   // get ID of document, send to url for deletion
-  deleteDocument(docId: string) {
-    this.httpClient
-      .delete<DocumentDeletionResponse>(
-        'http://localhost:3000/documents/deleteDocument/' +
-          this.user.id +
-          '/' +
-          docId
-      )
-      .subscribe(
-        (res) => {
-          console.log(res);
+  deleteDocument(documentID: string) {
+    this.documentsSubscription = this.user$
+      .pipe(
+        switchMap((user) =>
+          this.httpClient.delete<DocumentDeletionResponse>(
+            `http://localhost:3000/documents/deleteDocument/${user.id}/${documentID}`
+          )
+        ),
+        tap(() => {
           this.getDocuments();
-          console.log(this.documentsFromDB);
-        },
-        (err) => {
+        }),
+        catchError((err) => {
           console.log(err);
-        }
-      );
+          return throwError(() => new Error(err));
+        })
+      )
+      .subscribe();
   }
 
   ngOnDestroy(): void {
-    this.userSubscription.unsubscribe();
-    this.documentsSubscription.unsubscribe();
+    if (this.documentsSubscription) {
+      this.documentsSubscription.unsubscribe();
+    }
   }
 
   onAddDocument(): void {
@@ -166,17 +162,8 @@ export class OverviewComponent implements OnInit {
         JSON.parse(localStorage.getItem('userObject')).id
       );
       this.uploadDocData.append('document', file, this.fileName);
-      this.uploadDocData.append('language', this.selectedLang);
-      // if (userId) {
-      // formData.append("userId", userId.toString());
-      // console.log("user id appended")
-      // console.log(userId);
-      // }
-      this.uploadDocData.forEach((data) => {
-        console.log(data);
-      });
+      this.uploadDocData.append('language', this.selectedLanguage);
       this.isSubmitAvailable = true;
-      console.log(this.uploadDocData);
     }
   }
 
@@ -188,7 +175,6 @@ export class OverviewComponent implements OnInit {
     this.addDocumentVisible = false;
 
     upload$.subscribe((response) => {
-      console.log(response);
       this.text = response.text;
     });
   }

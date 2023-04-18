@@ -8,21 +8,46 @@
 
   .logo-brand {
     height: 8vh;
-    width: 20vw;
+    width: 24vw;
     display: flex;
     justify-content: center;
     align-items: center;
-    img {
-      height: 6vh;
-      width: 5vw;
+    .logo-img {
+      height: 7.75vh;
+      width: 4.25vw;
       display: block;
       line-height: 6vh;
-      margin-left: 2vw;
+      margin-right: 0.75vw;
     }
   }
   .RHS-dropdown {
     margin: 1vh 1vw 1vh 0vw;
     height: 6vh;
-    //width: 15vw;
+    width: 16vw;
+    display: flex;
+    flex-direction: row;
+    .flag-image-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      margin-right: 1.25vw;
+      .flag-image {
+        height: 3vh;
+        width: 2.5vw;
+        border-radius: 0.5rem;
+        display: block;
+        line-height: 6vh;
+        margin-right: 0.25vw;
+      }
+    }
+    .user-profile {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      :hover {
+        color:#EE8F1D;
+    }
+    }
   }
 }

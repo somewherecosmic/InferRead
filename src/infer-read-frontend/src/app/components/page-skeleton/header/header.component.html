@@ -1,22 +1,33 @@
 <div class="body">
   <div class="logo-brand">
-    <a (click)="onClick()">
+    <img
+      class="logo-img"
+      src="../../../assets/IR-Logo.png"
+      alt="Infer-Read Logo"
+    />
+    <a>
       <h1>Infer-Read</h1>
     </a>
-    
-    <img *ngIf="this.selectedLanguage == 'Irish'" (click)="changeUserChosenLanguage('French')" src="../../../assets/irish-flag.jpg" alt="Irish Flag" />
-    <img *ngIf="this.selectedLanguage == 'French'" (click)="changeUserChosenLanguage('Irish')" src="../../../assets/french-flag.jpg" alt="French Flag" />
   </div>
 
   <div *ngIf="currentPage != '/'" class="RHS-dropdown">
-    <dx-drop-down-button
-      [splitButton]="false"
-      [useSelectMode]="false"
-      text="Name McGee"
-      icon="../../../assets/logo.png"
-      [items]="userDropdownOptions"
-      displayExpr="name"
-      (onItemClick)="dropdownItemSelected($event.itemData.name)"
-    ></dx-drop-down-button>
+    <div class="flag-image-container">
+      <img
+        class="flag-image"
+        *ngIf="(userConfig$ | async)?.userConfig.selectedLanguage == 'Irish'"
+        src="../../../assets/irish-flag.jpg"
+        alt="Irish Flag"
+      />
+      <img
+        class="flag-image"
+        *ngIf="(userConfig$ | async)?.userConfig.selectedLanguage == 'French'"
+        src="../../../assets/french-flag.jpg"
+        alt="French Flag"
+      />
+      <h2>{{ (userConfig$ | async)?.userConfig.selectedLanguage }}</h2>
+    </div>
+      <div class="user-profile"  [routerLink]="'user'">
+        <h2>{{ (user$ |async)?.email}}</h2>
+    </div>
   </div>
 </div>

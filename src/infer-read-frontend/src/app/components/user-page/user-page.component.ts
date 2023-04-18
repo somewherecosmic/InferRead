@@ -13,10 +13,8 @@ import { EMPTY, catchError, tap, finalize } from 'rxjs';
 })
 export class UserPageComponent implements OnInit {
   private userSubscription!: Subscription;
-  private userSettingsSubscription!: Subscription;
 
   user!: User;
-  userSettings!: any;
 
   constructor(
     private authService: AuthorizationService,
@@ -32,20 +30,9 @@ export class UserPageComponent implements OnInit {
         console.log(err);
       },
     });
-    this.userSettingsSubscription = this.userConfigService
-      .getUserConfig(this.user)
-      .subscribe({
-        next: (settings) => {
-          this.userSettings = settings;
-        },
-        error: (err) => {
-          console.log(err);
-        },
-      });
   }
   ngOnDestroy(): void {
     this.userSubscription.unsubscribe();
-    this.userSettingsSubscription.unsubscribe();
   }
 
   updateUserConfig(newLanguage: string) {
