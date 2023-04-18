@@ -15,22 +15,25 @@
         border-radius: .75vw;
         justify-content: space-around;
         align-items: center;
+        :hover {
+            color:#EE8F1D;
+        }
         .button {
             width: 15vw; //BMcQ Comment: This is most likely problematic
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
+            
             p {
                 font-size: 2rem;
             }
             svg{
                 margin-left: 6vw;
+                // fill: #EE8F1D;
                 
             }
-            :hover {
-                fill:aqua;
-            }
+            
         }
         .border-line{
             width: 75%;

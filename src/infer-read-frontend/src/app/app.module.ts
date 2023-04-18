@@ -9,7 +9,6 @@ import {
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import {
-  DxDropDownButtonModule,
   DxSpeedDialActionModule,
   DxPopupModule,
 } from 'devextreme-angular';
@@ -47,7 +46,6 @@ import { UserPageComponent } from './components/user-page/user-page.component';
     HttpClientModule,
     BrowserAnimationsModule,
     FontAwesomeModule,
-    DxDropDownButtonModule,
     DxSpeedDialActionModule,
     DxPopupModule,
   ],
