@@ -1,10 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { User } from '../../models/user.model'
+import { AuthorizationService } from '../../services/authorization-service/authorization.service'
+import { switchMap, tap } from 'rxjs'
+
+
+// TODO: Remove timer logic at some point - when happy with request-response speed
+
 
 interface PageResponse {
-  // should be an NLP document, need to figure out how to handle this
+  _id: string,
+  pageIndex: number,
+  page: string,
 }
 
 @Component({
@@ -16,19 +25,28 @@ interface PageResponse {
 export class ReadingViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient
+    private http: HttpClient,
+    private authService: AuthorizationService
   ) {}
 
   paramSubscription: Subscription;
   documentId: string;
   pageIndex: number;
+  user$: Observable<User>
+  pageSubscription: Subscription;
+  text: string;
 
-  // DocID is passed to READ, now pages have to be fetched from the doc
-  // What is the smartest way to do this?
+  // check localStorage cache - key = docId
+  // access cache via routeParam passed
+  // read tab should keep latest route docId if you leave
+  // use router to store url
   ngOnInit(): void {
+    this.user$ = this.authService.user
+    // perform check for docId in localStorage later
     this.paramSubscription = this.route.queryParams.subscribe((params) => {
       this.documentId = params['docId'];
-      console.log(this.documentId);
+      // if (localStorage.getItem(this.documentId) 
+      this.getCurrentPage()
     });
     // fetch page in here
     // store index in database? 
@@ -39,15 +57,26 @@ export class ReadingViewComponent implements OnInit {
   // fetch via fastAPI backend
   // retrieve pageIndex, set local pageIndex var, get the respective page
 
-  // fetchDocumentPage(pageIndex: number) {
-  //   this.http.get<PageResponse>();
-  // }
+  getCurrentPage() {
+    // Use docID and pageIndex in DB to retrieve the current page
+    console.time('now')
+    this.pageSubscription = this.user$.pipe(
+      switchMap(user => 
+        this.http.get<PageResponse>(`http://127.0.0.1:8000/getCurrentPage/${user.id}/${this.documentId}/`)
+        ),
+        tap(response => {
+          this.pageIndex = response.pageIndex;
+          this.text = response.page
+          console.timeEnd('now');
+        })
+    ).subscribe()
+  }
 
+  // cache reading-view data onDestroy
   ngOnDestroy(): void {
     this.paramSubscription.unsubscribe();
   }
 
-  text = ""
   selectedWord: string;
 
   highlight(event) {

@@ -12,9 +12,6 @@ import pydantic
 from bson import ObjectId
 import spacy
 
-# TODO Need to store user's books in the OVERVIEW tab
-# TODO Add user ID to the book for fetching - any book with their ID will appear in their OVERVIEW tab
-# TODO Add ability for user to delete a book
 # TODO on fetching, perform spaCy operations on page, cache pages & progress with Redis?
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
@@ -24,7 +21,6 @@ nlp = spacy.load("fr_core_news_md")
 ca = certifi.where()
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"], tlsCAFile=ca)
 database = client.test
-document_collection = database.get_collection("documents")
 user_collection = database.get_collection("users")
 
 origins = [
@@ -91,6 +87,7 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
     # Now, need to send to backend, as well as find some way to
     # iterate through / turn pages on the user end
     #preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
+    print(pages[0])
     preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(".")[0], pages=pages, language=language, pageIndex=0)
 
     WriteStatus = await addDocumentData(preprocessed_document, user)
@@ -101,6 +98,7 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
 # refactor, update user model and embed the document into their documents array
 async def addDocument(document_data, user: str):
     document = await user_collection.update_one({"_id": ObjectId(user)}, { "$push": {"documents": document_data.__dict__}}, upsert=True)
+    print(document_data.__dict__)
     #doc_added = await document_collection.find_one({"title": document_data.title})
     #return doc_added
     return document.acknowledged
@@ -109,4 +107,42 @@ async def addDocumentData(document: Document, user: str):
     # document = jsonable_encoder(dict(document)
     writeStatus = await addDocument(document, user)
     return writeStatus
+
+
+# GETTING PAGES, UPDATING PAGE INDEX, PROCESSING TEXT IN SPACY
+
+
+# @app.get("/getPageIndex/{userId}/{docId}/")
+# async def getPageIndex(userId: str, docId: str):
+#     pageIndex = await user_collection.find_one({"_id": ObjectId(userId)}, {"documents" : { "$elemMatch": {"_id": ObjectId(docId)}}})
+#     return pageIndex
+
+@app.get("/getCurrentPage/{userId}/{docId}/")
+async def getCurrentPage(userId: str, docId: str):
+
+    pageIndex = await user_collection.aggregate([
+    {
+      '$match': { "_id": ObjectId(userId) }
+    },
+    {
+      '$project': {
+        'matching_document': {
+          '$filter': {
+            'input': "$documents",
+            'as': "document",
+            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
+          }
+        }
+      }
+    },
+    {
+      '$project': {
+        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, {'$first': '$matching_document.pageIndex'}]},
+        'pageIndex': {'$first': '$matching_document.pageIndex'}
+    }
+    }
+  ]).next()
+    print(pageIndex)
+    return pageIndex
+
 

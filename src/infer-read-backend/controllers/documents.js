@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 
 const getDocuments = (req, res, next) => {
     const userId = req.params.id;
+    console.log(userId)
     User.findById(userId, 'documents').then(documents => {
         res.status(200).send(documents);
     }).catch(err => {
