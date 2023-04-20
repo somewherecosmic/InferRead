@@ -87,7 +87,6 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
     # Now, need to send to backend, as well as find some way to
     # iterate through / turn pages on the user end
     #preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
-    print(pages[0])
     preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(".")[0], pages=pages, language=language, pageIndex=0)
 
     WriteStatus = await addDocumentData(preprocessed_document, user)
@@ -117,7 +116,7 @@ async def addDocumentData(document: Document, user: str):
 #     pageIndex = await user_collection.find_one({"_id": ObjectId(userId)}, {"documents" : { "$elemMatch": {"_id": ObjectId(docId)}}})
 #     return pageIndex
 
-@app.get("/getCurrentPage/{userId}/{docId}/")
+@app.get("/getCurrentPage/{userId}/{docId}")
 async def getCurrentPage(userId: str, docId: str):
 
     pageIndex = await user_collection.aggregate([
@@ -145,4 +144,28 @@ async def getCurrentPage(userId: str, docId: str):
     print(pageIndex)
     return pageIndex
 
-
+@app.get("/getNextPage/{userId}/{docId}/{pageIndex}")
+async def getNextPage(userId: str, docId: str, pageIndex: int):
+    nextPage = await user_collection.aggregate([
+    {
+      '$match': { "_id": ObjectId(userId) }
+    },
+    {
+      '$project': {
+        'matching_document': {
+          '$filter': {
+            'input': "$documents",
+            'as': "document",
+            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
+          }
+        }
+      }
+    },
+    {
+      '$project': {
+        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, pageIndex+1]}
+    }
+    }
+  ]).next()
+    print(nextPage)
+    return nextPage

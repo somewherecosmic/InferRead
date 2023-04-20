@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 
 const getDocuments = (req, res, next) => {
     const userId = req.params.id;
-    console.log(userId)
     User.findById(userId, 'documents').then(documents => {
         res.status(200).send(documents);
     }).catch(err => {
@@ -17,9 +16,6 @@ const deleteDocument = (req, res, next) => {
     const userId = req.params.id;
     const docId = req.params.docId;
     const token = req.query.auth;
-    console.log(req.params);
-    console.log(userId);
-    console.log(docId);
     if (verifyToken(token) != true) {
         res.status(401).send('Unauthorized');
         return;

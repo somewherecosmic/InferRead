@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { catchError, Observable, Subscription, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../../models/user.model'
 import { AuthorizationService } from '../../services/authorization-service/authorization.service'
 import { switchMap, tap } from 'rxjs'
+import { ScaleBreak } from 'devextreme/common/charts';
 
 
 // TODO: Remove timer logic at some point - when happy with request-response speed
@@ -12,7 +13,7 @@ import { switchMap, tap } from 'rxjs'
 
 interface PageResponse {
   _id: string,
-  pageIndex: number,
+  pageIndex?: number,
   page: string,
 }
 
@@ -33,7 +34,8 @@ export class ReadingViewComponent implements OnInit {
   documentId: string;
   pageIndex: number;
   user$: Observable<User>
-  pageSubscription: Subscription;
+  currentPageSubscription: Subscription;
+  nextPageSubscription: Subscription;
   text: string;
 
   // check localStorage cache - key = docId
@@ -44,12 +46,16 @@ export class ReadingViewComponent implements OnInit {
     this.user$ = this.authService.user
     // perform check for docId in localStorage later
     this.paramSubscription = this.route.queryParams.subscribe((params) => {
-      this.documentId = params['docId'];
-      // if (localStorage.getItem(this.documentId) 
-      this.getCurrentPage()
-    });
-    // fetch page in here
-    // store index in database? 
+    this.documentId = params['docId'];
+    if (localStorage.getItem(this.documentId) === null) {
+      this.getCurrentPage();
+    }
+    else {
+      this.text = localStorage.getItem(this.documentId);
+      this.pageIndex = parseInt(localStorage.getItem("${this.documentId}/pageIndex"));
+    }
+  }
+    );
 
   }
 
@@ -60,27 +66,86 @@ export class ReadingViewComponent implements OnInit {
   getCurrentPage() {
     // Use docID and pageIndex in DB to retrieve the current page
     console.time('now')
-    this.pageSubscription = this.user$.pipe(
+    this.currentPageSubscription = this.user$.pipe(
       switchMap(user => 
-        this.http.get<PageResponse>(`http://127.0.0.1:8000/getCurrentPage/${user.id}/${this.documentId}/`)
+        this.http.get<PageResponse>(`http://127.0.0.1:8000/getCurrentPage/${user.id}/${this.documentId}`)
         ),
         tap(response => {
           this.pageIndex = response.pageIndex;
-          this.text = response.page
+          this.text = response.page;
+          this.setLocalStorage();
           console.timeEnd('now');
+        }),
+        catchError(err => {
+          console.log(err);
+          return throwError(() => new Error(err));
         })
     ).subscribe()
+  }
+
+  // get the next page in the array
+  // set this.pageIndex to this.pageIndex++ when done
+  getNextPage() {
+    this.nextPageSubscription = this.user$.pipe(
+      switchMap(user => 
+        this.http.get<PageResponse>(`http://127.0.0.1:8000/getNextPage/${user.id}/${this.documentId}/${this.pageIndex}`)
+      ),
+      tap(response => {
+        console.log(response);
+        this.pageIndex++;
+        this.text = response.page;
+        this.setLocalStorage();
+      }),
+      catchError(err => {
+        console.log(err);
+        return throwError(() => new Error(err));
+      })
+    ).subscribe()
+  }
+
+  setLocalStorage() {
+    localStorage.setItem(this.documentId, this.text);
+    localStorage.setItem('${this.documentId}/pageIndex', this.pageIndex.toString());
   }
 
   // cache reading-view data onDestroy
   ngOnDestroy(): void {
     this.paramSubscription.unsubscribe();
+    this.currentPageSubscription.unsubscribe();
   }
 
   selectedWord: string;
 
   highlight(event) {
-    this.selectedWord = window.getSelection().toString();
+    var selection = window.getSelection()
+    this.selectedWord = selection.toString();
+    const anchorText = selection.anchorNode.textContent;
+    const focusText = selection.focusNode.textContent;
+
+    const textStartIndex = Math.min(selection.anchorOffset, selection.focusOffset);
+    const textEndIndex = Math.max(selection.anchorOffset, selection.focusOffset);
+
+    const textBefore = anchorText.slice(0, textStartIndex);
+    const textAfter = focusText.slice(textEndIndex);
+
+    const punctuationRegex = /[.!?]/;
+
+    const punctuationBeforeIndex = textBefore.split('').reverse().join('').search(punctuationRegex);
+    const sentenceStart = punctuationBeforeIndex !== -1 ? textBefore.slice(-punctuationBeforeIndex) : textBefore;
+    
+    const punctuationAfterIndex = textAfter.search(punctuationRegex);
+    const sentenceEnd = punctuationAfterIndex !== -1 ? textAfter.slice(0, punctuationAfterIndex) : textAfter;
+
+    const sentence = sentenceStart + this.selectedWord + sentenceEnd;
+    console.log(sentence);
+
+    
+    
+    //this.findSentence(this.selectedWord);
+
+    // while the selection's anchor isn't a fullstop
+    // while the selection's focus isn't a fullstop
+    
     // this.text = this.text.replace(
     //   this.selectedWord,
     //   '<mark>' + this.selectedWord + '</mark>'
