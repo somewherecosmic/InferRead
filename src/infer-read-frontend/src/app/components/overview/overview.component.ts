@@ -4,13 +4,12 @@ import {
   Subscription,
   catchError,
   map,
-  of,
   switchMap,
-  take,
   tap,
   throwError,
 } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import config from 'devextreme/core/config';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
@@ -35,8 +34,9 @@ config({
   },
 });
 
-// TODO fetch user's books and display them here
-// Need to add user ID or username to the book so we know who it belongs to
+// TODO: Add onClick() to document title
+// clicking title calls a function which fetches the first page of the book
+// or the page the user was previously on (cache this or store in user or read object?)
 
 @Component({
   selector: 'app-overview',
@@ -52,7 +52,8 @@ export class OverviewComponent implements OnInit {
   constructor(
     private authService: AuthorizationService,
     private userConfigService: UserConfigService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private router: Router
   ) {}
 
   user$: Observable<User>;
@@ -103,7 +104,6 @@ export class OverviewComponent implements OnInit {
           );
         }),
         catchError((err) => {
-          console.log(err);
           return throwError(() => new Error(err));
         })
       )
@@ -185,5 +185,10 @@ export class OverviewComponent implements OnInit {
 
   onCancelDeleteDocNav(): void {
     this.isDeleteDocument = false;
+  }
+
+  readDocument(docId: string) {
+    // pass ID to READ tab via query params and route.navigate()
+    this.router.navigate(['./read'], { queryParams: { docId: docId } });
   }
 }
