@@ -36,6 +36,7 @@ export class ReadingViewComponent implements OnInit {
   user$: Observable<User>
   currentPageSubscription: Subscription;
   nextPageSubscription: Subscription;
+  wordHelpSubscription: Subscription;
   text: string;
 
   // check localStorage cache - key = docId
@@ -85,6 +86,23 @@ export class ReadingViewComponent implements OnInit {
 
   // get the next page in the array
   // set this.pageIndex to this.pageIndex++ when done
+  getPreviousPage() {
+    this.nextPageSubscription = this.user$.pipe(
+      switchMap(user => 
+        this.http.get<PageResponse>(`http://127.0.0.1:8000/getPreviousPage/${user.id}/${this.documentId}/${this.pageIndex}`)
+      ),
+      tap(response => {
+        this.pageIndex--;
+        this.text = response.page;
+        this.setLocalStorage();
+      }),
+      catchError(err => {
+        console.log(err);
+        return throwError(() => new Error(err));
+      })
+    ).subscribe()
+  }
+
   getNextPage() {
     this.nextPageSubscription = this.user$.pipe(
       switchMap(user => 
@@ -116,9 +134,7 @@ export class ReadingViewComponent implements OnInit {
 
   selectedWord: string;
 
-  highlight(event) {
-    var selection = window.getSelection()
-    this.selectedWord = selection.toString();
+  grabSurroundingSentence(selection) {
     const anchorText = selection.anchorNode.textContent;
     const focusText = selection.focusNode.textContent;
 
@@ -138,7 +154,27 @@ export class ReadingViewComponent implements OnInit {
 
     const sentence = sentenceStart + this.selectedWord + sentenceEnd;
     console.log(sentence);
+    return sentence;
+  }
 
+  highlight(event) {
+    var selection = window.getSelection()
+    this.selectedWord = selection.toString();
+    const sentence = this.grabSurroundingSentence(selection);
+    // Send to NLP backend and process
+    // display information inside helper window
+
+    this.wordHelpSubscription = this.user$.pipe(
+      switchMap(user => 
+        this.http.post('http://127.0.0.1:8000/processWord', {"word": this.selectedWord, "context": sentence, "userId": user.id})
+      ),
+      tap(response => console.log(response)),
+      catchError((err) => {
+        return throwError(() => new Error(err));
+      }
+    )).subscribe();
+
+    
     
     
     //this.findSentence(this.selectedWord);

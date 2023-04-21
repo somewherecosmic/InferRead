@@ -11,13 +11,14 @@ import certifi
 import pydantic
 from bson import ObjectId
 import spacy
+import numpy as np
 
 # TODO on fetching, perform spaCy operations on page, cache pages & progress with Redis?
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
 app = FastAPI()
-nlp = spacy.load("fr_core_news_md")
+nlp = spacy.load("fr_core_news_lg")
 ca = certifi.where()
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"], tlsCAFile=ca)
 database = client.test
@@ -48,6 +49,11 @@ class Document:
     pages: List[str]
     language: str
     pageIndex: int
+
+class WordHelpRequest(BaseModel):
+    word: str
+    context: str
+    userId: str
 
 
     # def __init__(self, title, pages, language):
@@ -169,3 +175,45 @@ async def getNextPage(userId: str, docId: str, pageIndex: int):
   ]).next()
     print(nextPage)
     return nextPage
+
+@app.get("/getPreviousPage/{userId}/{docId}/{pageIndex}")
+async def getPreviousPage(userId: str, docId: str , pageIndex: int):
+    previousPage = await user_collection.aggregate([
+    {
+      '$match': { "_id": ObjectId(userId) }
+    },
+    {
+      '$project': {
+        'matching_document': {
+          '$filter': {
+            'input': "$documents",
+            'as': "document",
+            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
+          }
+        }
+      }
+    },
+    {
+      '$project': {
+        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, pageIndex-1]}
+    }
+    }
+  ]).next()
+    return previousPage
+
+
+
+@app.post("/processWord")
+async def processWord(wordHelpRequest: WordHelpRequest):
+    # spaCy is already loaded
+    # run translation pipeline?
+    # Simply attempt to obtain synonyms via word vectors and provide POS tagging rn
+
+    similar = nlp.vocab.vectors.most_similar(
+        np.asarray([nlp.vocab.vectors[nlp.vocab.strings[wordHelpRequest.word]]]), n=10
+    )
+    words = [nlp.vocab.strings[w] for w in similar[0][0]]
+    distances = similar[2]
+
+    print(words)
+    
