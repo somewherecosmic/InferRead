@@ -20,7 +20,7 @@ from tensorflow.keras.losses import cosine_similarity
 
 # TODO on fetching, perform spaCy operations on page, cache pages & progress with Redis?
 
-pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
+pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
 app = FastAPI()
 model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
@@ -50,7 +50,8 @@ class frenchTokenizer(Tokenizer):
 
 
 ca = certifi.where()
-client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"], tlsCAFile=ca)
+client = motor.motor_asyncio.AsyncIOMotorClient(
+    os.environ["MONGODB_URL"], tlsCAFile=ca)
 database = client.test
 user_collection = database.get_collection("users")
 
@@ -67,11 +68,14 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+
 class UploadRequest(BaseModel):
     document: UploadFile
     id: str = Form(...)
 
 # Model needs to be JSON encoded before being sent to Atlas
+
+
 @dataclass
 class Document:
     _id: ObjectId
@@ -80,23 +84,24 @@ class Document:
     language: str
     pageIndex: int
 
+
 class WordHelpRequest(BaseModel):
     word: str
     context: str
     maskedContext: str
     userId: str
 
-
     # def __init__(self, title, pages, language):
     #     self.title = title
     #     self.pages = pages
-    #     self.language = language 
+    #     self.language = language
 
 
 @app.get("/")
 async def root():
 
     return {"message": "Hello World"}
+
 
 @app.get("/test")
 async def test():
@@ -106,6 +111,8 @@ async def test():
 # Needs to take a file as arg
 # Pass file to python script
 # Run script, return result of script
+
+
 @app.post("/preprocess")
 async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)): # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
     stream = BytesIO(document.file.read())
@@ -114,7 +121,8 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
     text = ""
     pages = []
     while (currentPage < len(pdf.pages)):
-        text = pdf.pages[currentPage].extract_text().replace("\n\n", " ").replace("\n", "")
+        text = pdf.pages[currentPage].extract_text().replace(
+            "\n\n", " ").replace("\n", "")
         pages.append(text)
         currentPage += 1
     # Have array representing the literal pages of the document
@@ -122,21 +130,25 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
     # Slice off first 4 or so pages as a metric for removing intro text
     # Now, need to send to backend, as well as find some way to
     # iterate through / turn pages on the user end
-    #preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
-    preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(".")[0], pages=pages, language=language, pageIndex=0)
+    # preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
+    preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(
+        ".")[0], pages=pages, language=language, pageIndex=0)
 
     WriteStatus = await addDocumentData(preprocessed_document, user)
-    return {"successfulUpload": WriteStatus} #newDocId
+    return {"successfulUpload": WriteStatus}  # newDocId
 
 # This endpoint preprocesses the text into raw plaintext, need to sentencize?
 
 # refactor, update user model and embed the document into their documents array
+
+
 async def addDocument(document_data, user: str):
-    document = await user_collection.update_one({"_id": ObjectId(user)}, { "$push": {"documents": document_data.__dict__}}, upsert=True)
+    document = await user_collection.update_one({"_id": ObjectId(user)}, {"$push": {"documents": document_data.__dict__}}, upsert=True)
     print(document_data.__dict__)
-    #doc_added = await document_collection.find_one({"title": document_data.title})
-    #return doc_added
+    # doc_added = await document_collection.find_one({"title": document_data.title})
+    # return doc_added
     return document.acknowledged
+
 
 async def addDocumentData(document: Document, user: str):
     # document = jsonable_encoder(dict(document)
@@ -156,79 +168,80 @@ async def addDocumentData(document: Document, user: str):
 async def getCurrentPage(userId: str, docId: str):
 
     pageIndex = await user_collection.aggregate([
-    {
-      '$match': { "_id": ObjectId(userId) }
-    },
-    {
-      '$project': {
-        'matching_document': {
-          '$filter': {
-            'input': "$documents",
-            'as': "document",
-            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
-          }
+        {
+            '$match': {"_id": ObjectId(userId)}
+        },
+        {
+            '$project': {
+                'matching_document': {
+                    '$filter': {
+                        'input': "$documents",
+                        'as': "document",
+                        'cond': {'$eq': ["$$document._id", ObjectId(docId)]}
+                    }
+                }
+            }
+        },
+        {
+            '$project': {
+                'page': {'$arrayElemAt': [{'$first': "$matching_document.pages"}, {'$first': '$matching_document.pageIndex'}]},
+                'pageIndex': {'$first': '$matching_document.pageIndex'}
+            }
         }
-      }
-    },
-    {
-      '$project': {
-        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, {'$first': '$matching_document.pageIndex'}]},
-        'pageIndex': {'$first': '$matching_document.pageIndex'}
-    }
-    }
   ]).next()
     return pageIndex
+
 
 @app.get("/getNextPage/{userId}/{docId}/{pageIndex}")
 async def getNextPage(userId: str, docId: str, pageIndex: int):
     nextPage = await user_collection.aggregate([
-    {
-      '$match': { "_id": ObjectId(userId) }
-    },
-    {
-      '$project': {
-        'matching_document': {
-          '$filter': {
-            'input': "$documents",
-            'as': "document",
-            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
-          }
+        {
+            '$match': {"_id": ObjectId(userId)}
+        },
+        {
+            '$project': {
+                'matching_document': {
+                    '$filter': {
+                        'input': "$documents",
+                        'as': "document",
+                        'cond': {'$eq': ["$$document._id", ObjectId(docId)]}
+                    }
+                }
+            }
+        },
+        {
+            '$project': {
+                'page': {'$arrayElemAt': [{'$first': "$matching_document.pages"}, pageIndex+1]}
+            }
         }
-      }
-    },
-    {
-      '$project': {
-        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, pageIndex+1]}
-    }
-    }
-  ]).next()
+    ]).next()
     return nextPage
 
-@app.get("/getPreviousPage/{userId}/{docId}/{pageIndex}")
-async def getPreviousPage(userId: str, docId: str , pageIndex: int):
-    previousPage = await user_collection.aggregate([
-    {
-      '$match': { "_id": ObjectId(userId) }
-    },
-    {
-      '$project': {
-        'matching_document': {
-          '$filter': {
-            'input': "$documents",
-            'as': "document",
-            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
-          }
-        }
-      }
-    },
-    {
-      '$project': {
-        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, pageIndex-1]}
-    }
-    }
-  ]).next()
-    return previousPage
 
+@app.get("/getPreviousPage/{userId}/{docId}/{pageIndex}")
+async def getPreviousPage(userId: str, docId: str, pageIndex: int):
+    previousPage = await user_collection.aggregate([
+        {
+            '$match': {"_id": ObjectId(userId)}
+        },
+        {
+            '$project': {
+                'matching_document': {
+                    '$filter': {
+                        'input': "$documents",
+                        'as': "document",
+                        'cond': {'$eq': ["$$document._id", ObjectId(docId)]}
+                    }
+                }
+            }
+        },
+        {
+            '$project': {
+                'page': {'$arrayElemAt': [{'$first': "$matching_document.pages"}, pageIndex-1]}
+            }
+        }
+    ]).next()
+    return previousPage
 
 
 @app.post("/processWord")
@@ -300,3 +313,10 @@ def generatePredictions(maskedContext):
     # print(words)
 
 # generatePredictions()
+
+@app.get("/predictWord/{language}/{sentence}/{maskedWord}")
+async def predictWord(language: str, sentence: str, maskedWord: str):
+    if (language == "French"):
+        return "This is Irish :)"
+    else:
+        return "not Irish Yo"
