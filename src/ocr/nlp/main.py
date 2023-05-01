@@ -4,6 +4,7 @@ from io import BytesIO
 from typing import List
 
 import certifi
+import irishAPI as irishRouter
 import motor.motor_asyncio
 import numpy as np
 import pydantic
@@ -13,9 +14,7 @@ import tensorflow as tf
 from bson import ObjectId
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from requests import Response
 from spacy.tokenizer import Tokenizer
 from spacy.tokens import Doc, Token
 from tensorflow.keras.losses import cosine_similarity
@@ -26,17 +25,18 @@ from transformers import CamembertTokenizer, TFCamembertForMaskedLM
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
 app = FastAPI()
+# app.include(irishRouter)
 model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
 tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
 frenchNLP = spacy.load("fr_core_news_lg")
 
 # export to file later
 
-class frenchTokenizer(Tokenizer): 
+
+class frenchTokenizer(Tokenizer):
     def __init__(self, nlp):
         super().__init__(nlp.vocab)
-        
-    
+
     def split(self, doc):
         tokens = super().split(doc)
         i = 0
@@ -49,9 +49,6 @@ class frenchTokenizer(Tokenizer):
         return tokens
 
 
-
-
-
 ca = certifi.where()
 client = motor.motor_asyncio.AsyncIOMotorClient(
     os.environ["MONGODB_URL"], tlsCAFile=ca)
@@ -59,16 +56,14 @@ database = client.test
 user_collection = database.get_collection("users")
 
 origins = [
-    "http://localhost:3000",
     "http://localhost:4200",
     "http://localhost:4200/upload",
-    "http://localhost:4200/read",
+    "http://localhost:4200/read"
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
 )
@@ -101,9 +96,6 @@ class WordHelpRequest(BaseModel):
     #     self.pages = pages
     #     self.language = language
 
-@app.options("/{any:path}")
-async def options(any: str):
-    return {"status": "OK"}
 
 @app.get("/")
 async def root():
@@ -122,7 +114,8 @@ async def test():
 
 
 @app.post("/preprocess")
-async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)): # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
+# document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
+async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)):
     stream = BytesIO(document.file.read())
     pdf = PyPDF2.PdfReader(stream)
     currentPage = 0
@@ -196,7 +189,7 @@ async def getCurrentPage(userId: str, docId: str):
                 'pageIndex': {'$first': '$matching_document.pageIndex'}
             }
         }
-  ]).next()
+    ]).next()
     return pageIndex
 
 
@@ -267,7 +260,7 @@ async def processWord(wordHelpRequest: WordHelpRequest):
             root = token.lemma_
             isCommon = token.is_stop
             break
-    
+
     maskedLMPredictions = generatePredictions(wordHelpRequest.maskedContext)
     print(maskedLMPredictions)
     return {"partOfSpeech": partOfSpeech, "root": root, "isCommon": isCommon, "morphology": morphology, "maskedLMPredictions": maskedLMPredictions}
@@ -288,8 +281,10 @@ def generatePredictions(maskedContext):
     predictions = outputs[0]
 
     num_top_predictions = 5
-    predicted_indexes = tf.math.top_k(predictions[0, mask_token_index], k=num_top_predictions).indices.numpy()
-    predicted_words = [tokenizer.decode([predicted_index]) for predicted_index in predicted_indexes]
+    predicted_indexes = tf.math.top_k(
+        predictions[0, mask_token_index], k=num_top_predictions).indices.numpy()
+    predicted_words = [tokenizer.decode(
+        [predicted_index]) for predicted_index in predicted_indexes]
 
     return predicted_words
 
@@ -298,7 +293,7 @@ def generatePredictions(maskedContext):
 
     # with tf.device('/cpu:0'):
     #     embedding = model(input_ids)[0][0][0]
-    
+
     # vocab = tokenizer.get_vocab()
     # similar = []
 
@@ -310,7 +305,6 @@ def generatePredictions(maskedContext):
     #     if similarity > 0.5 and other_word != word:
     #         similar.append(other_word)
 
-
     # Deprecated method of synonym finding -> spaCy word vectors
     # similar = nlp.vocab.vectors.most_similar(
     #     np.asarray([nlp.vocab.vectors[nlp.vocab.strings[wordHelpRequest.word]]]), n=10
@@ -321,15 +315,3 @@ def generatePredictions(maskedContext):
     # print(words)
 
 # generatePredictions()
-
-@app.get("/predictWord/{language}/{sentence}/{maskedWord}")
-async def predictWord(language: str, sentence: str, maskedWord: str):
-    if (language == "French"):
-        return "This is Irish :)"
-    else:
-        return "not Irish Yo"
-
-@app.post("/processWordIrish")
-async def processWordIrish(wordHelpRequest: WordHelpRequest):
-    print("This is Irish :)")
-    return

@@ -8,5 +8,5 @@ src/ocr/nlp/pyvenv.cfg
 src/ocr/nlp/.ipynb_checkpoints
 src/ocr/nlp/etc
 src/ocr/nlp/share
-src/ocr/nlp/bert-base-irish-cased-v1/
+src/ocr/nlp/bert-base-irish-cased-v1
 src/.idea/
