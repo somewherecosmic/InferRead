@@ -100,8 +100,8 @@ export class AuthorizationService {
       const cachedUser = new User(
         userObject.email,
         userObject.id,
-        userObject.bank,
         userObject.userConfig,
+        userObject.bank,
         userObject._token,
         new Date(userObject._tokenExpires)
       );

@@ -30,14 +30,23 @@ export class BankService {
   
   updateBank(user: User) {
     var bank: Bank = {known: Array.from(this.known.values()) as string[], learning: this.learning}
-    return this.http.patch<Bank>(`http://localhost:3000/user/getBank/${user.id}`, bank);
+    console.log("Inside updateBank CS call:", user);
+    return this.http.patch<Bank>(`http://localhost:3000/user/updateBank/${user.id}`, bank);
   }
 
   addToKnown(pageContent: string) {
     // Closest regex so far: \b[A-Za-zÀ-Öz-öø-ÿ’é]+\b
     // Need to tokenize, otherwise words will be affected by punctuation
    // /\b[A-Za-zÀ-Öz-öø-ÿ’é\u00E0]+\b/g
-    console.log(pageContent.toLowerCase().match(/[A-Za-zÀ-Öz-öø-ÿ’éà]+/g));
+    const knownWords = pageContent.toLowerCase().match(/[A-Za-zÀ-Öz-öø-ÿ’éà]+/g);
+    knownWords.forEach((word) => {
+      this.known.add(word);
+    });
+    this.learning.forEach(entry => {
+      if (this.known.has(entry.word)) {
+        this.known.delete(entry.word);
+      }
+    });
   }
 
 }

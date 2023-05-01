@@ -1,12 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { catchError, Observable, Subscription, throwError } from 'rxjs';
+import { catchError, Observable, Subscription, throwError, switchMap, tap, map, of} from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Bank, User } from '../../models/user.model';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
 import { BankService } from '../../services/bank-service/bank.service';
-import { switchMap, tap } from 'rxjs';
 import { ScaleBreak } from 'devextreme/common/charts';
+import { CanDeactivate } from '@angular/router';
 
 // TODO: Remove timer logic at some point - when happy with request-response speed
 
@@ -27,7 +27,7 @@ interface WordHelpResponse {
   templateUrl: './reading-view.component.html',
   styleUrls: ['./reading-view.component.scss'],
 })
-export class ReadingViewComponent implements OnInit {
+export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewComponent> {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -73,6 +73,16 @@ export class ReadingViewComponent implements OnInit {
         );
       }
     });
+  }
+
+  canDeactivate() : Observable<boolean> {
+    console.log("Can deactivate called");
+    return this.user$.pipe(switchMap(user => {
+      return this.bankService.updateBank(user).pipe(
+        map(() => true),
+        catchError(() => of(false))
+      )
+    }));
   }
 
   // fetch page function, pagination on click? First page should be loaded on init
@@ -157,9 +167,15 @@ export class ReadingViewComponent implements OnInit {
   }
   
   ngOnDestroy(): void {
-    this.paramSubscription.unsubscribe();
-    this.currentPageSubscription.unsubscribe();
-    this.nextPageSubscription.unsubscribe();
+    if (this.paramSubscription) {
+      this.paramSubscription.unsubscribe();
+    }
+    if (this.currentPageSubscription) {
+      this.currentPageSubscription.unsubscribe();
+    }
+    if (this.nextPageSubscription) {
+      this.nextPageSubscription.unsubscribe();
+    }
   }
 
   selectedWord: string;
@@ -240,15 +256,6 @@ export class ReadingViewComponent implements OnInit {
         })
       )
       .subscribe();
-
-    //this.findSentence(this.selectedWord);
-
-    // while the selection's anchor isn't a fullstop
-    // while the selection's focus isn't a fullstop
-
-    // this.text = this.text.replace(
-    //   this.selectedWord,
-    //   '<mark>' + this.selectedWord + '</mark>'
-    // );
+  
   }
 }

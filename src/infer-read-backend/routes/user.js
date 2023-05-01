@@ -9,6 +9,6 @@ const router = express.Router();
 router.get("/getSettings/:id", getSettings);
 router.patch("/updateSettings/:id", updateSettings);
 router.get("/getBank/:id", getBank);
-router.patch("updateBank/:id", updateBank);
+router.patch("/updateBank/:id", updateBank);
 
 export default router;
