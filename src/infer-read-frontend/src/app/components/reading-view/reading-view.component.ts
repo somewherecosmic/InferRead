@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, Observable, Subscription, throwError } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { User } from '../../models/user.model';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Bank, User } from '../../models/user.model';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { BankService } from '../../services/bank-service/bank.service';
 import { switchMap, tap } from 'rxjs';
 import { ScaleBreak } from 'devextreme/common/charts';
 
@@ -15,6 +16,12 @@ interface PageResponse {
   page: string;
 }
 
+interface WordHelpResponse {
+  partOfSpeech: string;
+  root: string;
+  isRare: boolean;
+}
+
 @Component({
   selector: 'app-reading-view',
   templateUrl: './reading-view.component.html',
@@ -24,25 +31,37 @@ export class ReadingViewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private authService: AuthorizationService
+    private authService: AuthorizationService,
+    private bankService: BankService,
+    private cdRef: ChangeDetectorRef
   ) {}
 
   paramSubscription: Subscription;
   documentId: string;
   pageIndex: number;
   user$: Observable<User>;
+  bank$: Observable<Bank>;
   currentPageSubscription: Subscription;
   nextPageSubscription: Subscription;
   wordHelpSubscription: Subscription;
   text: string;
 
-  // check localStorage cache - key = docId
-  // access cache via routeParam passed
-  // read tab should keep latest route docId if you leave
-  // use router to store url
+ // TODO: read tab should keep latest route docId if you leave
+ // use router to store url
+
+ // TODO: clicking a word should fetch the associated data, then add the word and its POS tag to the learning bank
+ // On the call of next page, put any words not in learning into the known set
+ // simple for-loop through a split of the text, check if in learning, else add to set
+ // shouldn't need to worry about duplicates as set will discard same word again
+ // handle case where user clicks on a word already in known - if in known, allow user to choose to put back into learning?
+
+ // then implement guard for deactivating component, send update on leaving
+
   ngOnInit(): void {
     this.user$ = this.authService.user;
-    // perform check for docId in localStorage later
+    this.user$.pipe(switchMap(user => {
+      return this.bankService.getBank(user);
+    })).subscribe();
     this.paramSubscription = this.route.queryParams.subscribe((params) => {
       this.documentId = params['docId'];
       if (localStorage.getItem(this.documentId) === null) {
@@ -116,8 +135,8 @@ export class ReadingViewComponent implements OnInit {
           )
         ),
         tap((response) => {
-          console.log(response);
           this.pageIndex++;
+          this.bankService.addToKnown(this.text);
           this.text = response.page;
           this.setLocalStorage();
         }),
@@ -136,11 +155,11 @@ export class ReadingViewComponent implements OnInit {
       this.pageIndex.toString()
     );
   }
-
-  // cache reading-view data onDestroy
+  
   ngOnDestroy(): void {
     this.paramSubscription.unsubscribe();
     this.currentPageSubscription.unsubscribe();
+    this.nextPageSubscription.unsubscribe();
   }
 
   selectedWord: string;
@@ -180,13 +199,24 @@ export class ReadingViewComponent implements OnInit {
         : textAfter;
 
     const sentence = sentenceStart + this.selectedWord + sentenceEnd;
-    console.log(sentence);
     return sentence;
   }
 
   highlight(event) {
     var selection = window.getSelection();
     this.selectedWord = selection.toString();
+    // if (this.selectedWord.indexOf('-') !== -1) {
+    //   var words = this.selectedWord.split('-');
+    //   var fullString = words.join('-').trim();
+    //   var range = document.createRange();
+    //   range.selectNodeContents(event.target);
+    //   var startIndex = event.target.textContent.indexOf(fullString);
+    //   var endIndex = startIndex + fullString.length;
+    //   range.setStart(event.target.firstChild, startIndex);
+    //   range.setEnd(event.target.firstChild, endIndex);
+    //   window.getSelection().removeAllRanges();
+    //   window.getSelection().addRange(range);
+    // }
     const sentence = this.grabSurroundingSentence(selection);
     // Send to NLP backend and process
     // display information inside helper window
@@ -194,13 +224,17 @@ export class ReadingViewComponent implements OnInit {
     this.wordHelpSubscription = this.user$
       .pipe(
         switchMap((user) =>
-          this.http.post('http://127.0.0.1:8000/processWord', {
+          this.http.post<WordHelpResponse>('http://127.0.0.1:8000/processWord', {
             word: this.selectedWord,
             context: sentence,
             userId: user.id,
           })
         ),
-        tap((response) => console.log(response)),
+        tap((response) =>{ 
+        console.log(response);
+        console.log(this.bankService.learning);
+        this.bankService.learning.push({"word": this.selectedWord, "partOfSpeech": response.partOfSpeech});
+  }),
         catchError((err) => {
           return throwError(() => new Error(err));
         })

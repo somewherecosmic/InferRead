@@ -3,6 +3,7 @@ export class User {
         public email: string, 
         public id: string, 
         public userConfig: UserConfig,
+        public bank: Bank,
         private _token: string, 
         private _tokenExpires: Date,
         ) {}
@@ -17,3 +18,8 @@ export interface UserConfig {
     selectedLanguage: string;
     // otherConfig: string;
   }
+
+export interface Bank {
+    known: string[];
+    learning: [{word: string, partOfSpeech: string}]
+}

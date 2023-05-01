@@ -30,4 +30,24 @@ const updateSettings = (req, res, next) => {
     });
 };
 
-export { getSettings, updateSettings };
+const getBank = (req, res, next) => {
+  const userId = req.params.id;
+  User.findById(userId, 'bank').then((bank) => {
+    res.status(200).send(bank);
+  }).catch(err => {
+    res.status(500).send(err);
+  })
+}
+
+const updateBank = (req, res, next) => {
+  const userId = req.params.id;
+  const updatedBank = req.body.bank;
+  User.findOneAndUpdate(userId, {'bank': updatedBank}, {new: true})
+  .then(user => {
+    res.status(200).send(user);
+  }).catch(err => {
+    console.log(err);
+  }); 
+}
+
+export { getSettings, updateSettings, getBank, updateBank };

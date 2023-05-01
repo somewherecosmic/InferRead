@@ -19,6 +19,7 @@ const signup = (req, res, next) => {
             email: email,
             username: username,
             password: hash,
+            bank: {known: [], learning: []},
             userConfig: {languageSelected: "Irish"},
         })
         return user;
@@ -56,7 +57,7 @@ const logIn = (req, res, next) => {
             'inferread',
             {expiresIn: '24h'});
             // Date object + 24 hours
-        res.status(200).send( {email: loadedUser.email, token: token, id: loadedUser._id, userConfig: loadedUser.userConfig, expiresIn: new Date( new Date().getTime() + 24 * 60 * 60 * 1000)}) 
+        res.status(200).send( {email: loadedUser.email, token: token, id: loadedUser._id, bank: loadedUser.bank, userConfig: loadedUser.userConfig, expiresIn: new Date( new Date().getTime() + 24 * 60 * 60 * 1000)}) 
     })
     .catch(err => {
         next(err);

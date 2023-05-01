@@ -3,6 +3,9 @@
   <div class="RHS">
     <div class="reading-body">
       <p [textContent]="text" (dblclick)="highlight($event)"></p>
+      <!-- <p>
+      <span *ngFor="let word of text.split(' ')" [class.is-hovered]="word === hoveredWord" (mouseenter)="onMouseEnter(word)" (mouseleave)="onMouseLeave()" (dblclick)="highlight($event)"">{{word + " "}}</span>
+      </p> -->
       <div>
         <button *ngIf="pageIndex > 0" (click)="getPreviousPage()">
           Previous page
