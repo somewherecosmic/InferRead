@@ -1,22 +1,25 @@
-from fastapi import FastAPI, File, UploadFile, Form
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from dataclasses import dataclass
-from typing import List
-from transformers import TFCamembertForMaskedLM, CamembertTokenizer
-import PyPDF2
-from io import BytesIO
 import os
-import motor.motor_asyncio
+from dataclasses import dataclass
+from io import BytesIO
+from typing import List
+
 import certifi
+import motor.motor_asyncio
+import numpy as np
 import pydantic
-from bson import ObjectId
+import PyPDF2
 import spacy
+import tensorflow as tf
+from bson import ObjectId
+from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel
+from requests import Response
 from spacy.tokenizer import Tokenizer
 from spacy.tokens import Doc, Token
-import numpy as np
-import tensorflow as tf
 from tensorflow.keras.losses import cosine_similarity
+from transformers import CamembertTokenizer, TFCamembertForMaskedLM
 
 # TODO on fetching, perform spaCy operations on page, cache pages & progress with Redis?
 
@@ -56,14 +59,16 @@ database = client.test
 user_collection = database.get_collection("users")
 
 origins = [
+    "http://localhost:3000",
     "http://localhost:4200",
     "http://localhost:4200/upload",
-    "http://localhost:4200/read"
+    "http://localhost:4200/read",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
 )
@@ -96,6 +101,9 @@ class WordHelpRequest(BaseModel):
     #     self.pages = pages
     #     self.language = language
 
+@app.options("/{any:path}")
+async def options(any: str):
+    return {"status": "OK"}
 
 @app.get("/")
 async def root():
@@ -320,3 +328,8 @@ async def predictWord(language: str, sentence: str, maskedWord: str):
         return "This is Irish :)"
     else:
         return "not Irish Yo"
+
+@app.post("/processWordIrish")
+async def processWordIrish(wordHelpRequest: WordHelpRequest):
+    print("This is Irish :)")
+    return
