@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dataclasses import dataclass
 from typing import List
-# from transformers import TFCamembertForMaskedLM, CamembertTokenizer
+from transformers import TFCamembertForMaskedLM, CamembertTokenizer
 import PyPDF2
 from io import BytesIO
 import os
@@ -15,16 +15,16 @@ import spacy
 from spacy.tokenizer import Tokenizer
 from spacy.tokens import Doc, Token
 import numpy as np
-# import tensorflow as tf
-# from tensorflow.keras.losses import cosine_similarity
+import tensorflow as tf
+from tensorflow.keras.losses import cosine_similarity
 
 # TODO on fetching, perform spaCy operations on page, cache pages & progress with Redis?
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
 app = FastAPI()
-# model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
-# tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
+model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
+tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
 frenchNLP = spacy.load("fr_core_news_lg")
 
 # export to file later
@@ -83,6 +83,7 @@ class Document:
 class WordHelpRequest(BaseModel):
     word: str
     context: str
+    maskedContext: str
     userId: str
 
 
@@ -233,37 +234,43 @@ async def getPreviousPage(userId: str, docId: str , pageIndex: int):
 @app.post("/processWord")
 async def processWord(wordHelpRequest: WordHelpRequest):
     doc = frenchNLP(wordHelpRequest.context.replace("-", " "))
-    word = frenchNLP(wordHelpRequest.word)
+    wordToToken = frenchNLP(wordHelpRequest.word)
     # Check if tokenized representation is more than one token
     # Remove leading contractions to get root word
-    if (len(word) > 1):
-        word = word[-1]
+    if (len(wordToToken) > 1):
+        wordToToken = wordToToken[-1]
     for token in doc:
-        if token.text == word.text:
+        if token.text == wordToToken.text:
             partOfSpeech = token.tag_
             morphology = token.morph.to_dict()
             root = token.lemma_
             isCommon = token.is_stop
             break
-    return {"partOfSpeech": partOfSpeech, "root": root, "isCommon": isCommon, "morphology": morphology}
+    
+    maskedLMPredictions = generatePredictions(wordHelpRequest.maskedContext)
+    print(maskedLMPredictions)
+    return {"partOfSpeech": partOfSpeech, "root": root, "isCommon": isCommon, "morphology": morphology, "maskedLMPredictions": maskedLMPredictions}
 
 
-# def generatePredictions():
-#     #token = "vivement"
-#     sentence = "La vaste pièce, à deux fenêtres, lui était familière, servant à la fois de chambre à coucher, de salle à <mask> et de cuisine, avec ses meubles de noyer, son lit drapé de cotonnade rouge, son buffet à dressoir, sa table ronde, son armoire normande."
-#     input_ids = tokenizer.encode(sentence, add_special_tokens=True)
-#     mask_token_index = input_ids.index(tokenizer.mask_token_id)
+# Difficulty in that context sentence could contain more than one instance of the given word, so masking properly is tricky
+# iterate through context sentence, find word, replace with mask, predict
+# Need to account for the model predicting the word itself
+# Embed word as vector, both with lower and uppercase start
+# predicted indexes where != word
+def generatePredictions(maskedContext):
+    input_ids = tokenizer.encode(maskedContext, add_special_tokens=True)
+    mask_token_index = input_ids.index(tokenizer.mask_token_id)
 
-#     input_ids = tf.constant([input_ids])
-#     outputs = model(input_ids)
+    input_ids = tf.constant([input_ids])
+    outputs = model(input_ids)
 
-#     predictions = outputs[0]
+    predictions = outputs[0]
 
-#     num_top_predictions = 5
-#     predicted_indexes = tf.math.top_k(predictions[0, mask_token_index], k=num_top_predictions).indices.numpy()
-#     predicted_words = [tokenizer.decode([predicted_index]) for predicted_index in predicted_indexes]
+    num_top_predictions = 5
+    predicted_indexes = tf.math.top_k(predictions[0, mask_token_index], k=num_top_predictions).indices.numpy()
+    predicted_words = [tokenizer.decode([predicted_index]) for predicted_index in predicted_indexes]
 
-#     print(predicted_words)
+    return predicted_words
 
     # word = "vivement"
     # input_ids = tf.cast(tokenizer.encode(word, add_special_tokens=False, return_tensors='tf'), dtype=tf.int32)

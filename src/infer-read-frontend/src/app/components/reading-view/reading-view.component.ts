@@ -2,8 +2,9 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, Observable, Subscription, throwError, switchMap, tap, map, of} from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Bank, User } from '../../models/user.model';
+import { Bank, User, UserConfig } from '../../models/user.model';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
 import { BankService } from '../../services/bank-service/bank.service';
 import { ScaleBreak } from 'devextreme/common/charts';
 import { CanDeactivate } from '@angular/router';
@@ -27,6 +28,7 @@ interface WordHelpResponse {
     VerbForm? : string 
   }
   isRare: boolean;
+  maskedLMPredictions: string[];
 }
 
 @Component({
@@ -40,7 +42,8 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
     private http: HttpClient,
     private authService: AuthorizationService,
     private bankService: BankService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private userConfigService: UserConfigService
   ) {}
 
   paramSubscription: Subscription;
@@ -48,12 +51,15 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
   pageIndex: number;
   user$: Observable<User>;
   bank$: Observable<Bank>;
+  userConfig$: Observable<UserConfig>
+  selectedLanguage: string;
   currentPageSubscription: Subscription;
   nextPageSubscription: Subscription;
   wordHelpSubscription: Subscription;
   text: string;
   wordHelp: WordHelpResponse;
   disambiguation = this.bankService.disambiguation;
+  FR_MASK = " <mask> ";
 
   ngOnInit(): void {
     this.user$ = this.authService.user;
@@ -71,10 +77,20 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
         );
       }
     });
+
+    this.userConfig$ = this.user$.pipe(
+      switchMap((user: any) => this.userConfigService.getUserConfig(user))
+    );
+    this.userConfig$
+    .pipe(map((userConfig: UserConfig) => userConfig))
+    .subscribe((userConfigSuperObject: any) => {
+      this.selectedLanguage =
+        userConfigSuperObject.userConfig.selectedLanguage;
+        console.log(this.selectedLanguage);
+    });
   }
 
   canDeactivate() : Observable<boolean> {
-    console.log("Can deactivate called");
     return this.user$.pipe(switchMap(user => {
       return this.bankService.updateBank(user).pipe(
         map(() => true),
@@ -215,8 +231,17 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
         ? textAfter.slice(0, punctuationAfterIndex)
         : textAfter;
 
-    const sentence = sentenceStart + this.selectedWord + sentenceEnd;
-    return sentence;
+    // Add MASK token to context sentence here, in case of sentences where word appears twice
+    let sentence: string;
+    let maskedSentence: string;
+    if (this.selectedLanguage === "French") {
+      sentence = sentenceStart + this.selectedWord + sentenceEnd;
+      maskedSentence = sentenceStart + this.FR_MASK + sentenceEnd;
+    }
+    else {
+      sentence = sentenceStart + this.selectedWord + sentenceEnd
+    }
+    return [sentence, maskedSentence]
   }
 
   highlight(event) {
@@ -234,7 +259,7 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
     //   window.getSelection().removeAllRanges();
     //   window.getSelection().addRange(range);
     // }
-    const sentence = this.grabSurroundingSentence(selection);
+    const [sentence, maskedSentence] = this.grabSurroundingSentence(selection);
     // Send to NLP backend and process
     // display information inside helper window
 
@@ -247,6 +272,7 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
           this.http.post<WordHelpResponse>('http://127.0.0.1:8000/processWord', {
             word: this.selectedWord,
             context: sentence,
+            maskedContext: maskedSentence,
             userId: user.id,
           })
         ),

@@ -78,9 +78,9 @@ export class OverviewComponent implements OnInit {
       .subscribe((userConfigSuperObject: any) => {
         this.selectedLanguage =
           userConfigSuperObject.userConfig.selectedLanguage;
+          console.log("Language: " + this.selectedLanguage);
       });
     this.getDocuments();
-    console.log(this.authService.user.value);
   }
 
   getDocuments() {

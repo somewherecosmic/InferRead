@@ -19,6 +19,9 @@
       <h3>{{ "Root: " + wordHelp.root }}</h3>
       <h3>{{ wordHelp.partOfSpeech }} </h3>
       <h5 *ngFor="let feature of wordHelp.morphology | keyvalue"> {{disambiguation[feature.value]}}</h5>
+
+      <h4 *ngIf="wordHelp.maskedLMPredictions">Contextually viable:</h4>
+      <h5 *ngFor="let word of wordHelp.maskedLMPredictions">{{word}}</h5>
     </div>
   </div>
 </div>
