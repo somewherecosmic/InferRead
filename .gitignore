@@ -5,5 +5,8 @@ src/ocr/nlp/bin
 src/ocr/nlp/include
 src/ocr/nlp/__pycache__
 src/ocr/nlp/pyvenv.cfg
+src/ocr/nlp/.ipynb_checkpoints
+src/ocr/nlp/etc
+src/ocr/nlp/share
 src/nlp/irish/bert-base-irish-cased-v1/
 src/.idea/

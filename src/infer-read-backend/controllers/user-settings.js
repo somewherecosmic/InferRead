@@ -30,4 +30,28 @@ const updateSettings = (req, res, next) => {
     });
 };
 
-export { getSettings, updateSettings };
+const getBank = (req, res, next) => {
+  const userId = req.params.id;
+  User.findById(userId, 'bank').then((bank) => {
+    console.log(bank);
+    res.status(200).send(bank);
+  }).catch(err => {
+    res.status(500).send(err);
+  })
+}
+
+const updateBank = (req, res, next) => {
+  const userId = req.params.id;
+  console.log(userId);
+  const token = req.query.auth;
+  const updatedBank = req.body
+  console.log(updatedBank.learning);
+  User.findOneAndUpdate({_id: userId}, {$set: {'bank.known': updatedBank.known, 'bank.learning': updatedBank.learning}}, {new: true})
+  .then(user => {
+    res.status(200).send(user);
+  }).catch(err => {
+    console.log(err);
+  }); 
+}
+
+export { getSettings, updateSettings, getBank, updateBank };

@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { catchError, Observable, Subscription, throwError } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { User } from '../../models/user.model';
+import { catchError, Observable, Subscription, throwError, switchMap, tap, map, of} from 'rxjs';
+import { HttpClient, HttpResponse } from '@angular/common/http';
+import { Bank, User, UserConfig } from '../../models/user.model';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
-import { switchMap, tap } from 'rxjs';
+import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
+import { BankService } from '../../services/bank-service/bank.service';
 import { ScaleBreak } from 'devextreme/common/charts';
+import { CanDeactivate } from '@angular/router';
 
 // TODO: Remove timer logic at some point - when happy with request-response speed
 
@@ -15,34 +17,55 @@ interface PageResponse {
   page: string;
 }
 
+interface WordHelpResponse {
+  partOfSpeech: string;
+  root: string;
+  morphology: {
+    Voice?: string,
+    Tense?: string,
+    Number?: string,
+    Gender?: string,
+    VerbForm? : string 
+  }
+  isRare: boolean;
+  maskedLMPredictions: string[];
+}
+
 @Component({
   selector: 'app-reading-view',
   templateUrl: './reading-view.component.html',
   styleUrls: ['./reading-view.component.scss'],
 })
-export class ReadingViewComponent implements OnInit {
+export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewComponent> {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private authService: AuthorizationService
+    private authService: AuthorizationService,
+    private bankService: BankService,
+    private cdRef: ChangeDetectorRef,
+    private userConfigService: UserConfigService
   ) {}
 
   paramSubscription: Subscription;
   documentId: string;
   pageIndex: number;
   user$: Observable<User>;
+  bank$: Observable<Bank>;
+  userConfig$: Observable<UserConfig>
+  selectedLanguage: string;
   currentPageSubscription: Subscription;
   nextPageSubscription: Subscription;
   wordHelpSubscription: Subscription;
   text: string;
+  wordHelp: WordHelpResponse;
+  disambiguation = this.bankService.disambiguation;
+  FR_MASK = " <mask> ";
 
-  // check localStorage cache - key = docId
-  // access cache via routeParam passed
-  // read tab should keep latest route docId if you leave
-  // use router to store url
   ngOnInit(): void {
     this.user$ = this.authService.user;
-    // perform check for docId in localStorage later
+    this.user$.pipe(switchMap(user => {
+      return this.bankService.getBank(user);
+    })).subscribe();
     this.paramSubscription = this.route.queryParams.subscribe((params) => {
       this.documentId = params['docId'];
       if (localStorage.getItem(this.documentId) === null) {
@@ -54,6 +77,26 @@ export class ReadingViewComponent implements OnInit {
         );
       }
     });
+
+    this.userConfig$ = this.user$.pipe(
+      switchMap((user: any) => this.userConfigService.getUserConfig(user))
+    );
+    this.userConfig$
+    .pipe(map((userConfig: UserConfig) => userConfig))
+    .subscribe((userConfigSuperObject: any) => {
+      this.selectedLanguage =
+        userConfigSuperObject.userConfig.selectedLanguage;
+        console.log(this.selectedLanguage);
+    });
+  }
+
+  canDeactivate() : Observable<boolean> {
+    return this.user$.pipe(switchMap(user => {
+      return this.bankService.updateBank(user).pipe(
+        map(() => true),
+        catchError(() => of(false))
+      )
+    }));
   }
 
   // fetch page function, pagination on click? First page should be loaded on init
@@ -116,8 +159,8 @@ export class ReadingViewComponent implements OnInit {
           )
         ),
         tap((response) => {
-          console.log(response);
           this.pageIndex++;
+          this.bankService.addToKnown(this.text);
           this.text = response.page;
           this.setLocalStorage();
         }),
@@ -136,11 +179,20 @@ export class ReadingViewComponent implements OnInit {
       this.pageIndex.toString()
     );
   }
-
-  // cache reading-view data onDestroy
+  
   ngOnDestroy(): void {
-    this.paramSubscription.unsubscribe();
-    this.currentPageSubscription.unsubscribe();
+    if (this.paramSubscription) {
+      this.paramSubscription.unsubscribe();
+    }
+    if (this.currentPageSubscription) {
+      this.currentPageSubscription.unsubscribe();
+    }
+    if (this.nextPageSubscription) {
+      this.nextPageSubscription.unsubscribe();
+    }
+    if (this.wordHelpSubscription) {
+      this.wordHelpSubscription.unsubscribe();
+    }
   }
 
   selectedWord: string;
@@ -179,42 +231,68 @@ export class ReadingViewComponent implements OnInit {
         ? textAfter.slice(0, punctuationAfterIndex)
         : textAfter;
 
-    const sentence = sentenceStart + this.selectedWord + sentenceEnd;
-    console.log(sentence);
-    return sentence;
+    // Add MASK token to context sentence here, in case of sentences where word appears twice
+    let sentence: string;
+    let maskedSentence: string;
+    if (this.selectedLanguage === "French") {
+      sentence = sentenceStart + this.selectedWord + sentenceEnd;
+      maskedSentence = sentenceStart + this.FR_MASK + sentenceEnd;
+    }
+    else {
+      sentence = sentenceStart + this.selectedWord + sentenceEnd
+    }
+    return [sentence, maskedSentence]
   }
 
   highlight(event) {
     var selection = window.getSelection();
     this.selectedWord = selection.toString();
-    const sentence = this.grabSurroundingSentence(selection);
+    // if (this.selectedWord.indexOf('-') !== -1) {
+    //   var words = this.selectedWord.split('-');
+    //   var fullString = words.join('-').trim();
+    //   var range = document.createRange();
+    //   range.selectNodeContents(event.target);
+    //   var startIndex = event.target.textContent.indexOf(fullString);
+    //   var endIndex = startIndex + fullString.length;
+    //   range.setStart(event.target.firstChild, startIndex);
+    //   range.setEnd(event.target.firstChild, endIndex);
+    //   window.getSelection().removeAllRanges();
+    //   window.getSelection().addRange(range);
+    // }
+    const [sentence, maskedSentence] = this.grabSurroundingSentence(selection);
     // Send to NLP backend and process
     // display information inside helper window
 
+    if (this.bankService.known.has(this.selectedWord)) {
+      this.bankService.known.delete(this.selectedWord);
+    }
     this.wordHelpSubscription = this.user$
       .pipe(
         switchMap((user) =>
-          this.http.post('http://127.0.0.1:8000/processWord', {
+          this.http.post<WordHelpResponse>('http://127.0.0.1:8000/processWord', {
             word: this.selectedWord,
             context: sentence,
+            maskedContext: maskedSentence,
             userId: user.id,
           })
         ),
-        tap((response) => console.log(response)),
+        tap((response) => { 
+          console.log(response);
+          this.wordHelp = response;
+          //console.log(this.bankService.learning);
+          this.bankService.learning.push(
+          {"word": this.selectedWord,
+          "partOfSpeech": response.partOfSpeech,
+          "morphology": response.morphology,
+          "root": response.root
+        });
+        console.log(this.bankService.learning);
+  }),
         catchError((err) => {
           return throwError(() => new Error(err));
         })
       )
       .subscribe();
-
-    //this.findSentence(this.selectedWord);
-
-    // while the selection's anchor isn't a fullstop
-    // while the selection's focus isn't a fullstop
-
-    // this.text = this.text.replace(
-    //   this.selectedWord,
-    //   '<mark>' + this.selectedWord + '</mark>'
-    // );
+  
   }
 }

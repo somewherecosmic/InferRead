@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap, TimeoutConfig } from 'rxjs';
-import { User, UserConfig } from '../../models/user.model';
+import { User, UserConfig, Bank } from '../../models/user.model';
 import { Router } from '@angular/router';
+import { BankService } from '../bank-service/bank.service';
 
 interface AuthorizationResponse {
   email: string;
   token: string;
-  id: string;
+  id: string
   expiresIn: Date;
   documents: Document[];
+  bank: Bank;
   userConfig: UserConfig;
 }
 
@@ -26,6 +28,7 @@ export class AuthorizationService {
       response.email,
       response.id,
       response.userConfig,
+      response.bank,
       response.token,
       response.expiresIn
     );
@@ -33,6 +36,8 @@ export class AuthorizationService {
     // Have to cast to new Date() again due to problem with res deserialisation in getTime() method
     this.tokenExpirationHandler(new Date(response.expiresIn).getTime());
     localStorage.setItem('userObject', JSON.stringify(user));
+    this.bankService.known = new Set(response.bank.known);
+    this.bankService.learning = response.bank.learning;
   }
 
   signup(email: string, password: string) {
@@ -96,6 +101,7 @@ export class AuthorizationService {
         userObject.email,
         userObject.id,
         userObject.userConfig,
+        userObject.bank,
         userObject._token,
         new Date(userObject._tokenExpires)
       );
@@ -123,5 +129,5 @@ export class AuthorizationService {
     return JSON.parse(localStorage.getItem('userObject')).id;
   }
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router, private bankService: BankService) {}
 }

@@ -3,6 +3,9 @@
   <div class="RHS">
     <div class="reading-body">
       <p [textContent]="text" (dblclick)="highlight($event)"></p>
+      <!-- <p>
+      <span *ngFor="let word of text.split(' ')" [class.is-hovered]="word === hoveredWord" (mouseenter)="onMouseEnter(word)" (mouseleave)="onMouseLeave()" (dblclick)="highlight($event)"">{{word + " "}}</span>
+      </p> -->
       <div>
         <button *ngIf="pageIndex > 0" (click)="getPreviousPage()">
           Previous page
@@ -13,6 +16,12 @@
 
     <div class="side-help-info">
       <h1>{{ selectedWord }}</h1>
+      <h3>{{ "Root: " + wordHelp.root }}</h3>
+      <h3>{{ wordHelp.partOfSpeech }} </h3>
+      <h5 *ngFor="let feature of wordHelp.morphology | keyvalue"> {{disambiguation[feature.value]}}</h5>
+
+      <h4 *ngIf="wordHelp.maskedLMPredictions">Contextually viable:</h4>
+      <h5 *ngFor="let word of wordHelp.maskedLMPredictions">{{word}}</h5>
     </div>
   </div>
 </div>

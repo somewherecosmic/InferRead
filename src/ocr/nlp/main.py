@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dataclasses import dataclass
 from typing import List
+from transformers import TFCamembertForMaskedLM, CamembertTokenizer
 import PyPDF2
 from io import BytesIO
 import os
@@ -11,14 +12,43 @@ import certifi
 import pydantic
 from bson import ObjectId
 import spacy
+from spacy.tokenizer import Tokenizer
+from spacy.tokens import Doc, Token
 import numpy as np
+import tensorflow as tf
+from tensorflow.keras.losses import cosine_similarity
 
 # TODO on fetching, perform spaCy operations on page, cache pages & progress with Redis?
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
 app = FastAPI()
-nlp = spacy.load("fr_core_news_lg")
+model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
+tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
+frenchNLP = spacy.load("fr_core_news_lg")
+
+# export to file later
+
+class frenchTokenizer(Tokenizer): 
+    def __init__(self, nlp):
+        super().__init__(nlp.vocab)
+        
+    
+    def split(self, doc):
+        tokens = super().split(doc)
+        i = 0
+        while i < len(tokens):
+            if tokens[i].text == '-':
+                tokens[i-1:i+2] = [Doc(doc.vocab, [Token(doc, i-1, text=tokens[i-1].text)]),
+                                   Doc(doc.vocab, [Token(doc, i, text=tokens[i+1].text)])]
+                i -= 1
+            i += 1
+        return tokens
+
+
+
+
+
 ca = certifi.where()
 client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"], tlsCAFile=ca)
 database = client.test
@@ -53,6 +83,7 @@ class Document:
 class WordHelpRequest(BaseModel):
     word: str
     context: str
+    maskedContext: str
     userId: str
 
 
@@ -77,7 +108,6 @@ async def test():
 # Run script, return result of script
 @app.post("/preprocess")
 async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)): # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
-    print(document)
     stream = BytesIO(document.file.read())
     pdf = PyPDF2.PdfReader(stream)
     currentPage = 0
@@ -147,7 +177,6 @@ async def getCurrentPage(userId: str, docId: str):
     }
     }
   ]).next()
-    print(pageIndex)
     return pageIndex
 
 @app.get("/getNextPage/{userId}/{docId}/{pageIndex}")
@@ -173,7 +202,6 @@ async def getNextPage(userId: str, docId: str, pageIndex: int):
     }
     }
   ]).next()
-    print(nextPage)
     return nextPage
 
 @app.get("/getPreviousPage/{userId}/{docId}/{pageIndex}")
@@ -205,15 +233,70 @@ async def getPreviousPage(userId: str, docId: str , pageIndex: int):
 
 @app.post("/processWord")
 async def processWord(wordHelpRequest: WordHelpRequest):
-    # spaCy is already loaded
-    # run translation pipeline?
-    # Simply attempt to obtain synonyms via word vectors and provide POS tagging rn
-
-    similar = nlp.vocab.vectors.most_similar(
-        np.asarray([nlp.vocab.vectors[nlp.vocab.strings[wordHelpRequest.word]]]), n=10
-    )
-    words = [nlp.vocab.strings[w] for w in similar[0][0]]
-    distances = similar[2]
-
-    print(words)
+    doc = frenchNLP(wordHelpRequest.context.replace("-", " "))
+    wordToToken = frenchNLP(wordHelpRequest.word)
+    # Check if tokenized representation is more than one token
+    # Remove leading contractions to get root word
+    if (len(wordToToken) > 1):
+        wordToToken = wordToToken[-1]
+    for token in doc:
+        if token.text == wordToToken.text:
+            partOfSpeech = token.tag_
+            morphology = token.morph.to_dict()
+            root = token.lemma_
+            isCommon = token.is_stop
+            break
     
+    maskedLMPredictions = generatePredictions(wordHelpRequest.maskedContext)
+    print(maskedLMPredictions)
+    return {"partOfSpeech": partOfSpeech, "root": root, "isCommon": isCommon, "morphology": morphology, "maskedLMPredictions": maskedLMPredictions}
+
+
+# Difficulty in that context sentence could contain more than one instance of the given word, so masking properly is tricky
+# iterate through context sentence, find word, replace with mask, predict
+# Need to account for the model predicting the word itself
+# Embed word as vector, both with lower and uppercase start
+# predicted indexes where != word
+def generatePredictions(maskedContext):
+    input_ids = tokenizer.encode(maskedContext, add_special_tokens=True)
+    mask_token_index = input_ids.index(tokenizer.mask_token_id)
+
+    input_ids = tf.constant([input_ids])
+    outputs = model(input_ids)
+
+    predictions = outputs[0]
+
+    num_top_predictions = 5
+    predicted_indexes = tf.math.top_k(predictions[0, mask_token_index], k=num_top_predictions).indices.numpy()
+    predicted_words = [tokenizer.decode([predicted_index]) for predicted_index in predicted_indexes]
+
+    return predicted_words
+
+    # word = "vivement"
+    # input_ids = tf.cast(tokenizer.encode(word, add_special_tokens=False, return_tensors='tf'), dtype=tf.int32)
+
+    # with tf.device('/cpu:0'):
+    #     embedding = model(input_ids)[0][0][0]
+    
+    # vocab = tokenizer.get_vocab()
+    # similar = []
+
+    # for other_word in vocab:
+    #     other_input_ids = tf.cast(tokenizer.encode(other_word, add_special_tokens=False, return_tensors='tf'), dtype=tf.int32)
+    #     with tf.device('/cpu:0'):
+    #         other_embedding = model(other_input_ids)[0][0][0]
+    #     similarity = cosine_similarity(embedding, other_embedding, axis=0)
+    #     if similarity > 0.5 and other_word != word:
+    #         similar.append(other_word)
+
+
+    # Deprecated method of synonym finding -> spaCy word vectors
+    # similar = nlp.vocab.vectors.most_similar(
+    #     np.asarray([nlp.vocab.vectors[nlp.vocab.strings[wordHelpRequest.word]]]), n=10
+    # )
+    # words = [nlp.vocab.strings[w] for w in similar[0][0]]
+    # distances = similar[2]
+
+    # print(words)
+
+# generatePredictions()

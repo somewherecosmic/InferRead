@@ -34,9 +34,6 @@ config({
   },
 });
 
-// TODO: Add onClick() to document title
-// clicking title calls a function which fetches the first page of the book
-// or the page the user was previously on (cache this or store in user or read object?)
 
 @Component({
   selector: 'app-overview',
@@ -44,8 +41,6 @@ config({
   styleUrls: ['./overview.component.scss'],
 })
 export class OverviewComponent implements OnInit {
-  // TODO implement the rest of the CRUD operations - Update and Delete, on the overview page
-  // remove UPLOAD tab and have the user upload directly on the overview page?
   // BMcQ Comment: FontAwesome variables for icons.
   faTrash = faTrash;
 
@@ -83,6 +78,7 @@ export class OverviewComponent implements OnInit {
       .subscribe((userConfigSuperObject: any) => {
         this.selectedLanguage =
           userConfigSuperObject.userConfig.selectedLanguage;
+          console.log("Language: " + this.selectedLanguage);
       });
     this.getDocuments();
   }
@@ -177,6 +173,7 @@ export class OverviewComponent implements OnInit {
     upload$.subscribe((response) => {
       this.text = response.text;
     });
+    this.getDocuments();
   }
 
   onDeleteDocNav(): void {

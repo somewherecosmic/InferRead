@@ -20,8 +20,9 @@ const userSchema = new Schema({
       language: String,
     },
   ],
-  words: {
-    type: [{ word: String, POS: String }],
+  bank: {
+    known: [String],
+    learning: [{word: String, partOfSpeech: String}]
   },
   userConfig: {
     type: Object,
