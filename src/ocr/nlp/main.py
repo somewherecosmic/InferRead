@@ -232,24 +232,20 @@ async def getPreviousPage(userId: str, docId: str , pageIndex: int):
 
 @app.post("/processWord")
 async def processWord(wordHelpRequest: WordHelpRequest):
-    # replace spaCy vectors with BERT masking for word in sentence
-    # Perform POS tagging of the word in sentence with spaCy
-    # doc.indexOf(word); return pos, lemma, stop
     doc = frenchNLP(wordHelpRequest.context.replace("-", " "))
     word = frenchNLP(wordHelpRequest.word)
     # Check if tokenized representation is more than one token
     # Remove leading contractions to get root word
     if (len(word) > 1):
         word = word[-1]
-    print(word)
     for token in doc:
-        print(token)
         if token.text == word.text:
             partOfSpeech = token.tag_
+            morphology = token.morph.to_dict()
             root = token.lemma_
             isCommon = token.is_stop
             break
-    return {"partOfSpeech": partOfSpeech, "root": root, "isCommon": isCommon}
+    return {"partOfSpeech": partOfSpeech, "root": root, "isCommon": isCommon, "morphology": morphology}
 
 
 # def generatePredictions():

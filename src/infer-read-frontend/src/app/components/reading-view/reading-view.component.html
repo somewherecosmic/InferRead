@@ -16,6 +16,9 @@
 
     <div class="side-help-info">
       <h1>{{ selectedWord }}</h1>
+      <h3>{{ "Root: " + wordHelp.root }}</h3>
+      <h3>{{ wordHelp.partOfSpeech }} </h3>
+      <h5 *ngFor="let feature of wordHelp.morphology | keyvalue"> {{disambiguation[feature.value]}}</h5>
     </div>
   </div>
 </div>

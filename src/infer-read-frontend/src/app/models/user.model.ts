@@ -21,5 +21,16 @@ export interface UserConfig {
 
 export interface Bank {
     known: string[];
-    learning: [{word: string, partOfSpeech: string}]
+    learning: [{ 
+        word: string,
+        partOfSpeech: string,
+        root: string,
+        morphology: {
+          Voice?: string,
+          Tense?: string,
+          Number?: string,
+          Gender?: string,
+          VerbForm? : string 
+        }
+      }]
 }

@@ -11,7 +11,39 @@ import { Bank } from '../../models/user.model';
 export class BankService {
 
   known: Set<String>;
-  learning: [{word: string, partOfSpeech: string}] 
+  learning: [
+  { word: string,
+    partOfSpeech: string,
+    root: string,
+    morphology: {
+      Voice?: string,
+      Tense?: string,
+      Number?: string,
+      Gender?: string,
+      VerbForm? : string 
+    }
+  }
+]
+
+  disambiguation = {
+    "Masc": "Masculine",
+    "Fem": "Feminine",
+    "Past": "Past",
+    "Fut": "Future",
+    "Pres": "Present",
+    "Imp": "Imperfect",
+    "Pqp": "Pluperfect",
+    "Plur": "Plural",
+    "Sing": "Singular",
+    "Fin": "Finite",
+    "Inf": "Infinitive",
+    "Part": "Participle",
+    "Ger": "Gerund",
+    "Ind": "Indicative",
+    "Cnd": "Conditional",
+    "Sub": "Subjunctive",
+    "3": "3rd Person"
+  }
 
   // get the word bank
   // update the word bank
@@ -24,6 +56,7 @@ export class BankService {
     return this.http.get<BankResponse>(`http://localhost:3000/user/getBank/${user.id}`).pipe(tap(bankResponse => {
       this.known = new Set(bankResponse.bank.known);
       this.learning = bankResponse.bank.learning;
+      console.log(this.disambiguation);
     }
     ));
   } 
@@ -55,6 +88,19 @@ export class BankService {
 interface BankResponse {
   bank: {
     known: string[],
-    learning: [{word: string, partOfSpeech: string}]
+    learning: [
+    {
+      word: string, 
+      partOfSpeech: string,
+      root: string, 
+      morphology: {
+        Voice?: string,
+        Tense?: string,
+        Number?: string,
+        Gender?: string,
+        VerbForm? : string 
+      }
+    }
+    ]
   }
 }

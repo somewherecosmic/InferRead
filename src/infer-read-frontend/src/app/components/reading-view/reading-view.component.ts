@@ -19,6 +19,13 @@ interface PageResponse {
 interface WordHelpResponse {
   partOfSpeech: string;
   root: string;
+  morphology: {
+    Voice?: string,
+    Tense?: string,
+    Number?: string,
+    Gender?: string,
+    VerbForm? : string 
+  }
   isRare: boolean;
 }
 
@@ -45,17 +52,8 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
   nextPageSubscription: Subscription;
   wordHelpSubscription: Subscription;
   text: string;
-
- // TODO: read tab should keep latest route docId if you leave
- // use router to store url
-
- // TODO: clicking a word should fetch the associated data, then add the word and its POS tag to the learning bank
- // On the call of next page, put any words not in learning into the known set
- // simple for-loop through a split of the text, check if in learning, else add to set
- // shouldn't need to worry about duplicates as set will discard same word again
- // handle case where user clicks on a word already in known - if in known, allow user to choose to put back into learning?
-
- // then implement guard for deactivating component, send update on leaving
+  wordHelp: WordHelpResponse;
+  disambiguation = this.bankService.disambiguation;
 
   ngOnInit(): void {
     this.user$ = this.authService.user;
@@ -176,6 +174,9 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
     if (this.nextPageSubscription) {
       this.nextPageSubscription.unsubscribe();
     }
+    if (this.wordHelpSubscription) {
+      this.wordHelpSubscription.unsubscribe();
+    }
   }
 
   selectedWord: string;
@@ -237,6 +238,9 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
     // Send to NLP backend and process
     // display information inside helper window
 
+    if (this.bankService.known.has(this.selectedWord)) {
+      this.bankService.known.delete(this.selectedWord);
+    }
     this.wordHelpSubscription = this.user$
       .pipe(
         switchMap((user) =>
@@ -246,10 +250,17 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
             userId: user.id,
           })
         ),
-        tap((response) =>{ 
-        console.log(response);
+        tap((response) => { 
+          console.log(response);
+          this.wordHelp = response;
+          //console.log(this.bankService.learning);
+          this.bankService.learning.push(
+          {"word": this.selectedWord,
+          "partOfSpeech": response.partOfSpeech,
+          "morphology": response.morphology,
+          "root": response.root
+        });
         console.log(this.bankService.learning);
-        this.bankService.learning.push({"word": this.selectedWord, "partOfSpeech": response.partOfSpeech});
   }),
         catchError((err) => {
           return throwError(() => new Error(err));
