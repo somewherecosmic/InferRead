@@ -46,11 +46,6 @@ export class HeaderComponent implements OnInit {
         this.router.navigate(['user']);
         break;
       }
-      case 'Logout': {
-        this.authService.logout();
-        this.router.navigate(['']);
-        break;
-      }
       default: {
         break;
       }

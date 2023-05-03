@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {
   Observable,
   Subscription,
@@ -48,7 +48,8 @@ export class OverviewComponent implements OnInit {
     private authService: AuthorizationService,
     private userConfigService: UserConfigService,
     private httpClient: HttpClient,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   user$: Observable<User>;
@@ -94,11 +95,13 @@ export class OverviewComponent implements OnInit {
         map((response) => response.documents),
         tap((documentsFromDB) => {
           this.documentsFromDB = documentsFromDB;
+          if (this.filterDocuments !== undefined) {
           this.filteredDocuments = this.filterDocuments(
             documentsFromDB,
             this.selectedLanguage
           );
-        }),
+        }
+          }),
         catchError((err) => {
           return throwError(() => new Error(err));
         })
@@ -132,6 +135,12 @@ export class OverviewComponent implements OnInit {
         })
       )
       .subscribe();
+      // Remove doc from existing array
+      for (var i = 0; i<this.filteredDocuments.length; i++) {
+        if (this.filteredDocuments[i]._id === documentID) {
+          this.filteredDocuments.splice(i, 1);
+        }
+      }
   }
 
   ngOnDestroy(): void {
@@ -171,9 +180,12 @@ export class OverviewComponent implements OnInit {
     this.addDocumentVisible = false;
 
     upload$.subscribe((response) => {
-      this.text = response.text;
+      console.log(response);
+      if (response.successfulUpload){
+        this.filteredDocuments.push(response.successfulUpload);
+      }
     });
-    this.getDocuments();
+    // this.filteredDocuments.push
   }
 
   onDeleteDocNav(): void {

@@ -21,10 +21,15 @@ export class LoginAuthorizationComponent implements OnInit {
     private userConfigService: UserConfigService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
 
-  // Could refactor both auth functions here into one observable object and subscribe to it
-  // Conditional logic based on either using authService login or signup
+    if (localStorage.getItem('userObject') !== null) {
+      this.router.navigate(['/overview']);
+    }
+  }
+
+  // Should redirect straight to overview if the userObject already exists
+
 
   onLogIn(authForm: NgForm) {
     this.isLoading = true;

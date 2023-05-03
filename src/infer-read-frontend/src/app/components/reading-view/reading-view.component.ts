@@ -90,13 +90,24 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
     });
   }
 
-  canDeactivate() : Observable<boolean> {
-    return this.user$.pipe(switchMap(user => {
-      return this.bankService.updateBank(user).pipe(
-        map(() => true),
-        catchError(() => of(false))
-      )
-    }));
+  // Patch HTTP on pageIndex 
+  // pageIndex inside of document
+  // setup endpoint in API
+  canDeactivate() : Observable<boolean> | boolean {
+    if (confirm("Are you sure you want to finish reading?")) {
+      return this.user$.pipe(switchMap(user => {
+        this.updatePageIndex(user);
+        return this.bankService.updateBank(user);
+      }),
+      tap((response) => {
+        console.log("Response:", response)
+      }),
+      map(() => true),
+      catchError(() => of(false)));
+    }
+    else {
+      return false;
+    }
   }
 
   // fetch page function, pagination on click? First page should be loaded on init
@@ -170,6 +181,14 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
         })
       )
       .subscribe();
+  }
+
+  updatePageIndex(user) {
+    this.http.patch(`http://127.0.0.1:8000/updatePageIndex/${user.id}/${this.documentId}`,{"pageIndex": this.pageIndex}).pipe(
+      tap((response) => {
+      console.log(response);
+  })
+    ).subscribe();
   }
 
   setLocalStorage() {
@@ -279,7 +298,11 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
         tap((response) => { 
           console.log(response);
           this.wordHelp = response;
-          //console.log(this.bankService.learning);
+          for (let i = 0; i < this.bankService.learning.length; i++) {
+            if (this.bankService.learning[i].word === this.selectedWord) {
+              return;
+            }
+          }
           this.bankService.learning.push(
           {"word": this.selectedWord,
           "partOfSpeech": response.partOfSpeech,

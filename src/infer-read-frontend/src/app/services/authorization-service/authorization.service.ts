@@ -41,7 +41,6 @@ export class AuthorizationService {
   }
 
   signup(email: string, password: string) {
-    console.log(email, password);
     return this.http
       .post<AuthorizationResponse>(
         'http://localhost:3000/auth/signup',
@@ -86,7 +85,6 @@ export class AuthorizationService {
   logout() {
     this.user.next(null);
     localStorage.removeItem('userObject');
-    this.router.navigate(['']);
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
       this.tokenExpirationTimer = null;

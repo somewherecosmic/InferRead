@@ -20,26 +20,9 @@ const deleteDocument = (req, res, next) => {
         res.status(401).send('Unauthorized');
         return;
     }
-    // User.findByIdAndUpdate(userId,
-    //     { $pull: { documents: { _id: mongoose.Types.ObjectId(docId) }}}).then(console.log(data));
-    // }
-    
-    // returns a matchedCount of 1 but doesn't modify
-    // User.updateOne(userId, { "$pull": { documents: { _id : { "$in": mongoose.Types.ObjectId(docId)}} }}, (err, data) => {
-    //     console.log(err, data);
-    // });
+    // Need to delete after completion
     const filter = {"_id" : mongoose.Types.ObjectId(userId)};
     const pull = {"$pull": { "documents": { "_id": mongoose.Types.ObjectId(docId)}}};
-    // User.updateOne(filter, pull, (err, data) => {
-    //     console.log(err, data);
-    // });
-    // User.findByIdAndUpdate(userId, { $pull: { documents: { _id: docId} } }, { new: true }, (err, updatedUser) => {
-    //     if (err) {
-    //       console.error("error", err);
-    //       return;
-    //     }
-    //     console.log(updatedUser);
-    // });
     User.updateOne(
         { _id: userId },
         { $pull: { documents: { _id: docId } } },
