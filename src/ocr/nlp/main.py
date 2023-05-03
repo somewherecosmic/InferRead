@@ -89,7 +89,6 @@ class WordHelpRequest(BaseModel):
     maskedContext: str
     userId: str
 
-
 class PageIndexBody(BaseModel):
     pageIndex: int
 
