@@ -20,6 +20,10 @@ export class ReviewPageComponent implements OnInit {
   // to how mature the card is
   // Once an arbitrary amount of time has been achieved for due, put in known
 
+  // OVERVIEW OF CARDS
+
+  
+
   
   ngOnInit(): void {
   }
