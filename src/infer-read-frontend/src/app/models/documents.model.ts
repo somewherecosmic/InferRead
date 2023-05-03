@@ -4,7 +4,13 @@ export interface DocumentGetResponse {
 }
 
 export interface DocumentPostResponse {
-  text: string;
+  successfulUpload?: {
+    _id: string;
+    title: string;
+    pages: string[];
+    language: string;
+  }
+  unsuccessfulUpload? : boolean;
 }
 export interface DocumentDeletionResponse {
   acknowledged: boolean;

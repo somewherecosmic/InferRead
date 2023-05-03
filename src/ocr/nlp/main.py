@@ -17,8 +17,7 @@ from spacy.tokens import Doc, Token
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.losses import cosine_similarity
-
-# TODO on fetching, perform spaCy operations on page, cache pages & progress with Redis?
+import re
 
 pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
 
@@ -86,6 +85,9 @@ class WordHelpRequest(BaseModel):
     maskedContext: str
     userId: str
 
+class PageIndexBody(BaseModel):
+    pageIndex: int
+
 
     # def __init__(self, title, pages, language):
     #     self.title = title
@@ -106,27 +108,30 @@ async def test():
 # Needs to take a file as arg
 # Pass file to python script
 # Run script, return result of script
+def visitor_body(text, cm, tm, fontDict, fontSize):
+    y = tm[5]
+    if y > 100 and y < 720:
+        return text
+
 @app.post("/preprocess")
 async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)): # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
     stream = BytesIO(document.file.read())
     pdf = PyPDF2.PdfReader(stream)
-    currentPage = 0
+    currentPage = 4
     text = ""
     pages = []
     while (currentPage < len(pdf.pages)):
-        text = pdf.pages[currentPage].extract_text().replace("\n\n", " ").replace("\n", "")
-        pages.append(text)
+        text = pdf.pages[currentPage].extract_text() # .replace("\n\n", " ").replace("\n", "")
+        pages.append(re.sub(r'\d+$', '', text))
         currentPage += 1
-    # Have array representing the literal pages of the document
-    # Can call array.join() on the elements to return the full text
-    # Slice off first 4 or so pages as a metric for removing intro text
-    # Now, need to send to backend, as well as find some way to
-    # iterate through / turn pages on the user end
-    #preprocessed_document = {"title": document.filename, "pages": pages, "language": "French"}
     preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(".")[0], pages=pages, language=language, pageIndex=0)
 
-    WriteStatus = await addDocumentData(preprocessed_document, user)
-    return {"successfulUpload": WriteStatus} #newDocId
+    WriteStatus, docId = await addDocumentData(preprocessed_document, user)
+    print(docId)
+    if WriteStatus == True:
+        return {"successfulUpload": preprocessed_document.__dict__}
+    else:
+        return {"unsuccessfulUpload": WriteStatus}
 
 # This endpoint preprocesses the text into raw plaintext, need to sentencize?
 
@@ -134,23 +139,14 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
 async def addDocument(document_data, user: str):
     document = await user_collection.update_one({"_id": ObjectId(user)}, { "$push": {"documents": document_data.__dict__}}, upsert=True)
     print(document_data.__dict__)
-    #doc_added = await document_collection.find_one({"title": document_data.title})
-    #return doc_added
-    return document.acknowledged
+    return document.acknowledged, document.upserted_id
 
 async def addDocumentData(document: Document, user: str):
-    # document = jsonable_encoder(dict(document)
     writeStatus = await addDocument(document, user)
     return writeStatus
 
 
 # GETTING PAGES, UPDATING PAGE INDEX, PROCESSING TEXT IN SPACY
-
-
-# @app.get("/getPageIndex/{userId}/{docId}/")
-# async def getPageIndex(userId: str, docId: str):
-#     pageIndex = await user_collection.find_one({"_id": ObjectId(userId)}, {"documents" : { "$elemMatch": {"_id": ObjectId(docId)}}})
-#     return pageIndex
 
 @app.get("/getCurrentPage/{userId}/{docId}")
 async def getCurrentPage(userId: str, docId: str):
@@ -229,6 +225,20 @@ async def getPreviousPage(userId: str, docId: str , pageIndex: int):
   ]).next()
     return previousPage
 
+  # test request method on clientside, comment out DB logic and check if pageIndex sends correctly first
+@app.patch("/updatePageIndex/{userId}/{docId}")
+async def updatePageIndex(userId: str, docId: str, pageIndexBody: PageIndexBody):
+      pageIndex = pageIndexBody.pageIndex
+
+      filter = {"_id": ObjectId(userId)}
+      update = {'$set': {'documents.$[elem].pageIndex': pageIndex}}
+      array_filters = [{'elem._id': ObjectId(docId)}]
+
+      result = await user_collection.update_one(filter, update, array_filters=array_filters)
+      if result.raw_result['updatedExisting']:
+          return "Successfully updated pageIndex"
+      else:
+          return "Failed to update pageIndex"
 
 
 @app.post("/processWord")

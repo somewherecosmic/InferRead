@@ -12,7 +12,7 @@
       <fa-icon size="5x" [icon]="faEraser"></fa-icon>
       <p>Review</p>
     </div>
-    <div id="review-btn" class="button" [routerLink]="''">
+    <div id="review-btn" class="button" (click)="onLogout()">
       <fa-icon size="5x" [icon]="faSignOut"></fa-icon>
       <p>Logout</p>
     </div>

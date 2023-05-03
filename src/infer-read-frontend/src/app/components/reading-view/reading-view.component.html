@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <div class="side-help-info">
+    <div *ngIf="selectedWord" class="side-help-info">
       <h1>{{ selectedWord }}</h1>
       <h3>{{ "Root: " + wordHelp.root }}</h3>
       <h3>{{ wordHelp.partOfSpeech }} </h3>

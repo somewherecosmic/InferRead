@@ -19,22 +19,6 @@ export class CanDeactivateGuard implements CanDeactivate<ReadingViewComponent> {
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-      console.log("Inside of deactivate guard");
-      console.log(localStorage.getItem("userObject"));
-      
-      if (confirm("Are you sure you want to finish reading?")) {
-        return this.authService.user.pipe(switchMap(user => {
-          return this.bankService.updateBank(user);
-        }),
-        tap((response) => {
-          console.log("Response:", response)
-        }),
-        map(() => true),
-        catchError(() => of(false)));
-      }
-      else {
-        return false;
-      }
-  }
-  
+      return component.canDeactivate();
+}
 }

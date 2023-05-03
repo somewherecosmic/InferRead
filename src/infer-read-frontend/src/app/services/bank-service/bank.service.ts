@@ -56,14 +56,12 @@ export class BankService {
     return this.http.get<BankResponse>(`http://localhost:3000/user/getBank/${user.id}`).pipe(tap(bankResponse => {
       this.known = new Set(bankResponse.bank.known);
       this.learning = bankResponse.bank.learning;
-      console.log(this.disambiguation);
     }
     ));
   } 
   
   updateBank(user: User) {
     var bank: Bank = {known: Array.from(this.known.values()) as string[], learning: this.learning}
-    console.log("Inside updateBank CS call:", user);
     return this.http.patch<Bank>(`http://localhost:3000/user/updateBank/${user.id}`, bank);
   }
 
