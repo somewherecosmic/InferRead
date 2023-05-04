@@ -1,5 +1,6 @@
 stages:
     - backend-test
+    # - fe-unit-test
 
 
 backend-test:
@@ -9,3 +10,11 @@ backend-test:
         - cd src/infer-read-backend/
         - npm install
         - npm test
+
+# fe-unit-test:
+#     stage: fe-unit-test
+#     image: node:sass
+#     script:
+#         - cd src/infer-read-frontend/
+#         - npm install
+#         - ng test --progress=false --watch=false

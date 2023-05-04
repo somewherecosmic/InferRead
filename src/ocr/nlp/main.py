@@ -1,38 +1,40 @@
-from fastapi import FastAPI, File, UploadFile, Form
+import os
+import re
+from dataclasses import dataclass
+from io import BytesIO
+from typing import List
+
+import certifi
+from irishAPI import router as irishRouter
+import motor.motor_asyncio
+import numpy as np
+import pydantic
+import PyPDF2
+import spacy
+import tensorflow as tf
+from bson import ObjectId
+from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from dataclasses import dataclass
-from typing import List
-from transformers import TFCamembertForMaskedLM, CamembertTokenizer
-import PyPDF2
-from io import BytesIO
-import os
-import motor.motor_asyncio
-import certifi
-import pydantic
-from bson import ObjectId
-import spacy
 from spacy.tokenizer import Tokenizer
 from spacy.tokens import Doc, Token
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras.losses import cosine_similarity
-import re
+from transformers import CamembertTokenizer, TFCamembertForMaskedLM
 
-pydantic.json.ENCODERS_BY_TYPE[ObjectId]=str
+pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
 app = FastAPI()
+app.include_router(irishRouter)
 model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
 tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
 frenchNLP = spacy.load("fr_core_news_lg")
 
 # export to file later
 
-class frenchTokenizer(Tokenizer): 
+
+class frenchTokenizer(Tokenizer):
     def __init__(self, nlp):
         super().__init__(nlp.vocab)
-        
-    
+
     def split(self, doc):
         tokens = super().split(doc)
         i = 0
@@ -45,11 +47,9 @@ class frenchTokenizer(Tokenizer):
         return tokens
 
 
-
-
-
 ca = certifi.where()
-client = motor.motor_asyncio.AsyncIOMotorClient(os.environ["MONGODB_URL"], tlsCAFile=ca)
+client = motor.motor_asyncio.AsyncIOMotorClient(
+    os.environ["MONGODB_URL"], tlsCAFile=ca)
 database = client.test
 user_collection = database.get_collection("users")
 
@@ -66,11 +66,14 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+
 class UploadRequest(BaseModel):
     document: UploadFile
     id: str = Form(...)
 
 # Model needs to be JSON encoded before being sent to Atlas
+
+
 @dataclass
 class Document:
     _id: ObjectId
@@ -79,26 +82,33 @@ class Document:
     language: str
     pageIndex: int
 
+
 class WordHelpRequest(BaseModel):
     word: str
     context: str
     maskedContext: str
     userId: str
 
+
 class PageIndexBody(BaseModel):
     pageIndex: int
-
 
     # def __init__(self, title, pages, language):
     #     self.title = title
     #     self.pages = pages
-    #     self.language = language 
+    #     self.language = language
+
+
+@app.options("/{any:path}")
+async def options(any: str):
+    return {"status": "OK"}
 
 
 @app.get("/")
 async def root():
 
     return {"message": "Hello World"}
+
 
 @app.get("/test")
 async def test():
@@ -108,23 +118,29 @@ async def test():
 # Needs to take a file as arg
 # Pass file to python script
 # Run script, return result of script
+
+
 def visitor_body(text, cm, tm, fontDict, fontSize):
     y = tm[5]
     if y > 100 and y < 720:
         return text
 
+
 @app.post("/preprocess")
-async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)): # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
+# document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
+async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)):
     stream = BytesIO(document.file.read())
     pdf = PyPDF2.PdfReader(stream)
     currentPage = 4
     text = ""
     pages = []
     while (currentPage < len(pdf.pages)):
-        text = pdf.pages[currentPage].extract_text() # .replace("\n\n", " ").replace("\n", "")
+        # .replace("\n\n", " ").replace("\n", "")
+        text = pdf.pages[currentPage].extract_text()
         pages.append(re.sub(r'\d+$', '', text))
         currentPage += 1
-    preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(".")[0], pages=pages, language=language, pageIndex=0)
+    preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(
+        ".")[0], pages=pages, language=language, pageIndex=0)
 
     WriteStatus, docId = await addDocumentData(preprocessed_document, user)
     print(docId)
@@ -136,10 +152,13 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
 # This endpoint preprocesses the text into raw plaintext, need to sentencize?
 
 # refactor, update user model and embed the document into their documents array
+
+
 async def addDocument(document_data, user: str):
-    document = await user_collection.update_one({"_id": ObjectId(user)}, { "$push": {"documents": document_data.__dict__}}, upsert=True)
+    document = await user_collection.update_one({"_id": ObjectId(user)}, {"$push": {"documents": document_data.__dict__}}, upsert=True)
     print(document_data.__dict__)
     return document.acknowledged, document.upserted_id
+
 
 async def addDocumentData(document: Document, user: str):
     writeStatus = await addDocument(document, user)
@@ -152,96 +171,100 @@ async def addDocumentData(document: Document, user: str):
 async def getCurrentPage(userId: str, docId: str):
 
     pageIndex = await user_collection.aggregate([
-    {
-      '$match': { "_id": ObjectId(userId) }
-    },
-    {
-      '$project': {
-        'matching_document': {
-          '$filter': {
-            'input': "$documents",
-            'as': "document",
-            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
-          }
+        {
+            '$match': {"_id": ObjectId(userId)}
+        },
+        {
+            '$project': {
+                'matching_document': {
+                    '$filter': {
+                        'input': "$documents",
+                        'as': "document",
+                        'cond': {'$eq': ["$$document._id", ObjectId(docId)]}
+                    }
+                }
+            }
+        },
+        {
+            '$project': {
+                'page': {'$arrayElemAt': [{'$first': "$matching_document.pages"}, {'$first': '$matching_document.pageIndex'}]},
+                'pageIndex': {'$first': '$matching_document.pageIndex'}
+            }
         }
-      }
-    },
-    {
-      '$project': {
-        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, {'$first': '$matching_document.pageIndex'}]},
-        'pageIndex': {'$first': '$matching_document.pageIndex'}
-    }
-    }
-  ]).next()
+    ]).next()
     return pageIndex
+
 
 @app.get("/getNextPage/{userId}/{docId}/{pageIndex}")
 async def getNextPage(userId: str, docId: str, pageIndex: int):
     nextPage = await user_collection.aggregate([
-    {
-      '$match': { "_id": ObjectId(userId) }
-    },
-    {
-      '$project': {
-        'matching_document': {
-          '$filter': {
-            'input': "$documents",
-            'as': "document",
-            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
-          }
+        {
+            '$match': {"_id": ObjectId(userId)}
+        },
+        {
+            '$project': {
+                'matching_document': {
+                    '$filter': {
+                        'input': "$documents",
+                        'as': "document",
+                        'cond': {'$eq': ["$$document._id", ObjectId(docId)]}
+                    }
+                }
+            }
+        },
+        {
+            '$project': {
+                'page': {'$arrayElemAt': [{'$first': "$matching_document.pages"}, pageIndex+1]}
+            }
         }
-      }
-    },
-    {
-      '$project': {
-        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, pageIndex+1]}
-    }
-    }
-  ]).next()
+    ]).next()
     return nextPage
 
+
 @app.get("/getPreviousPage/{userId}/{docId}/{pageIndex}")
-async def getPreviousPage(userId: str, docId: str , pageIndex: int):
+async def getPreviousPage(userId: str, docId: str, pageIndex: int):
     previousPage = await user_collection.aggregate([
-    {
-      '$match': { "_id": ObjectId(userId) }
-    },
-    {
-      '$project': {
-        'matching_document': {
-          '$filter': {
-            'input': "$documents",
-            'as': "document",
-            'cond': { '$eq': [ "$$document._id", ObjectId(docId) ] }
-          }
+        {
+            '$match': {"_id": ObjectId(userId)}
+        },
+        {
+            '$project': {
+                'matching_document': {
+                    '$filter': {
+                        'input': "$documents",
+                        'as': "document",
+                        'cond': {'$eq': ["$$document._id", ObjectId(docId)]}
+                    }
+                }
+            }
+        },
+        {
+            '$project': {
+                'page': {'$arrayElemAt': [{'$first': "$matching_document.pages"}, pageIndex-1]}
+            }
         }
-      }
-    },
-    {
-      '$project': {
-        'page': {'$arrayElemAt': [{'$first':"$matching_document.pages"}, pageIndex-1]}
-    }
-    }
-  ]).next()
+    ]).next()
     return previousPage
 
   # test request method on clientside, comment out DB logic and check if pageIndex sends correctly first
+
+
 @app.patch("/updatePageIndex/{userId}/{docId}")
 async def updatePageIndex(userId: str, docId: str, pageIndexBody: PageIndexBody):
-      pageIndex = pageIndexBody.pageIndex
+    pageIndex = pageIndexBody.pageIndex
 
-      filter = {"_id": ObjectId(userId)}
-      update = {'$set': {'documents.$[elem].pageIndex': pageIndex}}
-      array_filters = [{'elem._id': ObjectId(docId)}]
+    filter = {"_id": ObjectId(userId)}
+    update = {'$set': {'documents.$[elem].pageIndex': pageIndex}}
+    array_filters = [{'elem._id': ObjectId(docId)}]
 
-      result = await user_collection.update_one(filter, update, array_filters=array_filters)
-      if result.raw_result['updatedExisting']:
-          return "Successfully updated pageIndex"
-      else:
-          return "Failed to update pageIndex"
+    result = await user_collection.update_one(filter, update, array_filters=array_filters)
+    if result.raw_result['updatedExisting']:
+        return "Successfully updated pageIndex"
+    else:
+        return "Failed to update pageIndex"
 
 
-@app.post("/processWord")
+@app.post("/processWordFrench")
 async def processWord(wordHelpRequest: WordHelpRequest):
     doc = frenchNLP(wordHelpRequest.context.replace("-", " "))
     wordToToken = frenchNLP(wordHelpRequest.word)
@@ -256,7 +279,7 @@ async def processWord(wordHelpRequest: WordHelpRequest):
             root = token.lemma_
             isCommon = token.is_stop
             break
-    
+
     maskedLMPredictions = generatePredictions(wordHelpRequest.maskedContext)
     print(maskedLMPredictions)
     return {"partOfSpeech": partOfSpeech, "root": root, "isCommon": isCommon, "morphology": morphology, "maskedLMPredictions": maskedLMPredictions}
@@ -277,8 +300,10 @@ def generatePredictions(maskedContext):
     predictions = outputs[0]
 
     num_top_predictions = 5
-    predicted_indexes = tf.math.top_k(predictions[0, mask_token_index], k=num_top_predictions).indices.numpy()
-    predicted_words = [tokenizer.decode([predicted_index]) for predicted_index in predicted_indexes]
+    predicted_indexes = tf.math.top_k(
+        predictions[0, mask_token_index], k=num_top_predictions).indices.numpy()
+    predicted_words = [tokenizer.decode(
+        [predicted_index]) for predicted_index in predicted_indexes]
 
     return predicted_words
 
@@ -287,7 +312,7 @@ def generatePredictions(maskedContext):
 
     # with tf.device('/cpu:0'):
     #     embedding = model(input_ids)[0][0][0]
-    
+
     # vocab = tokenizer.get_vocab()
     # similar = []
 
@@ -298,7 +323,6 @@ def generatePredictions(maskedContext):
     #     similarity = cosine_similarity(embedding, other_embedding, axis=0)
     #     if similarity > 0.5 and other_word != word:
     #         similar.append(other_word)
-
 
     # Deprecated method of synonym finding -> spaCy word vectors
     # similar = nlp.vocab.vectors.most_similar(

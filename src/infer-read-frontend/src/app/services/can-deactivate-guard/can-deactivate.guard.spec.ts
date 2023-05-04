@@ -1,12 +1,14 @@
 import { TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { CanDeactivateGuard } from './can-deactivate.guard';
 
 describe('CanDeactivateGuard', () => {
   let guard: CanDeactivateGuard;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule]
+    });
     guard = TestBed.inject(CanDeactivateGuard);
   });
 

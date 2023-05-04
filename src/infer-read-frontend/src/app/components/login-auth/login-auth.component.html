@@ -1,63 +1,53 @@
-<div class="body">
-  <div class="row">
-    <div class="col-lg">
-      <div class="alert alert-danger" *ngIf="error">
-        {{ error }}
-      </div>
-      <div *ngIf="isLoading" style="text-align: center">
-        <app-loading-spinner></app-loading-spinner>
-      </div>
-      <form class="form-group" #authForm="ngForm" *ngIf="!isLoading">
-        <label for="email">Email</label>
+<div class="body-container">
+  <div *ngIf="error">
+    {{ error }}
+  </div>
+  <div *ngIf="isLoading">
+    <app-loading-spinner></app-loading-spinner>
+  </div>
+  <div class="form-group">
+    <h2>Welcome to the next step in Language Learning.</h2>
+    <form #authForm="ngForm" *ngIf="!isLoading">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        class="form-control"
+        ngModel
+        name="email"
+        required
+        email
+      />
+      <div class="form-group">
+        <label for="password">Password</label>
         <input
-          type="email"
-          id="email"
+          type="password"
+          id="password"
           class="form-control"
           ngModel
-          name="email"
+          name="password"
           required
-          email
         />
-        <!-- <label for="username">Username</label>
-        <input
-          id="username"
-          class="form-control"
-          ngModel
-          name="username"
-          required
-          minlength="3"
-        /> -->
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            class="form-control"
-            ngModel
-            name="password"
-            required
-          />
-        </div>
-        <div>
-          <button
-            class="signup-button"
-            type="submit"
-            [disabled]="authForm.invalid"
-            (click)="onSignUp(authForm)"
-          >
-            Sign-up
-          </button>
-          |
-          <button
-            class="login-button"
-            type="submit"
-            [disabled]="authForm.invalid"
-            (click)="onLogIn(authForm)"
-          >
-            Log-in
-          </button>
-        </div>
-      </form>
-    </div>
+      </div>
+      <div>
+        <button
+          class="signup-button"
+          type="submit"
+          [disabled]="authForm.invalid"
+          (click)="onSignUp(authForm)"
+        >
+          Sign-up
+        </button>
+        |
+        <button
+          class="login-button"
+          type="submit"
+          [disabled]="authForm.invalid"
+          (click)="onLogIn(authForm)"
+        >
+          Sign in
+        </button>
+      </div>
+    </form>
   </div>
 </div>

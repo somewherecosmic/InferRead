@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { NavBarGeneralComponent } from './nav-bar-general.component';
 
@@ -8,6 +9,7 @@ describe('NavBarGeneralComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
       declarations: [ NavBarGeneralComponent ]
     })
     .compileComponents();
