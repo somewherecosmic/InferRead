@@ -1,5 +1,6 @@
 stages:
     - backend-test
+    - deploy
 
 
 backend-test:
@@ -9,3 +10,14 @@ backend-test:
         - cd src/infer-read-backend/
         - npm install
         - npm test
+
+deploy-railway:
+    stage: deploy
+    image: ubuntu
+    only: 
+        - pushes
+        - IR-7-82
+    script:
+        - apt-get update && apt-get install -y curl
+        - curl -fsSL https://railway.app/install.sh | sh
+        - railway up --service=$RAILWAY_SERVICE_NAME -d
