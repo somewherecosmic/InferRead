@@ -1,42 +1,33 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { catchError, Observable, Subscription, throwError, switchMap, tap, map, of} from 'rxjs';
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import {
+  catchError,
+  Observable,
+  Subscription,
+  throwError,
+  switchMap,
+  tap,
+  map,
+  of,
+} from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { Bank, User, UserConfig } from '../../models/user.model';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
 import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
 import { BankService } from '../../services/bank-service/bank.service';
-import { ScaleBreak } from 'devextreme/common/charts';
 import { CanDeactivate } from '@angular/router';
+import { PageResponse, WordHelpResponse } from 'src/app/models/reading.model';
 
 // TODO: Remove timer logic at some point - when happy with request-response speed
-
-interface PageResponse {
-  _id: string;
-  pageIndex?: number;
-  page: string;
-}
-
-interface WordHelpResponse {
-  partOfSpeech: string;
-  root: string;
-  morphology: {
-    Voice?: string,
-    Tense?: string,
-    Number?: string,
-    Gender?: string,
-    VerbForm? : string 
-  }
-  isRare: boolean;
-  maskedLMPredictions: string[];
-}
 
 @Component({
   selector: 'app-reading-view',
   templateUrl: './reading-view.component.html',
   styleUrls: ['./reading-view.component.scss'],
 })
-export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewComponent> {
+export class ReadingViewComponent
+  implements OnInit, CanDeactivate<ReadingViewComponent>
+{
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -51,7 +42,7 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
   pageIndex: number;
   user$: Observable<User>;
   bank$: Observable<Bank>;
-  userConfig$: Observable<UserConfig>
+  userConfig$: Observable<UserConfig>;
   selectedLanguage: string;
   currentPageSubscription: Subscription;
   nextPageSubscription: Subscription;
@@ -59,13 +50,17 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
   text: string;
   wordHelp: WordHelpResponse;
   disambiguation = this.bankService.disambiguation;
-  FR_MASK = " <mask> ";
+  FR_MASK = ' <mask> ';
 
   ngOnInit(): void {
     this.user$ = this.authService.user;
-    this.user$.pipe(switchMap(user => {
-      return this.bankService.getBank(user);
-    })).subscribe();
+    this.user$
+      .pipe(
+        switchMap((user) => {
+          return this.bankService.getBank(user);
+        })
+      )
+      .subscribe();
     this.paramSubscription = this.route.queryParams.subscribe((params) => {
       this.documentId = params['docId'];
       if (localStorage.getItem(this.documentId) === null) {
@@ -82,30 +77,31 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
       switchMap((user: any) => this.userConfigService.getUserConfig(user))
     );
     this.userConfig$
-    .pipe(map((userConfig: UserConfig) => userConfig))
-    .subscribe((userConfigSuperObject: any) => {
-      this.selectedLanguage =
-        userConfigSuperObject.userConfig.selectedLanguage;
+      .pipe(map((userConfig: UserConfig) => userConfig))
+      .subscribe((userConfigSuperObject: any) => {
+        this.selectedLanguage =
+          userConfigSuperObject.userConfig.selectedLanguage;
         console.log(this.selectedLanguage);
-    });
+      });
   }
 
-  // Patch HTTP on pageIndex 
+  // Patch HTTP on pageIndex
   // pageIndex inside of document
   // setup endpoint in API
-  canDeactivate() : Observable<boolean> | boolean {
-    if (confirm("Are you sure you want to finish reading?")) {
-      return this.user$.pipe(switchMap(user => {
-        this.updatePageIndex(user);
-        return this.bankService.updateBank(user);
-      }),
-      tap((response) => {
-        console.log("Response:", response)
-      }),
-      map(() => true),
-      catchError(() => of(false)));
-    }
-    else {
+  canDeactivate(): Observable<boolean> | boolean {
+    if (confirm('Are you sure you want to finish reading?')) {
+      return this.user$.pipe(
+        switchMap((user) => {
+          this.updatePageIndex(user);
+          return this.bankService.updateBank(user);
+        }),
+        tap((response) => {
+          console.log('Response:', response);
+        }),
+        map(() => true),
+        catchError(() => of(false))
+      );
+    } else {
       return false;
     }
   }
@@ -184,11 +180,17 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
   }
 
   updatePageIndex(user) {
-    this.http.patch(`http://127.0.0.1:8000/updatePageIndex/${user.id}/${this.documentId}`,{"pageIndex": this.pageIndex}).pipe(
-      tap((response) => {
-      console.log(response);
-  })
-    ).subscribe();
+    this.http
+      .patch(
+        `http://127.0.0.1:8000/updatePageIndex/${user.id}/${this.documentId}`,
+        { pageIndex: this.pageIndex }
+      )
+      .pipe(
+        tap((response) => {
+          console.log(response);
+        })
+      )
+      .subscribe();
   }
 
   setLocalStorage() {
@@ -198,7 +200,7 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
       this.pageIndex.toString()
     );
   }
-  
+
   ngOnDestroy(): void {
     if (this.paramSubscription) {
       this.paramSubscription.unsubscribe();
@@ -253,14 +255,13 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
     // Add MASK token to context sentence here, in case of sentences where word appears twice
     let sentence: string;
     let maskedSentence: string;
-    if (this.selectedLanguage === "French") {
+    if (this.selectedLanguage === 'French') {
       sentence = sentenceStart + this.selectedWord + sentenceEnd;
       maskedSentence = sentenceStart + this.FR_MASK + sentenceEnd;
+    } else {
+      sentence = sentenceStart + this.selectedWord + sentenceEnd;
     }
-    else {
-      sentence = sentenceStart + this.selectedWord + sentenceEnd
-    }
-    return [sentence, maskedSentence]
+    return [sentence, maskedSentence];
   }
 
   highlight(event) {
@@ -285,17 +286,21 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
     if (this.bankService.known.has(this.selectedWord)) {
       this.bankService.known.delete(this.selectedWord);
     }
+    let processWordLangURL = 'http://127.0.0.1:8000/processWord' + this.selectedLanguage;
     this.wordHelpSubscription = this.user$
       .pipe(
         switchMap((user) =>
-          this.http.post<WordHelpResponse>('http://127.0.0.1:8000/processWord', {
-            word: this.selectedWord,
-            context: sentence,
-            maskedContext: maskedSentence,
-            userId: user.id,
-          })
+          this.http.post<WordHelpResponse>(
+            processWordLangURL,
+            {
+              word: this.selectedWord,
+              context: sentence,
+              maskedContext: maskedSentence,
+              userId: user.id,
+            }
+          )
         ),
-        tap((response) => { 
+        tap((response) => {
           console.log(response);
           this.wordHelp = response;
           for (let i = 0; i < this.bankService.learning.length; i++) {
@@ -303,19 +308,24 @@ export class ReadingViewComponent implements OnInit, CanDeactivate<ReadingViewCo
               return;
             }
           }
-          this.bankService.learning.push(
-          {"word": this.selectedWord,
-          "partOfSpeech": response.partOfSpeech,
-          "morphology": response.morphology,
-          "root": response.root
-        });
-        console.log(this.bankService.learning);
-  }),
+          this.bankService.learning.push({
+            word: this.selectedWord,
+            partOfSpeech: response.partOfSpeech,
+            morphology: response.morphology,
+            root: response.root,
+          });
+          console.log(this.bankService.learning);
+        }),
         catchError((err) => {
           return throwError(() => new Error(err));
         })
       )
       .subscribe();
-  
+    // else if (user.userConfig.selectedLanguage == 'French') {
+    //   return this.http.post('http://127.0.0.1:8000/processWordFrench', {
+    //     word: this.selectedWord,
+    //     context: sentence,
+    //     userId: user.id,
+    //   });
   }
 }
