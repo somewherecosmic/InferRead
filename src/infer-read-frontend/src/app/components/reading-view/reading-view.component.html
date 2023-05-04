@@ -14,10 +14,7 @@
       </div>
     </div>
 
-    <div
-      *ngIf="selectedLanguage == 'French' && wordHelp"
-      class="side-help-info"
-    >
+    <div *ngIf="wordHelp" class="side-help-info">
       <h1>{{ selectedWord }}</h1>
       <h3>{{ "Root: " + wordHelp.root }}</h3>
       <h3>{{ wordHelp.partOfSpeech }}</h3>
@@ -25,11 +22,6 @@
         {{ disambiguation[feature.value] }}
       </h5>
 
-      <h4 *ngIf="wordHelp.maskedLMPredictions">Contextually viable:</h4>
-      <h5 *ngFor="let word of wordHelp.maskedLMPredictions">{{ word }}</h5>
-    </div>
-    <div *ngIf="selectedLanguage == 'Irish'" class="side-help-info">
-      <h1>{{ selectedWord }}</h1>
       <h4 *ngIf="wordHelp.maskedLMPredictions">Contextually viable:</h4>
       <h5 *ngFor="let word of wordHelp.maskedLMPredictions">{{ word }}</h5>
     </div>

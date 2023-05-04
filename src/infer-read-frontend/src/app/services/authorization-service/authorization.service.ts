@@ -8,7 +8,7 @@ import { BankService } from '../bank-service/bank.service';
 interface AuthorizationResponse {
   email: string;
   token: string;
-  id: string
+  id: string;
   expiresIn: Date;
   documents: Document[];
   bank: Bank;
@@ -22,6 +22,8 @@ export class AuthorizationService {
   // empty string fields treated as falsey, workaround for strict typechecking
   user = new BehaviorSubject<User | null>(null);
   tokenExpirationTimer: NodeJS.Timeout | null = null;
+
+  constructor(private http: HttpClient, private bankService: BankService) {}
 
   authHandler(response: AuthorizationResponse) {
     const user = new User(
@@ -126,6 +128,4 @@ export class AuthorizationService {
   getUserId() {
     return JSON.parse(localStorage.getItem('userObject')).id;
   }
-
-  constructor(private http: HttpClient, private router: Router, private bankService: BankService) {}
 }
