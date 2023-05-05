@@ -53,21 +53,46 @@
 #         word="an", context="Tá an bhean ag siúl ar an mbóthar", userId="test")
 #     print(processWordIrish(wordHelpRequest))
 
-from transformers import AutoModelForTokenClassification, AutoTokenizer
+from transformers import pipeline
 import torch
+from transformers import (AutoModelForTokenClassification, AutoTokenizer,
+                          BertForTokenClassification, BertTokenizer, pipeline, TokenClassificationPipeline)
 
-tokenizer = AutoTokenizer.from_pretrained(
-    '../../../../autotrain-test-55532129298', local_files_only=True)
-model = AutoModelForTokenClassification.from_pretrained(
-     '../../../../autotrain-test-55532129298', local_files_only=True)
-
-inputs = tokenizer("fear", return_tensors="pt")
-
-outputs = model(**inputs)
+tokenizer = BertTokenizer.from_pretrained(
+    '../../../../autotrain-test-55532129298', local_files_only=True, max_length=128)
+model = BertForTokenClassification.from_pretrained(
+    '../../../../autotrain-test-55532129298', local_files_only=True, max_length=128)
 
 
-logits = outputs.logits
-predictions = torch.argmax(logits, dim=-1)
+class MyTokenClassificationPipeline(TokenClassificationPipeline):
+    def preprocess(self, sentence, offset_mapping=None):
+        truncation = False
+        padding = 'longest'
+        model_inputs = self.tokenizer(
+            sentence,
+            return_tensors=self.framework,
+            truncation=truncation,
+            padding=padding,
+            return_special_tokens_mask=True,
+            return_offsets_mapping=self.tokenizer.is_fast,
+        )
+        if offset_mapping:
+            model_inputs["offset_mapping"] = offset_mapping
 
-labels = [tokenizer.decode([i]) for i in predictions[0].tolist()]
-print(labels)
+        model_inputs["sentence"] = sentence
+        return model_inputs
+
+
+# num_labels = ...  # number of PoS labels in your dataset
+pos_pipeline = MyTokenClassificationPipeline('token-classification', model=model,
+                                             tokenizer=tokenizer)
+
+sampData = [{"text": "Gaillimheach a bhfuil an saol feicthe aige."},
+            {"text": "Tá an bhean ag siúl ar an mbóthar"}]
+pos_tags = pos_pipeline(
+    "Gaillimheach a bhfuil an saol feicthe aige.", aggregation_strategy='simple')
+
+for token in pos_tags:
+    print(token['word'], token['entity'])
+
+print(pos_tags, "yolo")
