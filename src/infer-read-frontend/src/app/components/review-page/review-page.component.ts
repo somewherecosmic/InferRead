@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, AfterViewInit, ElementRef, HostListener }
 import { LearningWord, User } from 'src/app/models/user.model';
 import { AuthorizationService } from 'src/app/services/authorization-service/authorization.service';
 import { BankService } from '../../services/bank-service/bank.service';
-import { Observable, switchMap, tap } from 'rxjs';
+import { Observable, switchMap, tap, map, of, catchError } from 'rxjs';
 import { PassThrough } from 'stream';
 import { doesNotReject } from 'assert';
 
@@ -30,9 +30,8 @@ export class ReviewPageComponent implements OnInit, AfterViewInit {
   dayInterval = 86400000;
   goodInterval = 600000;
   easyInterval = this.dayInterval * 3;
+  monthInterval = 2629800000;
   done: LearningWord[] = [];
-
-
 
   ngOnInit(): void {
     // Initialise new and due, set inProgress during
@@ -64,13 +63,14 @@ export class ReviewPageComponent implements OnInit, AfterViewInit {
 
   initCards() {
     this.bankService.learning.forEach(learningWord => {
+      console.log(learningWord.lastReviewed);
       if (learningWord.lastReviewed === undefined ) {
         this.new.push(learningWord);
       }
       else if (learningWord.lastReviewed && learningWord.interval < this.dayInterval) {
         this.inProgress.push(learningWord);
       }
-      else if (learningWord.lastReviewed.getTime() + learningWord.interval < Date.now()) {
+      else if (new Date(learningWord.lastReviewed).getTime() + learningWord.interval < Date.now()) {
         this.due.push(learningWord);
       }
     })
@@ -80,7 +80,6 @@ export class ReviewPageComponent implements OnInit, AfterViewInit {
     this.start = false;
     this.displayCard = false;
     this.getCard();
-
   }
 
   getCard() {
@@ -129,13 +128,13 @@ export class ReviewPageComponent implements OnInit, AfterViewInit {
       this.done.push(currentCard);
       this.total--;
     }
-    if (currentCard.interval === this.goodInterval) {
+    else if (currentCard.interval === this.goodInterval) {
       currentCard.interval = this.dayInterval;  
       currentCard.lastReviewed = new Date();
       this.done.push(currentCard);
       this.total--;
     }
-    if (currentCard.interval === undefined) {
+    else if (currentCard.interval === undefined) {
       currentCard.interval = this.goodInterval;
       currentCard.lastReviewed = new Date();
       this.inProgress.push(currentCard);
@@ -160,6 +159,44 @@ export class ReviewPageComponent implements OnInit, AfterViewInit {
     this.displayCard = false;
   }
 
+  // do this on exit
+  // for words inside inProgress and done
+  updateLearningBank() {
+    console.log(this.done);
+
+    this.done.forEach(finishedWord => {
+      console.log(finishedWord.word);
+      let index = this.bankService.learning.findIndex((learningWord) => {
+        learningWord.word === finishedWord.word
+      });
+
+      if (finishedWord.interval > this.monthInterval) {
+        this.bankService.known.add(finishedWord.word);
+        this.bankService.learning.splice(index, 1);
+      }
+      else {
+        this.bankService.learning[index] = finishedWord;
+      }
+    })
+
+    if (this.inProgress.length > 0) {
+    this.inProgress.forEach(inProgressWord => {
+      let index = this.bankService.learning.findIndex((learningWord) => {
+        learningWord.word === inProgressWord.word
+      })
+      this.bankService.learning[index] = inProgressWord;
+    })
+  }
+  }
+
+  canDeactivate(): Observable<boolean> | boolean {
+    this.updateLearningBank();
+    console.log("Updated bank", this.bankService.learning);
+    this.user$.pipe(switchMap(user => {
+      return this.bankService.updateBank(user);
+    }), map(() =>  {return true}), catchError(() => of(false))).subscribe();
+    return true;
+  }
 
 }
   // Buttons -> again, good, easy

@@ -16,7 +16,9 @@
 
       <div *ngIf="!start">
         <div *ngIf="total > 0">
-        <h4>Total cards: {{total}}</h4>
+        <h4>New: {{new.length}}</h4>
+        <h4>In Progress: {{inProgress.length}}</h4>
+        <h4>Due: {{due.length}}</h4>
         <h2>{{currentCard.word}}</h2>
         <div *ngIf="displayCard">
           <h3>{{currentCard.partOfSpeech}}</h3>
