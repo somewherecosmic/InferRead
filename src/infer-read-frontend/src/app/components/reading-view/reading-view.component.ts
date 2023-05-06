@@ -112,7 +112,6 @@ export class ReadingViewComponent
 
   getCurrentPage() {
     // Use docID and pageIndex in DB to retrieve the current page
-    console.time('now');
     this.currentPageSubscription = this.user$
       .pipe(
         switchMap((user) =>
@@ -124,10 +123,8 @@ export class ReadingViewComponent
           this.pageIndex = response.pageIndex;
           this.text = response.page;
           this.setLocalStorage();
-          console.timeEnd('now');
         }),
         catchError((err) => {
-          console.log(err);
           return throwError(() => new Error(err));
         })
       )
@@ -286,19 +283,17 @@ export class ReadingViewComponent
     if (this.bankService.known.has(this.selectedWord)) {
       this.bankService.known.delete(this.selectedWord);
     }
-    let processWordLangURL = 'http://127.0.0.1:8000/processWord' + this.selectedLanguage;
+    let processWordLangURL =
+      'http://127.0.0.1:8000/processWord' + this.selectedLanguage;
     this.wordHelpSubscription = this.user$
       .pipe(
         switchMap((user) =>
-          this.http.post<WordHelpResponse>(
-            processWordLangURL,
-            {
-              word: this.selectedWord,
-              context: sentence,
-              maskedContext: maskedSentence,
-              userId: user.id,
-            }
-          )
+          this.http.post<WordHelpResponse>(processWordLangURL, {
+            word: this.selectedWord,
+            context: sentence,
+            maskedContext: maskedSentence,
+            userId: user.id,
+          })
         ),
         tap((response) => {
           console.log(response);

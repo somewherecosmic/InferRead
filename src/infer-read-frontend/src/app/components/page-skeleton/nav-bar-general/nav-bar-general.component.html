@@ -1,14 +1,20 @@
 <div class="body">
   <div class="list-buttons">
-    <div id="overview-btn" class="button" [routerLink]="'/overview'">
-      <fa-icon size="5x" [icon]="faFolderOpen"></fa-icon>
+    <div
+      id="overview-btn"
+      class="button"
+      [routerLink]="'/overview'"
+      routerLinkActive="active-link"
+    >
+      <fa-icon size="5x" [icon]="faBook"></fa-icon>
       <p>Overview</p>
     </div>
-    <div id="read-btn" class="button" [routerLink]="'/read'">
-      <fa-icon size="5x" [icon]="faBook"></fa-icon>
-      <p>Read</p>
-    </div>
-    <div id="review-btn" class="button" [routerLink]="'/review'">
+    <div
+      id="review-btn"
+      class="button"
+      [routerLink]="'/review'"
+      routerLinkActive="active-link"
+    >
       <fa-icon size="5x" [icon]="faEraser"></fa-icon>
       <p>Review</p>
     </div>
