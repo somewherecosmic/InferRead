@@ -22,7 +22,17 @@ const userSchema = new Schema({
   ],
   bank: {
     known: [String],
-    learning: [{word: String, partOfSpeech: String}]
+    learning: [{word: String,
+      partOfSpeech: String,
+      root: String,
+      morphology: {
+        Voice: String,
+        Tense: String,
+        Number: String,
+        Gender: String,
+        VerbForm : String 
+      },
+      lastReviewed: Date | undefined}]
   },
   userConfig: {
     type: Object,
