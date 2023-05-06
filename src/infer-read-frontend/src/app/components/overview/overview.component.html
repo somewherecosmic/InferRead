@@ -4,11 +4,13 @@
     <div class="items-available">
       <div *ngFor="let item of filteredDocuments" class="item">
         <div class="doc-info" (click)="readDocument(item._id)">
+          <img src="../../../assets/pdf-icon.png">
+          <div class="">
           <h1 class="item-title">{{ item.title }}</h1>
           <h2 class="item-desc">
             {{ item.pages.length }} pages ● {{ item.language }}
           </h2>
-        </div>
+        </div></div>
         <button
           *ngIf="isDeleteDocument"
           class="delete-doc-btn"

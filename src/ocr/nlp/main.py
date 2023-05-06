@@ -5,7 +5,7 @@ from io import BytesIO
 from typing import List
 
 import certifi
-# from irishAPI import router as irishRouter
+from irishAPI import router as irishRouter
 import motor.motor_asyncio
 import numpy as np
 import pydantic
