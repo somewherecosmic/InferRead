@@ -5,7 +5,6 @@
       <p>Email: {{ user.email}}</p>
       <p>Username: {{ user.id}}</p>
       <p> {{user.userConfig | json}}</p>
-      <button (click)="clearBank(user)">Clear Word Bank</button>
     </div>
     <ng-template #userDataError>
       <div>
@@ -13,7 +12,7 @@
       </div>
     </ng-template>
     <div class="user-page-expanded">
-      <p> To be Developed<br>Statistics and review summary</p>
+      <button (click)="clearBank(user)"><p>Clear Word Bank</p></button>
       <button (click)="updateUserConfig('Irish')"> <p> Set config to Irish</p></button>
       <button (click)="updateUserConfig('French')"> <p> Set config to French</p></button>
 
