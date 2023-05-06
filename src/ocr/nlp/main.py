@@ -5,7 +5,7 @@ from io import BytesIO
 from typing import List
 
 import certifi
-from irishAPI import router as irishRouter
+# from irishAPI import router as irishRouter
 import motor.motor_asyncio
 import numpy as np
 import pydantic
@@ -23,7 +23,7 @@ from transformers import CamembertTokenizer, TFCamembertForMaskedLM
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
 app = FastAPI()
-app.include_router(irishRouter)
+# app.include_router(irishRouter)
 model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
 tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
 frenchNLP = spacy.load("fr_core_news_lg")
@@ -88,7 +88,6 @@ class WordHelpRequest(BaseModel):
     context: str
     maskedContext: str
     userId: str
-
 
 class PageIndexBody(BaseModel):
     pageIndex: int

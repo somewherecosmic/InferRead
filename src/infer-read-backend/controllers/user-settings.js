@@ -45,6 +45,7 @@ const updateBank = (req, res, next) => {
   console.log(userId);
   const token = req.query.auth;
   const updatedBank = req.body
+  console.log("Incoming learning");
   console.log(updatedBank.learning);
   User.findOneAndUpdate({_id: userId}, {$set: {'bank.known': updatedBank.known, 'bank.learning': updatedBank.learning}}, {new: true})
   .then(user => {
@@ -54,4 +55,15 @@ const updateBank = (req, res, next) => {
   }); 
 }
 
-export { getSettings, updateSettings, getBank, updateBank };
+const clearBank = (req, res, next) => {
+  const userId = req.params.id;
+  const token = req.query.auth;
+  User.findOneAndUpdate({_id: userId}, {$set: {'bank.known': [], 'bank.learning': []}})
+  .then(user => {
+    res.status(200).send(user);
+  }).catch(err => {
+    console.log(err);
+  });
+}
+
+export { getSettings, updateSettings, getBank, updateBank, clearBank };

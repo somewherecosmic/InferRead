@@ -315,6 +315,8 @@ export class ReadingViewComponent
             partOfSpeech: response.partOfSpeech,
             morphology: response.morphology,
             root: response.root,
+            lastReviewed: undefined,
+            interval: undefined
           });
           console.log(this.bankService.learning);
         }),

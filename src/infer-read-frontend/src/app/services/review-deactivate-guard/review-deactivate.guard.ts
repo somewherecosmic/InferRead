@@ -5,17 +5,18 @@ import { ReadingViewComponent } from 'src/app/components/reading-view/reading-vi
 import { AuthorizationService } from '../authorization-service/authorization.service';
 import { BankService } from '../bank-service/bank.service';
 import { switchMap, map, tap } from 'rxjs';
+import { ReviewPageComponent } from 'src/app/components/review-page/review-page.component';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CanDeactivateGuard implements CanDeactivate<ReadingViewComponent> {
+export class ReviewDeactivateGuard implements CanDeactivate<ReviewPageComponent> {
 
   constructor(private authService: AuthorizationService, private bankService: BankService ) {}
 
 
   canDeactivate(
-    component: ReadingViewComponent,
+    component: ReviewPageComponent,
     currentRoute: ActivatedRouteSnapshot,
     currentState: RouterStateSnapshot,
     nextState?: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
