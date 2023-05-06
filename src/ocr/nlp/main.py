@@ -23,7 +23,7 @@ from transformers import CamembertTokenizer, TFCamembertForMaskedLM
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
 app = FastAPI()
-# app.include_router(irishRouter)
+app.include_router(irishRouter)
 model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
 tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
 frenchNLP = spacy.load("fr_core_news_lg")
