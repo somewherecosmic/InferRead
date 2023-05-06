@@ -17,6 +17,10 @@ import { UserConfigService } from 'src/app/services/user-config-service/user-con
 import { BankService } from '../../services/bank-service/bank.service';
 import { CanDeactivate } from '@angular/router';
 import { PageResponse, WordHelpResponse } from 'src/app/models/reading.model';
+import {
+  faChevronRight,
+  faChevronLeft,
+} from '@fortawesome/free-solid-svg-icons';
 
 // TODO: Remove timer logic at some point - when happy with request-response speed
 
@@ -28,6 +32,9 @@ import { PageResponse, WordHelpResponse } from 'src/app/models/reading.model';
 export class ReadingViewComponent
   implements OnInit, CanDeactivate<ReadingViewComponent>
 {
+  faChevronRight = faChevronRight;
+  faChevronLeft = faChevronLeft;
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
