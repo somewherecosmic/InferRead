@@ -17,6 +17,10 @@ import { UserConfigService } from 'src/app/services/user-config-service/user-con
 import { BankService } from '../../services/bank-service/bank.service';
 import { CanDeactivate } from '@angular/router';
 import { PageResponse, WordHelpResponse } from 'src/app/models/reading.model';
+import {
+  faChevronRight,
+  faChevronLeft,
+} from '@fortawesome/free-solid-svg-icons';
 
 // TODO: Remove timer logic at some point - when happy with request-response speed
 
@@ -28,6 +32,9 @@ import { PageResponse, WordHelpResponse } from 'src/app/models/reading.model';
 export class ReadingViewComponent
   implements OnInit, CanDeactivate<ReadingViewComponent>
 {
+  faChevronRight = faChevronRight;
+  faChevronLeft = faChevronLeft;
+
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
@@ -112,7 +119,6 @@ export class ReadingViewComponent
 
   getCurrentPage() {
     // Use docID and pageIndex in DB to retrieve the current page
-    console.time('now');
     this.currentPageSubscription = this.user$
       .pipe(
         switchMap((user) =>
@@ -124,10 +130,8 @@ export class ReadingViewComponent
           this.pageIndex = response.pageIndex;
           this.text = response.page;
           this.setLocalStorage();
-          console.timeEnd('now');
         }),
         catchError((err) => {
-          console.log(err);
           return throwError(() => new Error(err));
         })
       )
@@ -286,19 +290,17 @@ export class ReadingViewComponent
     if (this.bankService.known.has(this.selectedWord)) {
       this.bankService.known.delete(this.selectedWord);
     }
-    let processWordLangURL = 'http://127.0.0.1:8000/processWord' + this.selectedLanguage;
+    let processWordLangURL =
+      'http://127.0.0.1:8000/processWord' + this.selectedLanguage;
     this.wordHelpSubscription = this.user$
       .pipe(
         switchMap((user) =>
-          this.http.post<WordHelpResponse>(
-            processWordLangURL,
-            {
-              word: this.selectedWord,
-              context: sentence,
-              maskedContext: maskedSentence,
-              userId: user.id,
-            }
-          )
+          this.http.post<WordHelpResponse>(processWordLangURL, {
+            word: this.selectedWord,
+            context: sentence,
+            maskedContext: maskedSentence,
+            userId: user.id,
+          })
         ),
         tap((response) => {
           console.log(response);
