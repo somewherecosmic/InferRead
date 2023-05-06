@@ -13,7 +13,7 @@ backend-test:
 
 fe-unit-test:
     stage: fe-unit-test
-    image: node:sass
+    image: node:12-alpine
     script:
         - cd src/infer-read-frontend/
         - npm install
