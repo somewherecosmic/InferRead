@@ -1,16 +1,23 @@
 <div class="body">
   <app-nav-bar-general></app-nav-bar-general>
   <div class="RHS">
-    <div class="reading-body">
-      <p [textContent]="text" (dblclick)="highlight($event)"></p>
-      <!-- <p>
-      <span *ngFor="let word of text.split(' ')" [class.is-hovered]="word === hoveredWord" (mouseenter)="onMouseEnter(word)" (mouseleave)="onMouseLeave()" (dblclick)="highlight($event)"">{{word + " "}}</span>
-      </p> -->
-      <div>
-        <button *ngIf="pageIndex > 0" (click)="getPreviousPage()">
-          Previous page
+    <div class="reading-and-nav">
+      <div class="reading-body">
+        <p [textContent]="text" (dblclick)="highlight($event)"></p>
+      </div>
+      <div class="reading-nav">
+        <button
+          class="nav-btn"
+          [disabled]="pageIndex == 0"
+          (click)="getPreviousPage()"
+        >
+          <fa-icon size="3x" [icon]="faChevronLeft"></fa-icon>
+          <h3>Back</h3>
         </button>
-        <button (click)="getNextPage()">Next page</button>
+        <button class="nav-btn" (click)="getNextPage()">
+          <fa-icon size="3x" [icon]="faChevronRight"></fa-icon>
+          <h3>Next</h3>
+        </button>
       </div>
     </div>
 

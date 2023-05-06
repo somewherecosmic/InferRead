@@ -34,7 +34,6 @@ config({
   },
 });
 
-
 @Component({
   selector: 'app-overview',
   templateUrl: './overview.component.html',
@@ -79,7 +78,7 @@ export class OverviewComponent implements OnInit {
       .subscribe((userConfigSuperObject: any) => {
         this.selectedLanguage =
           userConfigSuperObject.userConfig.selectedLanguage;
-          console.log("Language: " + this.selectedLanguage);
+        console.log('Language: ' + this.selectedLanguage);
       });
     this.getDocuments();
   }
@@ -96,12 +95,12 @@ export class OverviewComponent implements OnInit {
         tap((documentsFromDB) => {
           this.documentsFromDB = documentsFromDB;
           if (this.filterDocuments !== undefined) {
-          this.filteredDocuments = this.filterDocuments(
-            documentsFromDB,
-            this.selectedLanguage
-          );
-        }
-          }),
+            this.filteredDocuments = this.filterDocuments(
+              documentsFromDB,
+              this.selectedLanguage
+            );
+          }
+        }),
         catchError((err) => {
           return throwError(() => new Error(err));
         })
@@ -135,12 +134,12 @@ export class OverviewComponent implements OnInit {
         })
       )
       .subscribe();
-      // Remove doc from existing array
-      for (var i = 0; i<this.filteredDocuments.length; i++) {
-        if (this.filteredDocuments[i]._id === documentID) {
-          this.filteredDocuments.splice(i, 1);
-        }
+    // Remove doc from existing array
+    for (var i = 0; i < this.filteredDocuments.length; i++) {
+      if (this.filteredDocuments[i]._id === documentID) {
+        this.filteredDocuments.splice(i, 1);
       }
+    }
   }
 
   ngOnDestroy(): void {
@@ -158,10 +157,7 @@ export class OverviewComponent implements OnInit {
 
     if (file) {
       this.fileName = file.name;
-
       this.uploadDocData = new FormData();
-      const userId: string = this.authService.getUserId();
-
       this.uploadDocData.append(
         'user',
         JSON.parse(localStorage.getItem('userObject')).id
@@ -180,12 +176,10 @@ export class OverviewComponent implements OnInit {
     this.addDocumentVisible = false;
 
     upload$.subscribe((response) => {
-      console.log(response);
-      if (response.successfulUpload){
+      if (response.successfulUpload) {
         this.filteredDocuments.push(response.successfulUpload);
       }
     });
-    // this.filteredDocuments.push
   }
 
   onDeleteDocNav(): void {
