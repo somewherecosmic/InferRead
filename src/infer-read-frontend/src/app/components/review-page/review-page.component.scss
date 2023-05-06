@@ -1,4 +1,25 @@
-.body{
+.body {
+  display: flex;
+  background-color: #f3f2ef;
+  .RHS {
+    height: 90vh;
+    width: 98vw;
     display: flex;
-    .RHS{}
+    flex-direction: column;
+    margin-left: 1vw;
+    margin-top: 0.5vh;
+    margin-right: 1vw;
+    border-radius: 0.75vw;
+    background-color: #ffffff;
+    .X {
+      height: 90vh;
+      background-color: #f3f2ef;
+      border-left: #000000 0.125vw solid;
+      border-right: #000000 0.125vw solid;
+      margin-left: 22.5vw;
+      margin-right: 22.5vw;
+      padding-left: 2.5vw;
+      padding-right: 2.5vw;
+    }
+  }
 }

@@ -1,47 +1,54 @@
 <div class="body">
   <app-nav-bar-general></app-nav-bar-general>
   <div class="RHS">
-    <ng-container *ngIf="start">
-      <div *ngIf="total > 0">
-        <h2>New: {{ new.length }}</h2>
-        <h2>In Progress: {{ inProgress.length }}</h2>
-        <h2>Due: {{ due.length }}</h2>
-        <button
-          (click)="startRevision()"
-          (keyup.space)="startRevision()"
-          tabindex="0"
-        >
-          Start Revision
-        </button>
-      </div>
-      <div *ngIf="total === 0">No cards due for today. Keep learning!</div>
-    </ng-container>
+    <div class="X">
+      <h2>
+        Personalized Training for
+        {{ (userConfig$ | async)?.userConfig.selectedLanguage }}
+      </h2>
+      <ng-container *ngIf="start; else X">
+        <div *ngIf="total > 0">
+          <h2>New: {{ new.length }}</h2>
+          <h2>In Progress: {{ inProgress.length }}</h2>
+          <h2>Due: {{ due.length }}</h2>
+          <button
+            (click)="startRevision()"
+            (keyup.space)="startRevision()"
+            tabindex="0"
+          >
+            Start Revision
+          </button>
+        </div>
+        <div *ngIf="total === 0">No cards due for today. Keep learning!</div>
+      </ng-container>
 
-    <div *ngIf="!start">
-      <div *ngIf="total > 0">
-        <h4>New: {{ new.length }}</h4>
-        <h4>In Progress: {{ inProgress.length }}</h4>
-        <h4>Due: {{ due.length }}</h4>
-        <h2>{{ currentCard.word }}</h2>
-        <div *ngIf="displayCard">
-          <h3>{{ currentCard.partOfSpeech }}</h3>
-          <div *ngIf="currentCard.morphology">
-            <h3 *ngFor="let feature of currentCard.morphology | keyvalue">
-              {{ disambiguation[feature.value] }}
-            </h3>
-          </div>
-          <h3>Root: {{ currentCard.root }}</h3>
-          <div>
-            <button (click)="againHandler(currentCard)">Again</button>
-            <button (click)="goodHandler(currentCard)">Good</button>
-            <button (click)="easyHandler(currentCard)">Easy</button>
+      <ng-template #X>
+        <div *ngIf="total > 0">
+          <h4>New: {{ new.length }}</h4>
+          <h4>In Progress: {{ inProgress.length }}</h4>
+          <h4>Due: {{ due.length }}</h4>
+          <h2>{{ currentCard.word }}</h2>
+          <div *ngIf="displayCard">
+            <h3>{{ currentCard.partOfSpeech }}</h3>
+            <div *ngIf="currentCard.morphology">
+              <h3 *ngFor="let feature of currentCard.morphology | keyvalue">
+                {{ disambiguation[feature.value] }}
+              </h3>
+            </div>
+            <h3>Root: {{ currentCard.root }}</h3>
+            <div>
+              <button (click)="againHandler(currentCard)">Again</button>
+              <button (click)="goodHandler(currentCard)">Good</button>
+              <button (click)="easyHandler(currentCard)">Easy</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div *ngIf="total === 0">
-        <h2>All cards for today are done.</h2>
-      </div>
+        <div *ngIf="total === 0">
+          <h2>All cards for today are done.</h2>
+        </div>
+        <p> Press Space to Reveal Answers</p>
+      </ng-template>
     </div>
   </div>
 </div>

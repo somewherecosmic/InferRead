@@ -16,5 +16,5 @@ fe-unit-test:
     image: node:12-alpine
     script:
         - cd src/infer-read-frontend/
-        - npm install
+        - npm install -g @angular/cli
         - ng test --progress=false --watch=false
