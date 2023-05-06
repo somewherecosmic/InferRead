@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User } from 'src/app/models/user.model'
+import { LearningWord, User } from 'src/app/models/user.model'
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Bank } from '../../models/user.model';
 
@@ -11,19 +11,7 @@ import { Bank } from '../../models/user.model';
 export class BankService {
 
   known: Set<String>;
-  learning: [
-  { word: string,
-    partOfSpeech: string,
-    root: string,
-    morphology: {
-      Voice?: string,
-      Tense?: string,
-      Number?: string,
-      Gender?: string,
-      VerbForm? : string 
-    }
-  }
-]
+  learning: [LearningWord]
 
   disambiguation = {
     "Masc": "Masculine",
@@ -56,12 +44,15 @@ export class BankService {
     return this.http.get<BankResponse>(`http://localhost:3000/user/getBank/${user.id}`).pipe(tap(bankResponse => {
       this.known = new Set(bankResponse.bank.known);
       this.learning = bankResponse.bank.learning;
+      console.log("bank response of learning:" + bankResponse.bank.learning.toString())
+      console.log("Inside getBank:" + this.learning);
     }
     ));
   } 
   
   updateBank(user: User) {
-    var bank: Bank = {known: Array.from(this.known.values()) as string[], learning: this.learning}
+    console.log("Inside update:" +  this.learning);
+    let bank: Bank = {known: Array.from(this.known.values()) as string[], learning: this.learning}
     return this.http.patch<Bank>(`http://localhost:3000/user/updateBank/${user.id}`, bank);
   }
 
@@ -80,25 +71,18 @@ export class BankService {
     });
   }
 
+  clearBank(user: User) {
+    return this.http.delete(`http://localhost:3000/user/clearBank/${user.id}`).pipe(tap(res => {
+      console.log(res);
+    }))
+  }
+
 }
 
 
 interface BankResponse {
   bank: {
     known: string[],
-    learning: [
-    {
-      word: string, 
-      partOfSpeech: string,
-      root: string, 
-      morphology: {
-        Voice?: string,
-        Tense?: string,
-        Number?: string,
-        Gender?: string,
-        VerbForm? : string 
-      }
-    }
-    ]
+    learning: [LearningWord]
   }
 }

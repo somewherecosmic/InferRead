@@ -5,6 +5,7 @@
       <p>Email: {{ user.email}}</p>
       <p>Username: {{ user.id}}</p>
       <p> {{user.userConfig | json}}</p>
+      <button (click)="clearBank(user)">Clear Word Bank</button>
     </div>
     <ng-template #userDataError>
       <div>

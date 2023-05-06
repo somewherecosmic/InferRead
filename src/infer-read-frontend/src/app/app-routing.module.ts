@@ -6,7 +6,8 @@ import { ReviewPageComponent } from './components/review-page/review-page.compon
 import { LoginAuthorizationComponent } from './components/login-auth/login-auth.component';
 import { UserPageComponent } from './components/user-page/user-page.component';
 import { AuthGuard } from './services/auth-guard/auth.guard';
-import { CanDeactivateGuard } from './services/can-deactivate-guard/can-deactivate.guard';
+import { ReadingDeactivateGuard } from './services/reading-deactivate-guard/reading-deactivate.guard';
+import { ReviewDeactivateGuard } from './services/review-deactivate-guard/review-deactivate.guard';
 
 @NgModule({
   imports: [
@@ -18,8 +19,8 @@ import { CanDeactivateGuard } from './services/can-deactivate-guard/can-deactiva
           canActivate: [AuthGuard],
           children: [
             { path: 'overview', component: OverviewComponent },
-            { path: 'read', component: ReadingViewComponent, canDeactivate: [CanDeactivateGuard] },
-            { path: 'review', component: ReviewPageComponent },
+            { path: 'read', component: ReadingViewComponent, canDeactivate: [ReadingDeactivateGuard] },
+            { path: 'review', component: ReviewPageComponent, canDeactivate: [ReviewDeactivateGuard] },
             { path: 'user', component: UserPageComponent },
           ],
         },
