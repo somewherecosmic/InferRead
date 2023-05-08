@@ -11,3 +11,4 @@ src/ocr/nlp/share
 src/ocr/nlp/bert-base-irish-cased-v1
 src/.idea/
 src/ocr/nlp/Untitled.ipynb
+.env

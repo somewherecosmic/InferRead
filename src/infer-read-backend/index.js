@@ -1,10 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
+dotenv.config();
 import authRoutes from './routes/auth.js';
 import documentRoutes from './routes/documents.js'
 import userSettingsRoutes from './routes/user.js'
+
+const PORT = process.env.PORT || 3000
 
 const app = express();
 
@@ -29,8 +33,9 @@ app.use('/user', userSettingsRoutes);
 
 mongoose.set('strictQuery', false);
 mongoose
-    .connect('mongodb+srv://Ethan:2mQWDO8L7jTetddl@cluster0.kbsgj.mongodb.net/test?retryWrites=true&w=majority').then(result => {
-        app.listen(3000)
+    .connect(process.env.MONGODB_URL).then(result => {
+        app.listen(process.env.PORT)
+        console.log(`Node server running on port ${PORT}`);
         console.log("Connected to MongoDB Atlas Cluster");
     })
     .catch(err => {

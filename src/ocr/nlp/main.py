@@ -5,7 +5,7 @@ from io import BytesIO
 from typing import List
 
 import certifi
-from irishAPI import router as irishRouter
+# from routers import irishAPI
 import motor.motor_asyncio
 import numpy as np
 import pydantic
@@ -19,14 +19,17 @@ from pydantic import BaseModel
 from spacy.tokenizer import Tokenizer
 from spacy.tokens import Doc, Token
 from transformers import CamembertTokenizer, TFCamembertForMaskedLM
+from dotenv import load_dotenv
 
+
+load_dotenv()
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
 app = FastAPI()
-app.include_router(irishRouter)
+# app.include_router(irishRouter)
 model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
 tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
-frenchNLP = spacy.load("fr_core_news_lg")
+frenchNLP = spacy.load("fr_core_news_md")
 
 # export to file later
 
