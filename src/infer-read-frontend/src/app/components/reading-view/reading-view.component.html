@@ -14,7 +14,7 @@
           <fa-icon size="3x" [icon]="faChevronLeft"></fa-icon>
           <h3>Back</h3>
         </button>
-        <h3>{{pageIndex}}</h3>
+        <h3>{{pageIndex+1}}</h3>
         <button class="nav-btn" (click)="getNextPage()">
           <fa-icon size="3x" [icon]="faChevronRight"></fa-icon>
           <h3>Next</h3>
@@ -27,19 +27,19 @@
       class="side-help-info"
     >
       <h1>{{ selectedWord }}</h1>
-      <h3>{{ "Root: " + wordHelp.root }}</h3>
-      <h3>{{ wordHelp.partOfSpeech }}</h3>
-      <h5 *ngFor="let feature of wordHelp.morphology | keyvalue">
+      <h2>{{ "Root: " + wordHelp.root }}</h2>
+      <h2>{{ wordHelp.partOfSpeech }}</h2>
+      <h3 *ngFor="let feature of wordHelp.morphology | keyvalue">
         {{ disambiguation[feature.value] }}
-      </h5>
+      </h3>
 
-      <h4 *ngIf="wordHelp.maskedLMPredictions">Contextually viable:</h4>
-      <h5 *ngFor="let word of wordHelp.maskedLMPredictions">{{ word }}</h5>
+      <h2 *ngIf="wordHelp.maskedLMPredictions">Contextually viable:</h2>
+      <h3 *ngFor="let word of wordHelp.maskedLMPredictions">{{ word }}</h3>
     </div>
     <div *ngIf="selectedLanguage == 'Irish'" class="side-help-info">
       <h1>{{ selectedWord }}</h1>
-      <h4 *ngIf="wordHelp.maskedLMPredictions">Contextually viable:</h4>
-      <h5 *ngFor="let word of wordHelp.maskedLMPredictions">{{ word }}</h5>
+      <h3 *ngIf="wordHelp.maskedLMPredictions">Contextually viable:</h3>
+      <h3 *ngFor="let word of wordHelp.maskedLMPredictions">{{ word }}</h3>
     </div>
   </div>
 </div>
