@@ -8,12 +8,13 @@ import { UserPageComponent } from './components/user-page/user-page.component';
 import { AuthGuard } from './services/auth-guard/auth.guard';
 import { ReadingDeactivateGuard } from './services/reading-deactivate-guard/reading-deactivate.guard';
 import { ReviewDeactivateGuard } from './services/review-deactivate-guard/review-deactivate.guard';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   imports: [
     RouterModule.forRoot(
       [
-        { path: '', component: LoginAuthorizationComponent },
+        { path: '', component: HomeComponent },
         {
           path: '',
           canActivate: [AuthGuard],

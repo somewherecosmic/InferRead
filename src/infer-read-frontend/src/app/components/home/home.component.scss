@@ -1,0 +1,37 @@
+.flex-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+.logo {
+    border: 3px solid yellow;
+    margin-right: auto;
+    padding: 1.5rem;
+    padding-right: 3rem;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.logo img {
+    width: 33%;
+}
+
+.logo h1 {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 3.5rem;
+}
+
+.header {
+    border: 3px solid red;
+}
+
+nav {
+    border: 3px solid orange;
+}
+
+ul {
+    border: 3px solid black;
+}
+
