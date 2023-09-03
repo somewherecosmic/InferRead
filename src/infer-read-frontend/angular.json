@@ -28,10 +28,7 @@
               "src/assets"
             ],
             "styles": [
-              "node_modules/devextreme/dist/css/dx.light.css",
-              "@angular/material/prebuilt-themes/purple-green.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/styles.scss"
+              "src/sass/styles.scss"
             ],
             "scripts": []
           },

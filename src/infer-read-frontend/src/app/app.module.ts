@@ -8,10 +8,6 @@ import {
 } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
-import {
-  DxSpeedDialActionModule,
-  DxPopupModule,
-} from 'devextreme-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/page-skeleton/header/header.component';
@@ -46,8 +42,8 @@ import { UserPageComponent } from './components/user-page/user-page.component';
     HttpClientModule,
     BrowserAnimationsModule,
     FontAwesomeModule,
-    DxSpeedDialActionModule,
-    DxPopupModule,
+    // DxSpeedDialActionModule,
+    // DxPopupModule,
   ],
   providers: [
     {
