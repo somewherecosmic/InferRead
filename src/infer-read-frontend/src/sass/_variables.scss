@@ -1,7 +1,7 @@
 // InferRead variables - from mockup design
 
 // Min-width for desktop -> media queries
-$width: 680px; 
+$width: 800px; 
 
 // Font sizes
 $font-sizes-sm: (
@@ -20,19 +20,41 @@ $font-sizes-ds: (
     "600": 1.375rem,
     "700": 2.25rem,
     "800": 3rem,
-    "900": 4rem
+    "900": 5rem
 );
 
 @function getMobileFont($font-size) {
-    @return app-get($font-sizes-sm, $font-size);
+    @return map-get($font-sizes-sm, $font-size);
 };
 
 @function getDesktopFont($font-size) {
-    @return app-get($font-sizes-ds, $font-size);
+    @return map-get($font-sizes-ds, $font-size);
 };
+
+// Font families
+@font-face {
+    font-family: 'Inter';
+    src: url(https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap);
+};
+
+@font-face {
+    font-family: 'Libre Baskerville';
+    src: url(https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap);
+};
+
+$ir-font-primary: 'Libre Baskerville';
+$ir-font-secondary: 'Inter';
 
 // Colors
 $ir-primary: rgba(249, 237, 177, 0.62);
 $ir-secondary: rgba(98, 94, 78, 1);
 $ir-shadow: rgba(176, 171, 153, 1);
 $ir-positive: rgba(105, 196, 181, 0.7);
+
+// utilty
+@mixin flexGroup($flex-direction, $justify, $align) {
+    display: flex;
+    flex-direction: $flex-direction;
+    justify-content: $justify;
+    align-items: $align;
+}

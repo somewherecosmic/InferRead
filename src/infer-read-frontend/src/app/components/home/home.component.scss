@@ -1,0 +1,119 @@
+@import "../../../sass/styles.scss";
+
+
+// Section 1 - Hero 
+
+.landing__ {
+    &hero {
+        background-color: $ir-primary;
+        max-width: 100%;
+    }
+
+    &header {
+            display: block;
+            font-family: $ir-font-primary;
+            margin: 0 auto;
+        
+            h1 {
+                margin: 0;
+                font-weight: 400;
+                font-size: getMobileFont('800');
+                max-width: 33%;
+                padding: 1rem;
+                margin: 0 auto;
+                text-align: center;
+            }
+    }
+    
+
+    &welcome {
+        font-family: $ir-font-secondary;
+        font-weight: 600;
+        max-width: 80%;
+        min-width: 70%;
+        margin: 0 auto;
+        border: 3px solid red;
+        @include flexGroup(column, space-between, null);
+
+            
+        h2 {
+            font-size: getMobileFont("800");
+            padding: 2rem;
+            min-height: 33%;
+        }
+
+        h3 {
+            font-size: getMobileFont("700");
+                
+        }
+
+        &-column {
+            @include flexGroup(column, center, space-between);
+            margin: 0 auto;
+        }
+    }
+
+    &form {
+        margin: 0;
+        padding: 0;
+
+        &-buttons {
+            @include flexGroup(null, space-around, null);
+        }
+
+        input {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        &-button {
+            // background-color: $ir-positive;
+            // font-size: getMobileFont('400');  
+            // font-family: $ir-font-secondary;
+            // font-weight: 600;
+
+        }
+    }
+    
+            // Section 2 - Features Showcase
+    &features {
+        background-color: $ir-secondary;
+        color: rgba(255, 255, 255, 0.9);
+        // display: grid;
+        // grid-template-columns: 
+        // grid-template-rows: 1fr 1fr;
+    }
+
+    }
+// Desktop Styles
+@media (min-width: $width) {
+
+    .landing__ {
+
+    &hero {
+        height: 100vh;
+    }
+
+    &header {
+        
+        h1 {
+            font-size: getDesktopFont('700');
+            padding: 1.5rem;
+            margin: 0 auto;
+        }
+    }
+
+    &welcome {
+        max-width: 40%;
+        min-height: 50%;
+        @include flexGroup(row, center, center);
+
+        h2 {
+            font-size: getDesktopFont("900");
+            padding: 3rem;
+            max-width: 11ch;
+        }
+    }
+}
+}
