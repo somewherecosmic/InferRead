@@ -1,0 +1,38 @@
+// InferRead variables - from mockup design
+
+// Min-width for desktop -> media queries
+$width: 680px; 
+
+// Font sizes
+$font-sizes-sm: (
+    "400": 1rem,
+    "500": 1.125rem,
+    "600": 1.25rem,
+    "700": 1.375rem,
+    "800": 2rem,
+    "900": 3rem
+);
+
+
+$font-sizes-ds: (
+    "400": 1.125rem,
+    "500": 1.25rem,
+    "600": 1.375rem,
+    "700": 2.25rem,
+    "800": 3rem,
+    "900": 4rem
+);
+
+@function getMobileFont($font-size) {
+    @return app-get($font-sizes-sm, $font-size);
+};
+
+@function getDesktopFont($font-size) {
+    @return app-get($font-sizes-ds, $font-size);
+};
+
+// Colors
+$ir-primary: rgba(249, 237, 177, 0.62);
+$ir-secondary: rgba(98, 94, 78, 1);
+$ir-shadow: rgba(176, 171, 153, 1);
+$ir-positive: rgba(105, 196, 181, 0.7);
