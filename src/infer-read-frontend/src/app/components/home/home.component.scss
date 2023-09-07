@@ -7,11 +7,12 @@
 // multiply font sizes, paddings etc. with a ratio
 // if spacings are set with em, they will adapt to the font size adjustments with the breakpoints
 
-$xs-ratio: 0.5;
+$xs-ratio: 0.625;
 
 .landing__ {
     &hero {
         background-color: $ir-primary;
+        height: 100vh;
     }
 
     &header {
@@ -29,6 +30,7 @@ $xs-ratio: 0.5;
 
         font-family: $ir-font-secondary;
         font-weight: 600;
+        min-height: 80%;
 
         &-text {
             font-size: calc(getMobileFont($fs-welcome) * $xs-ratio);
@@ -69,8 +71,9 @@ $xs-ratio: 0.5;
     // Section 2 -> Features Showcase
 
     &features {
-
         background-color: $ir-secondary;
+
+
     }
 }
 
