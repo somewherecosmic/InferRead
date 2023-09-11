@@ -31,6 +31,7 @@ $xs-ratio: 0.625;
         font-family: $ir-font-secondary;
         font-weight: 600;
         min-height: 80%;
+        @include container;
 
         &-text {
             font-size: calc(getMobileFont($fs-welcome) * $xs-ratio);
@@ -98,19 +99,73 @@ $xs-ratio: 0.625;
 
     // Section 2 -> Features Showcase
 
-    &features {
+    &feature-section {
         background-color: $ir-secondary;
         color: #FFF;
         font-family: $ir-font-secondary;
-        font-size: calc(getMobileFont("500") * $xs-ratio);
+        font-size: calc(getMobileFont("600") * $xs-ratio);
+        height: 100vh;
     }
-}
 
-.container {
-    width: 80%;
-    max-width: 320px;
-    margin: 0 auto;
-    border: 2px solid red;
+    &features {
+        padding: 2em 0;
+        @include container;
+        @include flexGroup(column, space-between, null);
+        min-height: 80%;
+    }
+
+    &feature {
+        
+        margin: 0 auto;
+        padding: 1em 0;
+
+        &.one {
+            @include flexGroup(column, center, center);
+            padding: .25em;
+            border: 1px solid #FFF;
+            width: 100%;
+        }
+
+        &.two {
+            // @include flexGroup(row, space-between, null);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2em;
+        }
+
+        // Images are children of a picture element; to adjust the image, we have to adjust the parent picture element
+        picture.one {
+            width: 75%;
+            margin-bottom: 1em;
+        }
+
+        picture.two {
+            width: 50%;
+        }
+    }
+
+    &feature-image {
+        width: 100%;
+    }
+
+    &feature-text {
+        line-height: 1.1;
+
+        &.one {
+           display: grid;
+           grid-template-columns: 1fr 1fr;
+           gap: 2em;
+        }
+
+        &.two {
+            width: 100%;
+            margin: auto;
+        }
+
+
+    }
+
+    &feature-paragraph {}
 }
 
 
