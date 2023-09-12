@@ -10,6 +10,27 @@ $breakpoints: (
     "xxl": 1281px
 );
 
+$ratios: (
+    "xsm": 0.625,
+    "sm": 0.75,
+    "md": 0.875,
+    "lg": 1,
+    "xl": 1,
+    "xxl": 1
+);
+
+@function getBreakpoint($breakpoint) {
+    @return map-get($breakpoints, $breakpoint);
+};
+
+@function getRatio($breakpoint) {
+    @return map-get($ratios, $breakpoint);
+};
+
+@function scaleSize($fontFunc, $size, $breakpoint) {
+    @return calc(call(get-function($fontFunc), $size) * call(get-function(getRatio), $breakpoint));
+}
+
 // Font sizes
 $font-sizes-sm: (
     "400": 1rem,
