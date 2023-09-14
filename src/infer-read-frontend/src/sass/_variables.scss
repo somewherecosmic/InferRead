@@ -11,9 +11,9 @@ $breakpoints: (
 );
 
 $ratios: (
-    "xsm": 0.625,
-    "sm": 0.75,
-    "md": 0.875,
+    "xsm": 0.75,
+    "sm": 0.875,
+    "md": 1,
     "lg": 1,
     "xl": 1,
     "xxl": 1
@@ -100,9 +100,9 @@ $ir-positive: rgba(105, 196, 181, 0.7);
     padding: 0.25em 0.5em;
 }
 
-@mixin container() {
-    width: 80%;
-    max-width: 320px;
+@mixin container($breakpoint) {
+    width: 90%;
+    max-width: $breakpoint;
     margin: 0 auto;
     border: 2px solid red;
 }

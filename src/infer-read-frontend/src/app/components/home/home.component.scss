@@ -31,7 +31,8 @@
         font-family: $ir-font-secondary;
         font-weight: 600;
         min-height: 80%;
-        @include container;
+        @include container(getBreakpoint("xsm"));
+        @include flexGroup(column, space-around, space-between);
 
         &-text {
             // font-size: calc(getMobileFont($fs-welcome) * $"xsm");
@@ -68,13 +69,14 @@
             @include irButton;
             background-color: $ir-positive;
             width: 50%;
+            font-size: scaleSize(getMobileFont, "700", "xsm");
         }
 
         &-input {
             background-color: $ir-input-fill;
             font-family: $ir-font-secondary, sans-serif;
             // font-size: calc(getMobileFont("600") * "xsm");
-            font-size: scaleSize(getMobileFont, "600", "xsm");
+            font-size: scaleSize(getMobileFont, "700", "xsm");
             // fill: $ir-input-fill;
             stroke-width: 1px;
             stroke: #000;
@@ -94,7 +96,7 @@
         ::-webkit-input-placeholder {
             font-family: $ir-font-secondary, sans-serif;
             // font-size: calc(getMobileFont("600") * "xsm");
-            font-size: scaleSize(getMobileFont, "600", "xsm");
+            font-size: scaleSize(getMobileFont, "700", "xsm");
             font-weight: 600;
             color: #000;
             padding-left: 0.25em;
@@ -113,7 +115,7 @@
 
     &features {
         padding: 2em 0;
-        @include container;
+        @include container(getBreakpoint("xsm"));
         @include flexGroup(column, space-between, null);
         min-height: 80%;
     }
@@ -171,41 +173,8 @@
 
 }
 
-// Breakpoint 1 -> small screens, landscape phones
-// @media (min-width: 480px) {
-//     .landing__ {
-//         &header {
-//             font-size: scaleSize(getMobileFont, $fs-header, "sm");
-//         }
-
-//         &welcome {
-//             &-text {
-//                 font-size: scaleSize(getMobileFont, $fs-welcome, "sm");
-//             }
-
-//             &-banner {
-//                 font-size: scaleSize(getMobileFont, $fs-callout, "sm");
-//             }
-//         }
-
-//         &form {
-//             &-input {
-//                 font-size: scaleSize(getMobileFont, "600", "sm");
-//             }
-
-//             ::-webkit-input-placeholder {
-//                 font-size: scaleSize(getMobileFont, "600", "sm");
-//             }
-//         }
-
-//         &feature-section {
-//             font-size: scaleSize(getMobileFont, "600", "sm");
-//         }
-
-//     }
-// }
-
-// can for loop through each media size and set the font sizes for each breakpoint
+// Breakpoints
+// Handle font sizing at each breakpoint
 
 @each $size, $breakpoint in $breakpoints {
     @media (min-width: $breakpoint) {
@@ -236,20 +205,30 @@
                 &-banner {
                     font-size: scaleSize($func, $fs-callout, $size);
                 }
+
+                @include container($breakpoint);
             }
     
             &form {
                 &-input {
-                    font-size: scaleSize($func, "600", $size);
+                    font-size: scaleSize($func, "700", $size);
                 }
     
                 ::-webkit-input-placeholder {
-                    font-size: scaleSize($func, "600", $size);
+                    font-size: scaleSize($func, "700", $size);
+                }
+
+                &-button {
+                    font-size: scaleSize($func, "700", $size);
                 }
             }
     
             &feature-section {
                 font-size: scaleSize($func, "600", $size);
+            }
+
+            &features {
+                @include container($breakpoint);
             }
     
         }

@@ -21,6 +21,8 @@ import { HomeComponent } from './components/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthInterceptorService } from './services/auth-interceptor-service/auth-interceptor.service';
 import { UserPageComponent } from './components/user-page/user-page.component';
+import { HeroComponent } from './components/hero/hero.component';
+import { FeaturesComponent } from './components/features/features.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,8 @@ import { UserPageComponent } from './components/user-page/user-page.component';
     LoadingSpinnerComponent,
     HomeComponent,
     UserPageComponent,
+    HeroComponent,
+    FeaturesComponent,
   ],
   imports: [
     BrowserModule,
