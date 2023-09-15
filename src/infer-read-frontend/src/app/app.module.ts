@@ -8,10 +8,6 @@ import {
 } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
-import {
-  DxSpeedDialActionModule,
-  DxPopupModule,
-} from 'devextreme-angular';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './components/page-skeleton/header/header.component';
@@ -25,6 +21,8 @@ import { HomeComponent } from './components/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthInterceptorService } from './services/auth-interceptor-service/auth-interceptor.service';
 import { UserPageComponent } from './components/user-page/user-page.component';
+import { HeroComponent } from './components/hero/hero.component';
+import { FeaturesComponent } from './components/features/features.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +36,8 @@ import { UserPageComponent } from './components/user-page/user-page.component';
     LoadingSpinnerComponent,
     HomeComponent,
     UserPageComponent,
+    HeroComponent,
+    FeaturesComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,8 +46,8 @@ import { UserPageComponent } from './components/user-page/user-page.component';
     HttpClientModule,
     BrowserAnimationsModule,
     FontAwesomeModule,
-    DxSpeedDialActionModule,
-    DxPopupModule,
+    // DxSpeedDialActionModule,
+    // DxPopupModule,
   ],
   providers: [
     {

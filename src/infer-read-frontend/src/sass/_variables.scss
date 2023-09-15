@@ -1,0 +1,112 @@
+// InferRead variables - from mockup design
+
+// min-widths -> mobile-first
+$breakpoints: (
+    "xsm": 320px,
+    "sm": 480px,
+    "md": 600px,
+    "lg": 801px,
+    "xl": 1025px,
+    "xxl": 1281px
+);
+
+$ratios: (
+    "xsm": 0.75,
+    "sm": 0.875,
+    "md": 1,
+    "lg": 1,
+    "xl": 1,
+    "xxl": 1
+);
+
+@function getBreakpoint($breakpoint) {
+    @return map-get($breakpoints, $breakpoint);
+};
+
+@function getRatio($breakpoint) {
+    @return map-get($ratios, $breakpoint);
+};
+
+@function scaleSize($fontFunc, $size, $breakpoint) {
+    @return calc(call(get-function($fontFunc), $size) * call(get-function(getRatio), $breakpoint));
+}
+
+// Font sizes
+$font-sizes-sm: (
+    "400": 1rem,
+    "500": 1.125rem,
+    "600": 1.25rem,
+    "700": 1.75rem,
+    "800": 2rem,
+    "900": 3rem
+);
+
+
+$font-sizes-ds: (
+    "400": 1.25rem,
+    "500": 1.5rem,
+    "600": 2.1875rem,
+    "700": 2.3125rem,
+    "800": 3.125rem,
+    "900": 4.375rem
+);
+
+$fs-header: "700";
+$fs-callout: "800";
+$fs-welcome: "900";
+$fs-button: "500";
+
+
+@function getMobileFont($font-size) {
+    @return map-get($font-sizes-sm, $font-size);
+};
+
+@function getDesktopFont($font-size) {
+    @return map-get($font-sizes-ds, $font-size);
+};
+
+// Font families
+@font-face {
+    font-family: 'Inter';
+    src: url(https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap);
+};
+
+@font-face {
+    font-family: 'Libre Baskerville';
+    src: url(https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap);
+};
+
+$ir-font-primary: 'Libre Baskerville';
+$ir-font-secondary: 'Inter';
+
+// Colors
+$ir-primary: rgba(249, 237, 177, 0.62);
+$ir-secondary: rgba(98, 94, 78, 1);
+$ir-input-fill: rgba(217, 217, 217, 1);
+$ir-input-focus: rgba(217, 217, 217, 0.85);
+$ir-shadow: rgba(176, 171, 153, 1);
+$ir-positive: rgba(105, 196, 181, 0.7);
+
+// utilty
+@mixin flexGroup($flex-direction, $justify, $align) {
+    display: flex;
+    flex-direction: $flex-direction;
+    justify-content: $justify;
+    align-items: $align;
+}
+
+@mixin irButton() {
+    border: 1px solid black;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    padding: 0.25em 0.5em;
+}
+
+@mixin container($breakpoint) {
+    width: 90%;
+    max-width: $breakpoint;
+    margin: 0 auto;
+
+    @media (min-width: getBreakpoint("xxl")) {
+        width: 80%;
+    }
+}

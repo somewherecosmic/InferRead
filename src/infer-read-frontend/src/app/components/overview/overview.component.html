@@ -21,7 +21,7 @@
           <fa-icon [icon]="faTrash"></fa-icon>
         </button>
       </div>
-      <dx-speed-dial-action
+      <!-- <dx-speed-dial-action
         icon="add"
         label="Add document"
         [index]="1"
@@ -43,12 +43,12 @@
         [index]="2"
         (onClick)="onCancelDeleteDocNav()"
       >
-      </dx-speed-dial-action>
+      </dx-speed-dial-action> -->
     </div>
     <div class="filtering-body">
       <h3>All documents filtered to {{ this.selectedLanguage }}, to access other language documents reconfigure settings on User Page.</h3>
     </div>
-    <dx-popup
+    <!-- <dx-popup
       [width]="300"
       [height]="280"
       [showTitle]="true"
@@ -57,14 +57,14 @@
       [hideOnOutsideClick]="true"
       [showCloseButton]="true"
       [(visible)]="addDocumentVisible"
-    >
+    > -->
       <input
         type="file"
         class="file-input"
         (change)="onFileSelected($event)"
         #fileUpload
       />
-      <div *dxTemplate="let data of 'content'">
+      <!-- <div *dxTemplate="let data of 'content'"> -->
         <div class="upload-selecton">
           <p>Document being uploaded as {{ this.selectedLanguage }}</p>
           <p>Click button to select document</p>
@@ -81,6 +81,6 @@
           <p>Submit</p>
         </button>
       </div>
-    </dx-popup>
+    <!-- </dx-popup> -->
   </div>
-</div>
+<!-- </div> -->

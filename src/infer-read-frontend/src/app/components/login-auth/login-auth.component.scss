@@ -1,26 +1,28 @@
-.body-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  // height: 80vh;
-  // width: 80vw;
-  .form-group {
-    margin: 0;
-    width: 50vh;
-    .signup-button {
-      background-color: #4caf50;
-      color: #ffffff;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .login-button {
-      background-color: #555555;
-      color: #ffffff;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-    }
-  }
-}
+// .body-container {
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: center;
+//   // height: 80vh;
+//   // width: 80vw;
+//   .form-group {
+//     margin: 0;
+//     width: 50vh;
+//     .signup-button {
+//       background-color: #4caf50;
+//       color: #ffffff;
+//       text-align: center;
+//       text-decoration: none;
+//       display: inline-block;
+//     }
+//     .login-button {
+//       background-color: #555555;
+//       color: #ffffff;
+//       text-align: center;
+//       text-decoration: none;
+//       display: inline-block;
+//     }
+//   }
+// }
+
+@import "../home/home.component.scss";

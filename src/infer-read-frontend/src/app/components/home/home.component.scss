@@ -1,0 +1,294 @@
+@import "../../../sass/styles.scss";
+
+
+// Potential Approach to container 
+// Set a max-width equal to the current min-width of the breakpoint
+// First breakpoint is 320px, start with designing for this, expand to 480px, etc.
+// multiply font sizes, paddings etc. with a ratio
+// if spacings are set with em, they will adapt to the font size adjustments with the breakpoints
+
+
+.landing__ {
+    &hero {
+        background-color: $ir-primary;
+        height: 100vh;
+    }
+
+    &header {
+        font-family: $ir-font-primary;
+        //font-size: calc(getMobileFont($fs-header) * $ratio);
+        font-size: scaleSize(getMobileFont, $fs-header, "xsm");
+        display: block;
+        padding: 0.5em;
+
+        h1 {
+            text-align: center;
+        }
+    }
+
+    &welcome {
+
+        font-family: $ir-font-secondary;
+        font-weight: 700;
+        // min-height: 80%;
+        height: 80%;
+        @include container(getBreakpoint("xsm"));   
+        @include flexGroup(column, space-around, space-between);
+
+        &-column > * {
+            padding: 0.25em 0;
+        }
+
+        &-text {
+            // font-size: calc(getMobileFont($fs-welcome) * $"xsm");
+            font-size: scaleSize(getMobileFont, $fs-welcome, "xsm");
+            text-align: center;
+            padding: 1em;
+        }
+
+        &-banner {
+            // font-size: calc(getMobileFont($fs-callout) * "xsm");
+            font-size: scaleSize(getMobileFont, $fs-callout, "xsm");
+            margin: 0 auto;
+            width: 80%;
+        }
+
+    }
+
+    &form {
+        margin: 0 auto;
+        width: 80%;
+        font-size: scaleSize(getMobileFont, "700", "xsm");
+
+
+        &-inputs {
+            @include flexGroup(column, space-between, null);
+            gap: 0.75em;
+        }
+
+        &-buttons {
+            margin: 0.5em auto;
+            @include flexGroup(row, space-around, null);
+            gap: 0.5em;
+            padding-top: 0.5em;
+        }
+
+        &-button {
+            @include irButton;
+            background-color: $ir-positive;
+            width: 50%;
+            font-size: scaleSize(getMobileFont, $fs-button, "xsm");
+        }
+
+        &-input {
+            background-color: $ir-input-fill;
+            font-family: $ir-font-secondary, sans-serif;
+            // font-size: calc(getMobileFont("600") * "xsm");
+            font-size: scaleSize(getMobileFont, "700", "xsm");
+            // fill: $ir-input-fill;
+            stroke-width: 1px;
+            stroke: #000;
+            filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+            padding-left: 0.25em;
+
+            &:hover, &:focus {
+                //outline: none;
+                // border: 1px solid $ir-shadow;
+                box-shadow: 0px 4px 4px 0px $ir-shadow;
+                background-color: $ir-input-focus;
+            }
+        }
+
+
+
+        ::-webkit-input-placeholder {
+            font-family: $ir-font-secondary, sans-serif;
+            // font-size: calc(getMobileFont("600") * "xsm");
+            font-size: scaleSize(getMobileFont, "700", "xsm");
+            font-weight: 700;
+            color: #000;
+            padding-left: 0.25em;
+        }
+    }
+
+    // Section 2 -> Features Showcase
+
+    &feature-section {
+        background-color: $ir-secondary;
+        color: #FFF;
+        font-family: $ir-font-secondary;
+        font-size: scaleSize(getMobileFont, "600", "xsm");
+        height: 100vh;
+        display: flex;
+
+    }
+
+    &features {
+
+        padding: 2em 2em;
+        @include container(getBreakpoint("xsm"));
+        @include flexGroup(column, space-between, null);
+        min-height: 80%;
+        margin: auto;
+    }
+
+    &feature {
+        
+        margin: 0 auto;
+        padding: 1em 0;
+
+        &.one {
+            @include flexGroup(column, center, center);
+            padding: .25em;
+            // border: 1px solid #FFF;
+            width: 100%;
+        }
+
+        &.two {
+            // @include flexGroup(row, space-between, null);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2em;
+        }
+
+        // Images are children of a picture element; to adjust the image, we have to adjust the parent picture element
+        picture.one {
+            width: 75%;
+            margin-bottom: 1em;
+        }
+
+        picture.two {
+            width: 50%;
+        }
+    }
+
+    &feature-image {
+        width: 100%;
+    }
+
+    &feature-text {
+        line-height: 1.1;
+
+        &.one {
+           display: grid;
+           grid-template-columns: 1fr 1fr;
+           gap: 2em;
+        }
+
+        &.two {
+            width: 100%;
+            margin: auto;
+        }
+
+
+    }
+
+}
+
+// Breakpoints
+// Handle font sizing at each breakpoint
+
+@each $size, $breakpoint in $breakpoints {
+    @media (min-width: $breakpoint) {
+        $func: null;
+        $ratio: null;
+        @if $breakpoint > getBreakpoint("md") {
+            $func: getDesktopFont;
+        } @else {
+            $func: getMobileFont;
+        }
+
+        .landing__ {
+            &header {
+                font-size: scaleSize($func, $fs-header, $size);
+            }
+    
+            &welcome {
+                &-text {
+                    font-size: scaleSize($func, $fs-welcome, $size);
+                }
+    
+                &-banner {
+                    font-size: scaleSize($func, $fs-callout, $size);
+                }
+
+                @include container($breakpoint);
+            }
+    
+            &form {
+
+                font-size: scaleSize($func, "700", $size);
+
+                &-input {
+                    font-size: scaleSize($func, "700", $size);
+                }
+    
+                ::-webkit-input-placeholder {
+                    font-size: scaleSize($func, "700", $size);
+                }
+
+                &-button {
+                    font-size: scaleSize($func, $fs-button, $size);
+                }
+            }
+    
+            &feature-section {
+                font-size: scaleSize($func, "400", $size);
+            }
+
+            &features {
+                @include container($breakpoint);
+            }
+    
+        }
+    }
+}
+
+
+// Handling layouts at larger screen sizes
+
+@media (min-width: getBreakpoint("lg")) {
+
+    .landing__ {
+        &welcome {
+
+            @include flexGroup(row, space-around, center);
+
+            &-text {
+                width: 10.5ch;
+                text-align: left;
+            }
+        }
+
+        &features {
+            margin: auto;
+        }
+
+        &feature {
+
+            &.one {
+                @include flexGroup(row, flex-end, center);
+                gap: 5em;
+            }
+
+            &.two {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2em;
+            }
+            
+            &-text.one {
+                @include flexGroup(column, space-between, null);
+                width: 40%;
+            }
+
+            picture.one {
+                width: 30%;
+            }
+    
+            picture.two {
+                width: 40%; 
+            }
+        }
+    }
+}
