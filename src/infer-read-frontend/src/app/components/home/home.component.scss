@@ -29,10 +29,15 @@
     &welcome {
 
         font-family: $ir-font-secondary;
-        font-weight: 600;
-        min-height: 80%;
-        @include container(getBreakpoint("xsm"));
+        font-weight: 700;
+        // min-height: 80%;
+        height: 80%;
+        @include container(getBreakpoint("xsm"));   
         @include flexGroup(column, space-around, space-between);
+
+        &-column > * {
+            padding: 0.25em 0;
+        }
 
         &-text {
             // font-size: calc(getMobileFont($fs-welcome) * $"xsm");
@@ -53,23 +58,26 @@
     &form {
         margin: 0 auto;
         width: 80%;
+        font-size: scaleSize(getMobileFont, "700", "xsm");
+
 
         &-inputs {
-            @include flexGroup(column, space-between, space-between);
-            gap: 0.5em;
+            @include flexGroup(column, space-between, null);
+            gap: 0.75em;
         }
 
         &-buttons {
             margin: 0.5em auto;
-            @include flexGroup(row, space-around, space-between);
+            @include flexGroup(row, space-around, null);
             gap: 0.5em;
+            padding-top: 0.5em;
         }
 
         &-button {
             @include irButton;
             background-color: $ir-positive;
             width: 50%;
-            font-size: scaleSize(getMobileFont, "700", "xsm");
+            font-size: scaleSize(getMobileFont, $fs-button, "xsm");
         }
 
         &-input {
@@ -84,8 +92,8 @@
             padding-left: 0.25em;
 
             &:hover, &:focus {
-                outline: none;
-                border: 1px solid $ir-shadow;
+                //outline: none;
+                // border: 1px solid $ir-shadow;
                 box-shadow: 0px 4px 4px 0px $ir-shadow;
                 background-color: $ir-input-focus;
             }
@@ -97,7 +105,7 @@
             font-family: $ir-font-secondary, sans-serif;
             // font-size: calc(getMobileFont("600") * "xsm");
             font-size: scaleSize(getMobileFont, "700", "xsm");
-            font-weight: 600;
+            font-weight: 700;
             color: #000;
             padding-left: 0.25em;
         }
@@ -110,14 +118,18 @@
         color: #FFF;
         font-family: $ir-font-secondary;
         font-size: scaleSize(getMobileFont, "600", "xsm");
-        height: 100%;
+        height: 100vh;
+        display: flex;
+
     }
 
     &features {
-        padding: 2em 0;
+
+        padding: 2em 2em;
         @include container(getBreakpoint("xsm"));
         @include flexGroup(column, space-between, null);
         min-height: 80%;
+        margin: auto;
     }
 
     &feature {
@@ -128,7 +140,7 @@
         &.one {
             @include flexGroup(column, center, center);
             padding: .25em;
-            border: 1px solid #FFF;
+            // border: 1px solid #FFF;
             width: 100%;
         }
 
@@ -182,15 +194,9 @@
         $ratio: null;
         @if $breakpoint > getBreakpoint("md") {
             $func: getDesktopFont;
-            @debug "Inside if";
         } @else {
             $func: getMobileFont;
-            @debug "inside else";
         }
-
-        @debug $func;
-        @debug $ratio;
-        @debug scaleSize($func, $fs-header, $size);
 
         .landing__ {
             &header {
@@ -210,6 +216,9 @@
             }
     
             &form {
+
+                font-size: scaleSize($func, "700", $size);
+
                 &-input {
                     font-size: scaleSize($func, "700", $size);
                 }
@@ -219,18 +228,67 @@
                 }
 
                 &-button {
-                    font-size: scaleSize($func, "700", $size);
+                    font-size: scaleSize($func, $fs-button, $size);
                 }
             }
     
             &feature-section {
-                font-size: scaleSize($func, "600", $size);
+                font-size: scaleSize($func, "400", $size);
             }
 
             &features {
                 @include container($breakpoint);
             }
     
+        }
+    }
+}
+
+
+// Handling layouts at larger screen sizes
+
+@media (min-width: getBreakpoint("lg")) {
+
+    .landing__ {
+        &welcome {
+
+            @include flexGroup(row, space-around, center);
+
+            &-text {
+                width: 10.5ch;
+                text-align: left;
+            }
+        }
+
+        &features {
+            margin: auto;
+        }
+
+        &feature {
+
+            &.one {
+                @include flexGroup(row, flex-end, center);
+                gap: 5em;
+            }
+
+            &.two {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2em;
+            }
+            
+            &-text.one {
+                @include flexGroup(column, space-between, null);
+                width: 40%;
+            }
+
+            picture.one {
+                width: 30%;
+            }
+    
+            picture.two {
+                width: 40%; 
+            }
         }
     }
 }

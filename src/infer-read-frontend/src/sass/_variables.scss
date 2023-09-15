@@ -53,7 +53,8 @@ $font-sizes-ds: (
 
 $fs-header: "700";
 $fs-callout: "800";
-$fs-welcome: "900"  ;
+$fs-welcome: "900";
+$fs-button: "500";
 
 
 @function getMobileFont($font-size) {
@@ -104,5 +105,8 @@ $ir-positive: rgba(105, 196, 181, 0.7);
     width: 90%;
     max-width: $breakpoint;
     margin: 0 auto;
-    border: 2px solid red;
+
+    @media (min-width: getBreakpoint("xxl")) {
+        width: 80%;
+    }
 }
