@@ -4,6 +4,7 @@ import { BehaviorSubject, tap, TimeoutConfig } from 'rxjs';
 import { User, UserConfig, Bank } from '../../models/user.model';
 import { Router } from '@angular/router';
 import { BankService } from '../bank-service/bank.service';
+import { environment } from 'src/environments/environment';
 
 interface AuthorizationResponse {
   email: string;
@@ -22,6 +23,7 @@ export class AuthorizationService {
   // empty string fields treated as falsey, workaround for strict typechecking
   user = new BehaviorSubject<User | null>(null);
   tokenExpirationTimer: NodeJS.Timeout | null = null;
+  authURL = environment.authURL;
 
   authHandler(response: AuthorizationResponse) {
     const user = new User(
@@ -43,7 +45,7 @@ export class AuthorizationService {
   signup(email: string, password: string) {
     return this.http
       .post<AuthorizationResponse>(
-        'http://localhost:3000/auth/signup',
+        `${this.authURL}auth/signup`,
         {
           email: email,
           password: password,
@@ -64,7 +66,7 @@ export class AuthorizationService {
   login(email: string, password: string) {
     return this.http
       .post<AuthorizationResponse>(
-        'http://localhost:3000/auth/login',
+        `${this.authURL}auth/login`,
         {
           email: email,
           password: password,

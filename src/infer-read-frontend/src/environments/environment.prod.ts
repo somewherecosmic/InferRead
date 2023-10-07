@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  authURL: "https://ir-node-prod.up.railway.app/"
 };

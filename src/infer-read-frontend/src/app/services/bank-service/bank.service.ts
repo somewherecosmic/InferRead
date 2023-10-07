@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { LearningWord, User } from 'src/app/models/user.model'
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Bank } from '../../models/user.model';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable({
@@ -11,7 +12,9 @@ import { Bank } from '../../models/user.model';
 export class BankService {
 
   known: Set<String>;
-  learning: [LearningWord]
+  learning: [LearningWord];
+
+  authURL = environment.authURL;
 
   disambiguation = {
     "Masc": "Masculine",
@@ -41,7 +44,7 @@ export class BankService {
 
   getBank(user: User) {
     // get bank from DB, set local vars
-    return this.http.get<BankResponse>(`http://localhost:3000/user/getBank/${user.id}`).pipe(tap(bankResponse => {
+    return this.http.get<BankResponse>(`${this.authURL}user/getBank/${user.id}`).pipe(tap(bankResponse => {
       this.known = new Set(bankResponse.bank.known);
       this.learning = bankResponse.bank.learning;
       console.log("bank response of learning:" + bankResponse.bank.learning.toString())
@@ -53,7 +56,7 @@ export class BankService {
   updateBank(user: User) {
     console.log("Inside update:" +  this.learning);
     let bank: Bank = {known: Array.from(this.known.values()) as string[], learning: this.learning}
-    return this.http.patch<Bank>(`http://localhost:3000/user/updateBank/${user.id}`, bank);
+    return this.http.patch<Bank>(`${this.authURL}user/updateBank/${user.id}`, bank);
   }
 
   addToKnown(pageContent: string) {
@@ -72,7 +75,7 @@ export class BankService {
   }
 
   clearBank(user: User) {
-    return this.http.delete(`http://localhost:3000/user/clearBank/${user.id}`).pipe(tap(res => {
+    return this.http.delete(`${this.authURL}user/clearBank/${user.id}`).pipe(tap(res => {
       console.log(res);
     }))
   }

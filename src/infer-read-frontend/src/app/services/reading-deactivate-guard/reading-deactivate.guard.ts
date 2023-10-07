@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanDeactivate, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { catchError, Observable, of } from 'rxjs';
 import { ReadingViewComponent } from 'src/app/components/reading-view/reading-view.component';
 import { AuthorizationService } from '../authorization-service/authorization.service';
@@ -9,7 +9,7 @@ import { switchMap, map, tap } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class ReadingDeactivateGuard implements CanDeactivate<ReadingViewComponent> {
+export class ReadingDeactivateGuard  {
 
   constructor(private authService: AuthorizationService, private bankService: BankService ) {}
 

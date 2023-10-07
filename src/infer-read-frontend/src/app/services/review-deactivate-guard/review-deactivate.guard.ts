@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, CanDeactivate, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { catchError, Observable, of } from 'rxjs';
 import { ReadingViewComponent } from 'src/app/components/reading-view/reading-view.component';
 import { AuthorizationService } from '../authorization-service/authorization.service';
@@ -10,7 +10,7 @@ import { ReviewPageComponent } from 'src/app/components/review-page/review-page.
 @Injectable({
   providedIn: 'root'
 })
-export class ReviewDeactivateGuard implements CanDeactivate<ReviewPageComponent> {
+export class ReviewDeactivateGuard  {
 
   constructor(private authService: AuthorizationService, private bankService: BankService ) {}
 

@@ -21,6 +21,7 @@ import {
   DocumentPostResponse,
   UploadedDocument,
 } from 'src/app/models/documents.model';
+import { environment } from 'src/environments/environment';
 
 config({
   //BMcQ Comment: Configuration of floating action button
@@ -61,6 +62,7 @@ export class OverviewComponent implements OnInit {
   isDeleteDocument = false;
   uploadDocData = new FormData();
   isSubmitAvailable = false;
+  authURL = environment.authURL;
 
   //BMcQ Comment: copying code from file-upload which will be moved here
   text = '';
@@ -88,7 +90,7 @@ export class OverviewComponent implements OnInit {
       .pipe(
         switchMap((user) =>
           this.httpClient.get<DocumentGetResponse>(
-            `http://localhost:3000/documents/getDocuments/${user.id}`
+            `${this.authURL}documents/getDocuments/${user.id}`
           )
         ),
         map((response) => response.documents),
@@ -122,7 +124,7 @@ export class OverviewComponent implements OnInit {
       .pipe(
         switchMap((user) =>
           this.httpClient.delete<DocumentDeletionResponse>(
-            `http://localhost:3000/documents/deleteDocument/${user.id}/${documentID}`
+            `${this.authURL}documents/deleteDocument/${user.id}/${documentID}`
           )
         ),
         tap(() => {

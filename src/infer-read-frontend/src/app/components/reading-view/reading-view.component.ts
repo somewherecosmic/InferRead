@@ -15,7 +15,7 @@ import { Bank, User, UserConfig } from '../../models/user.model';
 import { AuthorizationService } from '../../services/authorization-service/authorization.service';
 import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
 import { BankService } from '../../services/bank-service/bank.service';
-import { CanDeactivate } from '@angular/router';
+
 import { PageResponse, WordHelpResponse } from 'src/app/models/reading.model';
 import {
   faChevronRight,
@@ -30,7 +30,7 @@ import {
   styleUrls: ['./reading-view.component.scss'],
 })
 export class ReadingViewComponent
-  implements OnInit, CanDeactivate<ReadingViewComponent>
+   implements OnInit
 {
   faChevronRight = faChevronRight;
   faChevronLeft = faChevronLeft;
@@ -75,7 +75,7 @@ export class ReadingViewComponent
       } else {
         this.text = localStorage.getItem(this.documentId);
         this.pageIndex = parseInt(
-          localStorage.getItem('${this.documentId}/pageIndex')
+          localStorage.getItem(`${this.documentId}/pageIndex`)
         );
       }
     });
@@ -200,7 +200,7 @@ export class ReadingViewComponent
   setLocalStorage() {
     localStorage.setItem(this.documentId, this.text);
     localStorage.setItem(
-      '${this.documentId}/pageIndex',
+      `${this.documentId}/pageIndex`,
       this.pageIndex.toString()
     );
   }
