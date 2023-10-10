@@ -1,0 +1,58 @@
+@import "../../../sass/variables";
+
+.card {
+
+    // font-family: $ir-font-primary;
+    // @include flexGroup(row, null, null);
+    // border: 1px solid red;
+    // margin-top: 1vh;
+    // border-radius: 0.75vw;
+    // background-color: #f3f2ef;
+    // padding-right: 1vw;
+    // font-weight: 600;
+    // display: flex;
+    // justify-content: space-between;
+    // cursor: pointer;
+    // border: 2px solid pink;
+    font-family: $ir-font-primary;
+    background-color: #D9D9D9;
+    margin-top: 2rem;
+    display: flex;
+    @include flexGroup(row, null, null);
+
+    &__body {
+        min-width: 50%;
+    }
+
+
+    &__image {
+       
+        max-width: 50%;
+        img {
+            max-width: 78%;
+            height: 100%;
+        }
+    }
+
+    &__body-title {
+        font-size: getDesktopFont("600");
+        font-weight: 600;
+        padding-left: 4rem;
+        padding-top: 1rem;
+        cursor: pointer;
+    }
+
+    &__body-info {
+        @include flexGroup(row, space-around, null);
+        padding-top: 2rem;
+        font-size: getDesktopFont("500");
+    }
+
+    &__actions {
+        margin-left: auto;
+    }
+
+    * {
+        border: 1px solid blue;
+    }
+}

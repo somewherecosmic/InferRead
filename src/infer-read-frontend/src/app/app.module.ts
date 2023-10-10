@@ -23,6 +23,7 @@ import { AuthInterceptorService } from './services/auth-interceptor-service/auth
 import { UserPageComponent } from './components/user-page/user-page.component';
 import { HeroComponent } from './components/hero/hero.component';
 import { FeaturesComponent } from './components/features/features.component';
+import { ReadingCardComponent } from './components/reading-card/reading-card.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { FeaturesComponent } from './components/features/features.component';
     UserPageComponent,
     HeroComponent,
     FeaturesComponent,
+    ReadingCardComponent,
   ],
   imports: [
     BrowserModule,
