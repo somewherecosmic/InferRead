@@ -3,7 +3,21 @@
         <img src="../../../assets/pdf-icon.png" alt="pdf-icon">
     </div>
     <div class="card__body">
-        <h2 class="card__body-title">{{ title }}</h2>
+        <!-- A double click on title should allow a user to edit the title -->
+        <!-- A click outside of the editing space should be considered a cancel -->
+        <!-- Pressing Enter should save the change -->
+
+        <!-- bool flag editing, on dblclick event, change template to input, with the value as the current title -->
+        <!-- keyboard focus should already be on the title -->
+
+        <!-- on blur, cancel editing -->
+        <!-- on enter, save changes, post to backend -->
+        <div *ngIf="editing">
+            <input type="text" name="title" id="title"  [(ngModel)]="title" (keydown.enter)="saveChanges($event)">
+        </div> 
+        <div *ngIf="!editing">
+            <h2 class="card__body-title" (dblclick)="editTitle()">{{ title }}</h2>
+        </div>
         <div class="card__body-info">
             <p>{{ language }}</p>
             <p> {{ length }} pages</p>
