@@ -13,7 +13,7 @@
         <!-- on blur, cancel editing -->
         <!-- on enter, save changes, post to backend -->
         <div *ngIf="editing">
-            <input type="text" name="title" id="title"  [(ngModel)]="title" (keydown.enter)="saveChanges($event)">
+            <input class="card__input" type="text" name="title" id="title"  [(ngModel)]="title" (keydown.enter)="onSaveTitleChange($event)" (keydown.escape)="onCancelChange()">
         </div> 
         <div *ngIf="!editing">
             <h2 class="card__body-title" (dblclick)="editTitle()">{{ title }}</h2>
