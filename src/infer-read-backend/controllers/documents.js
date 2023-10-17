@@ -54,9 +54,10 @@ const updateDocumentTitle = (req, res, next) => {
         (err, result) => {
             if (err) {
                 console.error(err);
+                res.status(500).send("Failed to change title, " + err);
                 return;
             }
-            console.log(result);
+            return res.status(200).send("Changed title successfully");
         });
 };
 
