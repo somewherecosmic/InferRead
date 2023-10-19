@@ -54,6 +54,11 @@
             cursor: pointer;
             font-size: getDesktopFont($fs-button);
             padding: .5rem;
+            background-color: #ffff00b3;
+        }
+
+        .button:hover {
+            background-color: #ffff008c;
         }
 
         &-icon, svg {
