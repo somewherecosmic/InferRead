@@ -57,7 +57,7 @@ export class OverviewComponent implements OnInit {
   selectedLanguage: string;
   private documentsSubscription!: Subscription;
   documentsFromDB: UploadedDocument[];
-  filteredDocuments: UploadedDocument[] = [];
+  filteredDocuments: UploadedDocument[] = localStorage.getItem("filteredDocuments") ? JSON.parse(localStorage.getItem("filteredDocuments")) : [];
   addDocumentVisible = false;
   isDeleteDocument = false;
   uploadDocData = new FormData();
@@ -82,7 +82,7 @@ export class OverviewComponent implements OnInit {
           userConfigSuperObject.userConfig.selectedLanguage;
         console.log('Language: ' + this.selectedLanguage);
       });
-    this.getDocuments();
+    localStorage.getItem("filteredDocuments") ? this.filteredDocuments = JSON.parse(localStorage.getItem("filteredDocuments")) : this.getDocuments();
   }
 
   sortDocuments(filter: string) {
@@ -99,18 +99,13 @@ export class OverviewComponent implements OnInit {
         this.filteredDocuments.sort((a, b) => {
           return a.title.localeCompare(b.title);
         })
-        console.log(this.filteredDocuments);
         break;
       }
 
       case 'Length': {
         this.filteredDocuments.sort((a, b) => {
           return a.pages.length - b.pages.length;
-          // if (a.pages.length < b.pages.length) return 1;
-          // if (a.pages.length > a.pages.length) return -1;
-          // return 0;
         })
-        console.log(this.filteredDocuments);
         break;
       }
 
@@ -119,7 +114,8 @@ export class OverviewComponent implements OnInit {
 
       // }
     }
-    this.cdr.detectChanges();  
+    localStorage.setItem("filteredDocuments", JSON.stringify(this.filteredDocuments));
+    this.cdr.detectChanges();
   }
 
   getDocuments() {
@@ -179,6 +175,7 @@ export class OverviewComponent implements OnInit {
         this.filteredDocuments.splice(i, 1);
       }
     }
+    localStorage.setItem("filteredDocuments", JSON.stringify(this.filteredDocuments));
   }
 
   ngOnDestroy(): void {
@@ -217,6 +214,7 @@ export class OverviewComponent implements OnInit {
     upload$.subscribe((response) => {
       if (response.successfulUpload) {
         this.filteredDocuments.push(response.successfulUpload);
+        localStorage.setItem("filteredDocuments", JSON.stringify(this.filteredDocuments));
       }
     });
   }
