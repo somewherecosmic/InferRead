@@ -24,6 +24,7 @@ import { UserPageComponent } from './components/user-page/user-page.component';
 import { HeroComponent } from './components/hero/hero.component';
 import { FeaturesComponent } from './components/features/features.component';
 import { ReadingCardComponent } from './components/reading-card/reading-card.component';
+import { DropdownComponent } from './components/dropdown/dropdown.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { ReadingCardComponent } from './components/reading-card/reading-card.com
     HeroComponent,
     FeaturesComponent,
     ReadingCardComponent,
+    DropdownComponent,
   ],
   imports: [
     BrowserModule,

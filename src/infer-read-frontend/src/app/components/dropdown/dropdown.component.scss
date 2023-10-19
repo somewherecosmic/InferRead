@@ -1,0 +1,28 @@
+@use '../../../sass/variables' as *;
+
+.dropdown {
+
+    margin-top: 1rem;
+    margin-left: 0.5rem;
+    font-size: getDesktopFont($fs-button);
+    font-family: $ir-font-primary;
+
+    &.active {
+        border: 1px solid black;
+        width: 30%;
+
+        .dropdown__selected {
+            border-bottom: 1px solid black;
+        }
+
+        .dropdown__option {
+            border-bottom: 1px solid black;
+        }
+    }
+
+
+    &__option:hover {
+        background-color: #D9D9D9;
+        cursor: pointer;
+    }
+}

@@ -85,6 +85,43 @@ export class OverviewComponent implements OnInit {
     this.getDocuments();
   }
 
+  sortDocuments(filter: string) {
+    // figure out how to sort based on which values, enums?
+
+    console.log("Sorting docs: " + this.filteredDocuments);
+
+    switch (filter) {
+      // Need to add a last read field to the schema for this option
+      // case 'Last Read': { 
+      //   this
+      // }
+      case 'Title': {
+        this.filteredDocuments.sort((a, b) => {
+          return a.title.localeCompare(b.title);
+        })
+        console.log(this.filteredDocuments);
+        break;
+      }
+
+      case 'Length': {
+        this.filteredDocuments.sort((a, b) => {
+          return a.pages.length - b.pages.length;
+          // if (a.pages.length < b.pages.length) return 1;
+          // if (a.pages.length > a.pages.length) return -1;
+          // return 0;
+        })
+        console.log(this.filteredDocuments);
+        break;
+      }
+
+      // Add a date field to the schema for this option
+      // case 'Upload Date': {
+
+      // }
+    }
+    this.cdr.detectChanges();  
+  }
+
   getDocuments() {
     this.documentsSubscription = this.user$
       .pipe(

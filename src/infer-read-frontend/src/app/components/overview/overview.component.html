@@ -17,15 +17,11 @@
       </button>
   </div> -->
     <div class="items-available">
+      <div class="filters">
+        <app-dropdown [values]="['Last Read', 'Length', 'Title', 'Upload Date']" (selectedValueChange)="sortDocuments($event)"></app-dropdown>
+      </div>
       <div *ngFor="let doc of filteredDocuments" class="item">
-        <!-- <div class="doc-info" (click)="readDocument(doc._id)">
-          <img src="../../../assets/pdf-icon.png">
-          <div class="">
-          <h1 class="item-title">{{ doc.title }}</h1>
-          <h2 class="item-desc">
-            {{ doc.pages.length }} pages ● {{ doc.language }}
-          </h2> -->
-          <app-reading-card [title]="doc.title" [length]="doc.pages.length" [language]="doc.language" [id]="doc._id"/>
+        <app-reading-card [title]="doc.title" [length]="doc.pages.length" [language]="doc.language" [id]="doc._id"/>
       </div>
     </div>
   </div>
