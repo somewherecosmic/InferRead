@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { LearningWord, User, UserConfig } from 'src/app/models/user.model';
 import { AuthorizationService } from 'src/app/services/authorization-service/authorization.service';
-import { BankService } from '../../services/bank-service/bank.service';
+import { BankService } from '../../../services/bank-service/bank.service';
 import { Observable, switchMap, tap, map, of, catchError } from 'rxjs';
 import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
 @Component({

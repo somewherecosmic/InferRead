@@ -10,21 +10,22 @@ import { FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HeaderComponent } from './components/page-skeleton/header/header.component';
-import { NavBarGeneralComponent } from './components/page-skeleton/nav-bar-general/nav-bar-general.component';
-import { OverviewComponent } from './components/overview/overview.component';
-import { ReadingViewComponent } from './components/reading-view/reading-view.component';
-import { ReviewPageComponent } from './components/review-page/review-page.component';
-import { LoginAuthorizationComponent } from './components/login-auth/login-auth.component';
-import { LoadingSpinnerComponent } from './components/page-skeleton/loading-spinner/loading-spinner.component';
-import { HomeComponent } from './components/home/home.component';
+import { HeaderComponent } from './components/utility/page-skeleton/header/header.component';
+import { NavBarGeneralComponent } from './components/utility/page-skeleton/nav-bar-general/nav-bar-general.component';
+import { OverviewComponent } from './components/view-components/overview/overview.component';
+import { ReadingViewComponent } from './components/view-components/reading-view/reading-view.component';
+import { ReviewPageComponent } from './components/view-components/review-page/review-page.component';
+import { LoginAuthorizationComponent } from './components/utility/login-auth/login-auth.component';
+import { LoadingSpinnerComponent } from './components/utility/page-skeleton/loading-spinner/loading-spinner.component';
+import { HomeComponent } from './components/view-components/landing/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthInterceptorService } from './services/auth-interceptor-service/auth-interceptor.service';
-import { UserPageComponent } from './components/user-page/user-page.component';
-import { HeroComponent } from './components/hero/hero.component';
-import { FeaturesComponent } from './components/features/features.component';
-import { ReadingCardComponent } from './components/reading-card/reading-card.component';
-import { DropdownComponent } from './components/dropdown/dropdown.component';
+import { UserPageComponent } from './components/view-components/user-page/user-page.component';
+import { HeroComponent } from './components/view-components/landing/hero/hero.component';
+import { FeaturesComponent } from './components/view-components/landing/features/features.component';
+import { ReadingCardComponent } from './components/utility/reading-card/reading-card.component';
+import { DropdownComponent } from './components/utility/dropdown/dropdown.component';
+import { ModalComponent } from './components/utility/modal/modal.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { DropdownComponent } from './components/dropdown/dropdown.component';
     FeaturesComponent,
     ReadingCardComponent,
     DropdownComponent,
+    ModalComponent,
   ],
   imports: [
     BrowserModule,

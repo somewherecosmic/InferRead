@@ -12,9 +12,9 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import config from 'devextreme/core/config';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { AuthorizationService } from '../../../services/authorization-service/authorization.service';
 import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
-import { User, UserConfig } from '../../models/user.model';
+import { User, UserConfig } from '../../../models/user.model';
 import {
   DocumentGetResponse,
   DocumentDeletionResponse,

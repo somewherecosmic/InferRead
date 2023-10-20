@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { faSignOut, faBook, faEraser, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-import { AuthorizationService } from '../../../services/authorization-service/authorization.service';
+import { AuthorizationService } from '../../../../services/authorization-service/authorization.service';
 
 @Component({
   selector: 'app-nav-bar-general',

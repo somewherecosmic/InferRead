@@ -11,10 +11,10 @@ import {
   of,
 } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Bank, User, UserConfig } from '../../models/user.model';
-import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { Bank, User, UserConfig } from '../../../models/user.model';
+import { AuthorizationService } from '../../../services/authorization-service/authorization.service';
 import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
-import { BankService } from '../../services/bank-service/bank.service';
+import { BankService } from '../../../services/bank-service/bank.service';
 
 import { PageResponse, WordHelpResponse } from 'src/app/models/reading.model';
 import {

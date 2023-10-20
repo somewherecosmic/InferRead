@@ -2,7 +2,7 @@ import { formatCurrency } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { AuthorizationService } from '../../../services/authorization-service/authorization.service';
 import { UserConfigService } from 'src/app/services/user-config-service/user-config.service';
 import { EMPTY, catchError, tap, finalize, throwError } from 'rxjs';
 

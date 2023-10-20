@@ -26,7 +26,7 @@
       />
       <h2>{{ (userConfig$ | async)?.userConfig.selectedLanguage }}</h2>
     </div>
-      <div class="user-profile"  [routerLink]="'user'">
+      <div class="user-profile"  [routerLink]="'/user'">
         <h2>{{ (user$ |async)?.email}}</h2>
     </div>
   </div>

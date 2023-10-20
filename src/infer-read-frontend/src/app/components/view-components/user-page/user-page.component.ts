@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthorizationService } from '../../services/authorization-service/authorization.service';
+import { AuthorizationService } from '../../../services/authorization-service/authorization.service';
 import { Subscription } from 'rxjs';
-import { User } from '../../models/user.model';
+import { User } from '../../../models/user.model';
 import { HttpClient } from '@angular/common/http';
-import { UserConfigService } from '../../services/user-config-service/user-config.service';
+import { UserConfigService } from '../../../services/user-config-service/user-config.service';
 import { EMPTY, catchError, tap, finalize } from 'rxjs';
 import { BankService } from 'src/app/services/bank-service/bank.service';
 
