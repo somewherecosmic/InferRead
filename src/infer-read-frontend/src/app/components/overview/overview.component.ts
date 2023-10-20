@@ -184,10 +184,6 @@ export class OverviewComponent implements OnInit {
     }
   }
 
-  onAddDocument(): void {
-    this.addDocumentVisible = true;
-  }
-
   onFileSelected(event) {
     const file: File = event.target.files[0];
 
@@ -200,7 +196,8 @@ export class OverviewComponent implements OnInit {
       );
       this.uploadDocData.append('document', file, this.fileName);
       this.uploadDocData.append('language', this.selectedLanguage);
-      this.isSubmitAvailable = true;
+
+      this.onFileSubmit();
     }
   }
 
@@ -209,7 +206,6 @@ export class OverviewComponent implements OnInit {
       'http://127.0.0.1:8000/preprocess',
       this.uploadDocData
     );
-    this.addDocumentVisible = false;
 
     upload$.subscribe((response) => {
       if (response.successfulUpload) {
@@ -217,14 +213,6 @@ export class OverviewComponent implements OnInit {
         localStorage.setItem("filteredDocuments", JSON.stringify(this.filteredDocuments));
       }
     });
-  }
-
-  onDeleteDocNav(): void {
-    this.isDeleteDocument = true;
-  }
-
-  onCancelDeleteDocNav(): void {
-    this.isDeleteDocument = false;
   }
 
   readDocument(docId: string) {

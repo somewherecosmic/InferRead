@@ -23,34 +23,33 @@
       border-radius: 0.75vw;
       padding-left: 2vw;
       padding-right: 2vw;
-
-      .item {
-        // .doc-info {
-        //   display: flex;
-        //   flex-direction: row;
-        //   img {
-        //     padding-right: 1vw;
-        //     height: 100%;
-        //   }
-        //   // width: auto;
-        // }
-      }
     }
+
     .filtering-body {
       background-color: #ffffff;
       height: 90vh;
       width: 10vw;
       border-radius: 0.75vw;
     }
-  }
-}
 
-.select-doc-btn {
-  // background-color: red;
-}
-.submit-doc-btn {
-  background: #45b11e;
-  color: white;
-  border-style: outset;
-  text-shadow: none;
+    .menus {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background-color: #fff;
+    }
+
+    .upload {
+      margin-top: 0.5rem;
+      margin-right: 0.5rem;
+    }
+
+    .upload-label {
+      margin-top: 0.5rem;
+      padding-top: 0.5rem;
+      cursor: pointer;
+    }
+  }
 }
