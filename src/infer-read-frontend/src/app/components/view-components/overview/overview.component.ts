@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
 import {
   Observable,
   Subscription,
@@ -58,17 +58,14 @@ export class OverviewComponent implements OnInit {
   private documentsSubscription!: Subscription;
   documentsFromDB: UploadedDocument[];
   filteredDocuments: UploadedDocument[] = localStorage.getItem("filteredDocuments") ? JSON.parse(localStorage.getItem("filteredDocuments")) : [];
-  addDocumentVisible = false;
-  isDeleteDocument = false;
-  uploadDocData = new FormData();
-  isSubmitAvailable = false;
   authURL = environment.authURL;
 
-  //BMcQ Comment: copying code from file-upload which will be moved here
-  text = '';
-  fileName = '';
+  showModal = false;
+  @ViewChild("modal") modal: ElementRef;
 
-  // Fetch the user docs array and display them on the template
+
+  
+
 
   ngOnInit(): void {
     this.user$ = this.authService.user;
@@ -118,6 +115,11 @@ export class OverviewComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  onNewDocument(document: UploadedDocument) {
+    this.filteredDocuments.push(document);
+    localStorage.setItem("filteredDocuments", JSON.stringify(this.filteredDocuments));
+  }
+
   getDocuments() {
     this.documentsSubscription = this.user$
       .pipe(
@@ -141,6 +143,14 @@ export class OverviewComponent implements OnInit {
         })
       )
       .subscribe();
+  }
+
+  onAddDocument() {
+    this.modal.nativeElement.showModal();
+  }
+
+  uploadDocument(event: Event) {
+    this.modal.nativeElement.close();
   }
 
   filterDocuments(documents: any, language: string) {
@@ -178,45 +188,14 @@ export class OverviewComponent implements OnInit {
     localStorage.setItem("filteredDocuments", JSON.stringify(this.filteredDocuments));
   }
 
+  readDocument(docId: string) {
+    // pass ID to READ tab via query params and route.navigate()
+    this.router.navigate(['./read'], { queryParams: { docId: docId } });
+  }
+
   ngOnDestroy(): void {
     if (this.documentsSubscription) {
       this.documentsSubscription.unsubscribe();
     }
-  }
-
-  onFileSelected(event) {
-    const file: File = event.target.files[0];
-
-    if (file) {
-      this.fileName = file.name;
-      this.uploadDocData = new FormData();
-      this.uploadDocData.append(
-        'user',
-        JSON.parse(localStorage.getItem('userObject')).id
-      );
-      this.uploadDocData.append('document', file, this.fileName);
-      this.uploadDocData.append('language', this.selectedLanguage);
-
-      this.onFileSubmit();
-    }
-  }
-
-  onFileSubmit() {
-    const upload$ = this.httpClient.post<DocumentPostResponse>(
-      'http://127.0.0.1:8000/preprocess',
-      this.uploadDocData
-    );
-
-    upload$.subscribe((response) => {
-      if (response.successfulUpload) {
-        this.filteredDocuments.push(response.successfulUpload);
-        localStorage.setItem("filteredDocuments", JSON.stringify(this.filteredDocuments));
-      }
-    });
-  }
-
-  readDocument(docId: string) {
-    // pass ID to READ tab via query params and route.navigate()
-    this.router.navigate(['./read'], { queryParams: { docId: docId } });
   }
 }

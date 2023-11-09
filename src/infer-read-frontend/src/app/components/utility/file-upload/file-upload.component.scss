@@ -1,0 +1,8 @@
+@use '../../../../sass/variables' as *;
+
+
+.upload {
+    width: 54vw;
+    height: 43vh;
+    @include flexGroup(column, space-evenly, center);
+}

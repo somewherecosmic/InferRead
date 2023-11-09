@@ -9,10 +9,14 @@ import { throws } from 'assert';
 export class DropdownComponent implements OnInit {
 
   @Input() values: string[] = []
+  @Input() id: number;
+  @Input() default: string;
+  @Input() cache: boolean = false;
   selectedValue: string;
   showDropdown: boolean = false;
 
   @Output() selectedValueChange: EventEmitter<string> = new EventEmitter();
+  @Output() onInit: EventEmitter<string> = new EventEmitter();
 
   toggleDropdown() {
     this.showDropdown = !this.showDropdown;
@@ -20,7 +24,9 @@ export class DropdownComponent implements OnInit {
   
   selectOption(option) {
     this.selectedValue = option;
-    localStorage.setItem('selectedValue', option);
+    if (this.cache) {
+      localStorage.setItem('selectedValue ' + this.id , option);
+    }
 
     this.selectedValueChange.emit(option);
     this.showDropdown = false;
@@ -28,8 +34,16 @@ export class DropdownComponent implements OnInit {
 
 
 
+
+
   ngOnInit() {
-    localStorage.getItem('selectedValue') ? this.selectedValue = localStorage.getItem('selectedValue') : this.selectedValue = this.values[0];
+    if (this.cache) { 
+      localStorage.getItem('selectedValue ' + this.id) ? this.selectedValue = localStorage.getItem('selectedValue ' + this.id) : this.selectedValue = this.values[0];
+    }
+    else {
+      this.selectedValue = this.default;
+    }
+    this.onInit.emit(this.selectedValue);
   }
   
 }

@@ -130,7 +130,7 @@ def visitor_body(text, cm, tm, fontDict, fontSize):
 
 @app.post("/preprocess")
 # document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
-async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...)):
+async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...), title: str = Form(...)):
     stream = BytesIO(document.file.read())
     pdf = PyPDF2.PdfReader(stream)
     currentPage = 4
@@ -141,8 +141,7 @@ async def preprocess(user: str = Form(...), document: UploadFile = File(...), la
         text = pdf.pages[currentPage].extract_text()
         pages.append(re.sub(r'\d+$', '', text))
         currentPage += 1
-    preprocessed_document = Document(_id=ObjectId(), title=document.filename.split(
-        ".")[0], pages=pages, language=language, pageIndex=0)
+    preprocessed_document = Document(_id=ObjectId(), title=title, pages=pages, language=language, pageIndex=0)
 
     WriteStatus, docId = await addDocumentData(preprocessed_document, user)
     print(docId)

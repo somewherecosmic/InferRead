@@ -2,29 +2,14 @@
 <div class="body">
   <app-nav-bar-general></app-nav-bar-general>
   <div class="RHS">
-    <!-- <input
-    type="file"
-    class="file-input"
-    (change)="onFileSelected($event)"
-    #fileUpload
-  />
-    <div *ngIf="this.isSubmitAvailable" class="upload btn">
-      <button
-        class="submit-doc-btn"
-        (click)="onFileSubmit()"
-      >
-        Upload
-      </button>
-  </div> -->
     <div class="items-available">
       <div class="menus">
-        <app-dropdown [values]="['Last Read', 'Length', 'Title', 'Upload Date']" (selectedValueChange)="sortDocuments($event)"></app-dropdown>
+        <app-dropdown [values]="['Last Read', 'Length', 'Title', 'Upload Date']" [id]=0 [cache]="true" (selectedValueChange)="sortDocuments($event)"></app-dropdown>
         <div class="upload">
-          <input type="file" name="file-input" id="file-input" style="display: none;" (change)="onFileSelected($event)" #fileInput>
-            <label for="file-input">
+            <label (click)="onAddDocument()">
               <svg fill="#000000" height="48px" width="48px" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-	 viewBox="0 0 512 512" xml:space="preserve">
-<g class="upload-label">
+	 			viewBox="0 0 512 512" xml:space="preserve">
+			  	<g class="upload-label">
 	<g>
 		<g>
 			<path d="M227.8,174.1v53.7h-53.7c-9.5,0-17.2,7.7-17.2,17.2s7.7,17.2,17.2,17.2h53.7v53.7c0,9.5,7.7,17.2,17.2,17.2
@@ -66,11 +51,18 @@
 	</g>
 	<g>
 	</g>
-</g>
-</svg>
+			  	</g>
+			  </svg>
             </label>
         </div>
       </div>
+		<!-- <app-modal #uploadModal>
+			<app-file-upload></app-file-upload>
+		</app-modal> -->
+		<dialog #modal class="modal">
+			<app-file-upload (newDocument)="onNewDocument($event)"></app-file-upload>
+			<button (click)="uploadDocument($event)">Close</button>
+		</dialog>
       <div *ngFor="let doc of filteredDocuments" class="item">
         <app-reading-card [title]="doc.title" [length]="doc.pages.length" [language]="doc.language" [id]="doc._id"/>
       </div>

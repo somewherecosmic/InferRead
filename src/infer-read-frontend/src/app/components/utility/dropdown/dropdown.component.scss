@@ -4,12 +4,12 @@
 
     margin-top: 1rem;
     margin-left: 0.5rem;
-    font-size: getDesktopFont($fs-button);
+    font-size: getDesktopFont("400");
     font-family: $ir-font-primary;
 
     &.active {
         border: 1px solid black;
-        width: 70%;
+        width: 100%;
 
         .dropdown__selected {
             border-bottom: 1px solid black;

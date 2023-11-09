@@ -26,6 +26,7 @@ import { FeaturesComponent } from './components/view-components/landing/features
 import { ReadingCardComponent } from './components/utility/reading-card/reading-card.component';
 import { DropdownComponent } from './components/utility/dropdown/dropdown.component';
 import { ModalComponent } from './components/utility/modal/modal.component';
+import { FileUploadComponent } from './components/utility/file-upload/file-upload.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { ModalComponent } from './components/utility/modal/modal.component';
     ReadingCardComponent,
     DropdownComponent,
     ModalComponent,
+    FileUploadComponent,
   ],
   imports: [
     BrowserModule,

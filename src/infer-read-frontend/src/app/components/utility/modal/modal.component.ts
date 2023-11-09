@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 
 @Component({
   selector: 'app-modal',
@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class ModalComponent {
 
+  @ViewChild("modal") modal: ElementRef;
+
+  show() {
+    this.modal.nativeElement.showModal();
+  }
 }
