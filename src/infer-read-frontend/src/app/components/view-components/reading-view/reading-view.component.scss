@@ -1,4 +1,5 @@
-@import url(https://fonts.googleapis.com/css?family=Crimson+Text:400,700,900,400italic,700italic,900italic|Playfair+Display:400,700,900,400italic,700italic,900italic|Rock+Salt:400);
+@use "../../../../sass/variables" as *;
+
 
 .body {
   display: flex;
@@ -30,7 +31,7 @@
         padding-left: 2vw;
         padding-right: 2vw;
         p {
-          font-size: 3rem;
+          font-size: scaleSize(getMobileFont, "700", "md");
         }
       }
       .reading-nav {

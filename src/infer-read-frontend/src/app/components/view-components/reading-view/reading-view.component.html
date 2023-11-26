@@ -11,13 +11,11 @@
           [disabled]="pageIndex == 0"
           (click)="getPreviousPage()"
         >
-          <fa-icon size="3x" [icon]="faChevronLeft"></fa-icon>
-          <h3>Back</h3>
+          <fa-icon size="2x" [icon]="faChevronLeft"></fa-icon>
         </button>
         <h3>{{pageIndex+1}}</h3>
         <button class="nav-btn" (click)="getNextPage()">
-          <fa-icon size="3x" [icon]="faChevronRight"></fa-icon>
-          <h3>Next</h3>
+          <fa-icon size="2x" [icon]="faChevronRight"></fa-icon>
         </button>
       </div>
     </div>
