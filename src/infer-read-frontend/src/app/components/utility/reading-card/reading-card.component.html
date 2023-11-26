@@ -27,7 +27,9 @@
         </div>
     </div>
     <div class="card__actions">
-        <button class="button"><img src="assets/read-icon.svg" class="card__actions-icon"> Read</button>
+        <button class="button" (click)="readDocument(id)">
+            <img src="assets/read-icon.svg" class="card__actions-icon">Read
+        </button>
     </div>
     <div class="card__delete">
         <button class="card__delete-button">

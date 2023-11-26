@@ -188,11 +188,6 @@ export class OverviewComponent implements OnInit {
     localStorage.setItem("filteredDocuments", JSON.stringify(this.filteredDocuments));
   }
 
-  readDocument(docId: string) {
-    // pass ID to READ tab via query params and route.navigate()
-    this.router.navigate(['./read'], { queryParams: { docId: docId } });
-  }
-
   ngOnDestroy(): void {
     if (this.documentsSubscription) {
       this.documentsSubscription.unsubscribe();
