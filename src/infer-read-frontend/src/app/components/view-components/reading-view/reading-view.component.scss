@@ -30,8 +30,16 @@
         border-radius: 0.75vw;
         padding-left: 2vw;
         padding-right: 2vw;
+
+        .reading__div {
+          display: contents;
+        }
         p {
-          font-size: scaleSize(getMobileFont, "700", "md");
+          font-size: scaleSize(getDesktopFont, "500", "md");
+          display: inline-block;
+        }
+        .reading__words:hover {
+          background-color: #f7e8bb;
         }
       }
       .reading-nav {

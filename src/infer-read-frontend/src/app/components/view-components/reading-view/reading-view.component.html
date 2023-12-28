@@ -3,7 +3,16 @@
   <div class="RHS">
     <div class="reading-and-nav">
       <div class="reading-body">
-        <p [textContent]="text" (dblclick)="highlight($event)"></p>
+        <!-- <p [textContent]="text" (dblclick)="highlight($event)"></p> -->
+        <div *ngFor="let word of text.split(' '); index as i" class="reading__div">
+          <p class="reading__words" (dblclick)="highlight($event, i)">
+            {{word}}
+          </p>
+          &nbsp;
+        </div>
+        <!-- <p *ngFor="let word of text.split(' ')" class="reading__words" (dblclick)="grabSurroundingSentence($event)">
+          {{word}}
+        </p> -->
       </div>
       <div class="reading-nav">
         <button
