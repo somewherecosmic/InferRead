@@ -41,15 +41,13 @@ export class FileUploadComponent {
         'user',
         JSON.parse(localStorage.getItem('userObject')).id
       );
-      console.log(this.selectedLanguage + " Inside onFileSelected");
       this.uploadDocData.append('document', file, this.fileName);
-      this.uploadDocData.append('title', this.title);
-      this.uploadDocData.append('language', this.selectedLanguage);
-
     }
   }
 
   onFileSubmit() {
+    this.uploadDocData.append('title', this.title);
+    this.uploadDocData.append('language', this.selectedLanguage);
     const upload$ = this.httpClient.post<DocumentPostResponse>(
       'http://127.0.0.1:8000/preprocess',
       this.uploadDocData

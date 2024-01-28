@@ -1,60 +1,35 @@
 import os
-import re
-from dataclasses import dataclass
 from io import BytesIO
-from typing import List
-
 import certifi
-# from routers import irishAPI
-import motor.motor_asyncio
+from motor.motor_asyncio import AsyncIOMotorDatabase
 import numpy as np
 import pydantic
 import PyPDF2
 import spacy
 import tensorflow as tf
 from bson import ObjectId
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from spacy.tokenizer import Tokenizer
 from spacy.tokens import Doc, Token
 from transformers import CamembertTokenizer, TFCamembertForMaskedLM
 from dotenv import load_dotenv
+
+from utility import french_tokenizer, data_models
+from routers import french_endpoints
+from utility import database
 
 
 load_dotenv()
 pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
 app = FastAPI()
-# app.include_router(irishRouter)
+
+app.include_router(french_endpoints.router)
+
 model = TFCamembertForMaskedLM.from_pretrained('camembert-base')
 tokenizer = CamembertTokenizer.from_pretrained('camembert-base')
 frenchNLP = spacy.load("fr_core_news_md")
-
-# export to file later
-
-
-class frenchTokenizer(Tokenizer):
-    def __init__(self, nlp):
-        super().__init__(nlp.vocab)
-
-    def split(self, doc):
-        tokens = super().split(doc)
-        i = 0
-        while i < len(tokens):
-            if tokens[i].text == '-':
-                tokens[i-1:i+2] = [Doc(doc.vocab, [Token(doc, i-1, text=tokens[i-1].text)]),
-                                   Doc(doc.vocab, [Token(doc, i, text=tokens[i+1].text)])]
-                i -= 1
-            i += 1
-        return tokens
-
-
-ca = certifi.where()
-client = motor.motor_asyncio.AsyncIOMotorClient(
-    os.environ["MONGODB_URL"], tlsCAFile=ca)
-database = client.test
-user_collection = database.get_collection("users")
 
 origins = [
     "http://localhost:4200",
@@ -69,57 +44,9 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-
-class UploadRequest(BaseModel):
-    document: UploadFile
-    id: str = Form(...)
-
-# Model needs to be JSON encoded before being sent to Atlas
-
-
-@dataclass
-class Document:
-    _id: ObjectId
-    title: str
-    pages: List[str]
-    language: str
-    pageIndex: int
-
-
-class WordHelpRequest(BaseModel):
-    word: str
-    context: str
-    maskedContext: str
-    userId: str
-
-class PageIndexBody(BaseModel):
-    pageIndex: int
-
-    # def __init__(self, title, pages, language):
-    #     self.title = title
-    #     self.pages = pages
-    #     self.language = language
-
-
 @app.options("/{any:path}")
 async def options(any: str):
     return {"status": "OK"}
-
-
-@app.get("/")
-async def root():
-
-    return {"message": "Hello World"}
-
-
-@app.get("/test")
-async def test():
-    return {"message": "DB tested, dummy inserted"}
-
-# Create post endpoint that takes a file and returns a chapter?
-# Needs to take a file as arg
-# Pass file to python script
-# Run script, return result of script
 
 
 def visitor_body(text, cm, tm, fontDict, fontSize):
@@ -128,50 +55,15 @@ def visitor_body(text, cm, tm, fontDict, fontSize):
         return text
 
 
-@app.post("/preprocess")
-# document: Annotated[UploadFile, File()], id: Annotated[str, Form()]
-async def preprocess(user: str = Form(...), document: UploadFile = File(...), language: str = Form(...), title: str = Form(...)):
-    stream = BytesIO(document.file.read())
-    pdf = PyPDF2.PdfReader(stream)
-    currentPage = 4
-    text = ""
-    pages = []
-    while (currentPage < len(pdf.pages)):
-        # .replace("\n\n", " ").replace("\n", "")
-        text = pdf.pages[currentPage].extract_text()
-        pages.append(re.sub(r'\d+$', '', text))
-        currentPage += 1
-    preprocessed_document = Document(_id=ObjectId(), title=title, pages=pages, language=language, pageIndex=0)
 
-    WriteStatus, docId = await addDocumentData(preprocessed_document, user)
-    print(docId)
-    if WriteStatus == True:
-        return {"successfulUpload": preprocessed_document.__dict__}
-    else:
-        return {"unsuccessfulUpload": WriteStatus}
-
-# This endpoint preprocesses the text into raw plaintext, need to sentencize?
-
-# refactor, update user model and embed the document into their documents array
-
-
-async def addDocument(document_data, user: str):
-    document = await user_collection.update_one({"_id": ObjectId(user)}, {"$push": {"documents": document_data.__dict__}}, upsert=True)
-    print(document_data.__dict__)
-    return document.acknowledged, document.upserted_id
-
-
-async def addDocumentData(document: Document, user: str):
-    writeStatus = await addDocument(document, user)
-    return writeStatus
 
 
 # GETTING PAGES, UPDATING PAGE INDEX, PROCESSING TEXT IN SPACY
 
 @app.get("/getCurrentPage/{userId}/{docId}")
-async def getCurrentPage(userId: str, docId: str):
-
-    pageIndex = await user_collection.aggregate([
+async def getCurrentPage(userId: str, docId: str, db: AsyncIOMotorDatabase = Depends(database.get_db)):
+    
+    pageIndex = await db.get_collection("users").aggregate([
         {
             '$match': {"_id": ObjectId(userId)}
         },
@@ -197,8 +89,8 @@ async def getCurrentPage(userId: str, docId: str):
 
 
 @app.get("/getNextPage/{userId}/{docId}/{pageIndex}")
-async def getNextPage(userId: str, docId: str, pageIndex: int):
-    nextPage = await user_collection.aggregate([
+async def getNextPage(userId: str, docId: str, pageIndex: int, db: AsyncIOMotorDatabase = Depends(database.get_db)):
+    nextPage = await db.get_collection("users").aggregate([
         {
             '$match': {"_id": ObjectId(userId)}
         },
@@ -223,8 +115,8 @@ async def getNextPage(userId: str, docId: str, pageIndex: int):
 
 
 @app.get("/getPreviousPage/{userId}/{docId}/{pageIndex}")
-async def getPreviousPage(userId: str, docId: str, pageIndex: int):
-    previousPage = await user_collection.aggregate([
+async def getPreviousPage(userId: str, docId: str, pageIndex: int, db: AsyncIOMotorDatabase = Depends(database.get_db)):
+    previousPage = await db.get_collection("users").aggregate([
         {
             '$match': {"_id": ObjectId(userId)}
         },
@@ -251,14 +143,14 @@ async def getPreviousPage(userId: str, docId: str, pageIndex: int):
 
 
 @app.patch("/updatePageIndex/{userId}/{docId}")
-async def updatePageIndex(userId: str, docId: str, pageIndexBody: PageIndexBody):
+async def updatePageIndex(userId: str, docId: str, pageIndexBody: data_models.PageIndexBody, db: AsyncIOMotorDatabase = Depends(database.get_db)):
     pageIndex = pageIndexBody.pageIndex
 
     filter = {"_id": ObjectId(userId)}
     update = {'$set': {'documents.$[elem].pageIndex': pageIndex}}
     array_filters = [{'elem._id': ObjectId(docId)}]
 
-    result = await user_collection.update_one(filter, update, array_filters=array_filters)
+    result = await db.get_collection("users").update_one(filter, update, array_filters=array_filters)
     if result.raw_result['updatedExisting']:
         return "Successfully updated pageIndex"
     else:
@@ -266,7 +158,7 @@ async def updatePageIndex(userId: str, docId: str, pageIndexBody: PageIndexBody)
 
 
 @app.post("/processWordFrench")
-async def processWord(wordHelpRequest: WordHelpRequest):
+async def processWord(wordHelpRequest: data_models.WordHelpRequest):
     doc = frenchNLP(wordHelpRequest.context.replace("-", " "))
     wordToToken = frenchNLP(wordHelpRequest.word)
     # Check if tokenized representation is more than one token
