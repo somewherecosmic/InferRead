@@ -22,6 +22,7 @@ import {
   faChevronRight,
   faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons';
+import { environment } from 'src/environments/environment';
 
 
 // TODO: Remove timer logic at some point - when happy with request-response speed
@@ -127,7 +128,7 @@ export class ReadingViewComponent
       .pipe(
         switchMap((user) =>
           this.http.get<PageResponse>(
-            `http://127.0.0.1:8000/getCurrentPage/${user.id}/${this.documentId}`
+            `${environment.mlURL}/getCurrentPage/${user.id}/${this.documentId}`
           )
         ),
         tap((response) => {
@@ -150,7 +151,7 @@ export class ReadingViewComponent
       .pipe(
         switchMap((user) =>
           this.http.get<PageResponse>(
-            `http://127.0.0.1:8000/getPreviousPage/${user.id}/${this.documentId}/${this.pageIndex}`
+            `${environment.mlURL}/getPreviousPage/${user.id}/${this.documentId}/${this.pageIndex}`
           )
         ),
         tap((response) => {
@@ -172,7 +173,7 @@ export class ReadingViewComponent
       .pipe(
         switchMap((user) =>
           this.http.get<PageResponse>(
-            `http://127.0.0.1:8000/getNextPage/${user.id}/${this.documentId}/${this.pageIndex}`
+            `${environment.mlURL}/getNextPage/${user.id}/${this.documentId}/${this.pageIndex}`
           )
         ),
         tap((response) => {
@@ -193,7 +194,7 @@ export class ReadingViewComponent
   updatePageIndex(user) {
     this.http
       .patch(
-        `http://127.0.0.1:8000/updatePageIndex/${user.id}/${this.documentId}`,
+        `${environment.mlURL}/updatePageIndex/${user.id}/${this.documentId}`,
         { pageIndex: this.pageIndex }
       )
       .pipe(
@@ -233,7 +234,7 @@ export class ReadingViewComponent
   // we represent the text as a series of disjoint words in order to highlight them
   // we can grab the sentence out of the text by finding it in the string?
   // however the same word could occur multiple times on the same page
-  // - this isn't necessarily a problem, as that word is probaby being used in the same way
+  // - this isn't necessarily a problem, as that word is probably being used in the same way
   // however, it could be a problem if the word is being used in different ways or contrasted in some way
   // so we need to grab the sentence that the word is in
 
@@ -248,9 +249,12 @@ export class ReadingViewComponent
     // want to return the sentence with the word in it, and the sentence with the word masked
     // must also consider case where the sentence goes onto the next page and is truncated (don't over-index)
 
+    // two representations, string rep of text and array of strings split on spaces - how can I grab the word and surrounding sentence?
+
 
     const sentence = "";
     const maskedSentence = "";
+    const word = this.textArray[index];
     return [sentence, maskedSentence];
   }
 

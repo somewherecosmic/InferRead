@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  authURL: "http://localhost:3000/"
+  authURL: "http://localhost:3000/",
+  mlURL: "http://127.0.0.1:8000"
 };
 
 /*
