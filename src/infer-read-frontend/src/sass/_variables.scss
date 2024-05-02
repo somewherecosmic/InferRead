@@ -27,6 +27,8 @@ $ratios: (
     @return map-get($ratios, $breakpoint);
 };
 
+// Given a font size and a breakpoint, scale the font size according to either the desktop or mobile fonts
+// and multiply by the ratio for the given breakpoint
 @function scaleSize($fontFunc, $size, $breakpoint) {
     @return calc(call(get-function($fontFunc), $size) * call(get-function(getRatio), $breakpoint));
 }

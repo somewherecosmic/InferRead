@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AuthorizationService } from 'src/app/services/authorization-service/authorization.service';
 import { tap } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reading-card',
@@ -19,7 +20,7 @@ export class ReadingCardComponent implements OnInit {
   
   @ViewChild('titleInput') titleInput: ElementRef;
 
-  constructor(private http: HttpClient, private auth: AuthorizationService) {
+  constructor(private http: HttpClient, private auth: AuthorizationService, private router: Router) {
   }
 
 
@@ -44,6 +45,12 @@ export class ReadingCardComponent implements OnInit {
       console.log(res);
       }))
     .subscribe()
+  }
 
+  readDocument(docId: string) {
+    // pass ID to READ tab via query params and route.navigate()
+    console.log(docId);
+    console.log("Inside readDocument() in reading-card.component.ts");
+    this.router.navigate(['./read'], { queryParams: { docId: docId } });
   }
 }

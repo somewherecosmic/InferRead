@@ -27,6 +27,7 @@ import { ReadingCardComponent } from './components/utility/reading-card/reading-
 import { DropdownComponent } from './components/utility/dropdown/dropdown.component';
 import { ModalComponent } from './components/utility/modal/modal.component';
 import { FileUploadComponent } from './components/utility/file-upload/file-upload.component';
+import { HighlightDirective } from './directives/highlight.directive';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { FileUploadComponent } from './components/utility/file-upload/file-uploa
     DropdownComponent,
     ModalComponent,
     FileUploadComponent,
+    HighlightDirective,
   ],
   imports: [
     BrowserModule,

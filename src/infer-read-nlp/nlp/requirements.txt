@@ -79,7 +79,7 @@ tensorflow-io-gcs-filesystem==0.32.0
 termcolor==2.2.0
 thinc==8.1.5
 tokenizers==0.12.1
-torch==1.12.1
+torch>=1.12.1
 tqdm==4.64.1
 transformers==4.21.3
 typer==0.4.2

@@ -1,11 +1,11 @@
 <!-- Inputs for doc title, file upload, dropdown for lang, image? -->
 <div class="upload">
-<input class="upload__file-input" style="display: none;" type="file" name="file-input" id="file-input" (change)="onFileSelected($event) " #fileInput>
+<input class="upload__file-input" type="file" name="file-input" id="file-input" (change)="onFileSelected($event) " #fileInput>
 <label class="upload__label" for="file-input"></label>
 <input class="upload__title" type="text" name="title" id="title" placeholder="Title"  [(ngModel)]="title">
 <app-dropdown class="upload__dropdown" [values]="['Irish', 'French']" [default]="'Language'" [cache]="false" [id]=1 (onInit)="onDropdownInit($event)" (selectedValueChange)="onLanguageSelected($event)"></app-dropdown>
 
 <!-- File input for image later? -->
 
-<button class="upload__button" (click)="onFileSubmit()">Add To Library</button>
+<button class="upload__button" (click)="onFileSubmit()" [disabled]="!(this.title && this.fileName && this.selectedLanguage) ">Add To Library</button>
 </div>
