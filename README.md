@@ -1,4 +1,4 @@
-# Infer-Read Language Learning Tool
+# InferRead Language Learning Tool
 
 > Natural language processing web application for assisting learners with tackling and comprehending texts in their target languages.  
 > **(French & Irish)**.
